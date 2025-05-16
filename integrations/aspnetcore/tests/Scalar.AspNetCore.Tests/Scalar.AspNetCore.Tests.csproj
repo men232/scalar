@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
   <ItemGroup>
@@ -25,6 +25,10 @@
 
   <ItemGroup Condition="$(TargetFrameWork) == 'net9.0'">
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="9.0.4" />
+  </ItemGroup>
+
+  <ItemGroup Condition="$(TargetFrameWork) == 'net10.0'">
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Testing" Version="10.0.0-preview.4.25258.110" />
   </ItemGroup>
 
   <ItemGroup>
