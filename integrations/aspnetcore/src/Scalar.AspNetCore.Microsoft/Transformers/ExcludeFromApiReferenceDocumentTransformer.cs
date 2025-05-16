@@ -1,9 +1,6 @@
 using Microsoft.AspNetCore.OpenApi;
 using Microsoft.OpenApi.Any;
 using Microsoft.OpenApi.Models;
-#if NET10_0_OR_GREATER
-using Microsoft.OpenApi.Models.References;
-#endif
 
 
 namespace Scalar.AspNetCore;
@@ -21,7 +18,7 @@ internal sealed class ExcludeFromApiReferenceOpenApiDocumentTransformer : IOpenA
             {
                 continue;
             }
-            
+
             foreach (var (_, operation) in path.Value.Operations)
             {
                 var tags = operation.Tags ?? [];
@@ -31,6 +28,7 @@ internal sealed class ExcludeFromApiReferenceOpenApiDocumentTransformer : IOpenA
                     {
                         continue;
                     }
+
                     if (!tagOperations.TryGetValue(tagName, out var operations))
                     {
                         operations = [];
