@@ -6,6 +6,7 @@ import type { Spec, Tag as TagType } from '@scalar/types/legacy'
 import { computed } from 'vue'
 
 import { Lazy } from '@/components/Content/Lazy'
+import { Models } from '@/features/Models'
 import { Operation } from '@/features/Operation'
 import { useSidebar } from '@/features/sidebar'
 import { useNavState } from '@/hooks/useNavState'
@@ -57,6 +58,11 @@ const isLazy = (index: number) =>
       :collection="collection"
       :spec="spec"
       :tag="tag">
+      <Models
+        v-if="layout === 'modern' && tag.components"
+        :tag="tag"
+        :schemas="schemas"
+        :components="tag.components" />
       <Lazy
         v-for="(operation, operationIndex) in tag.operations"
         :id="operation.id"

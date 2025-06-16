@@ -87,11 +87,13 @@ const transformResult = (originalSchema: OpenAPIV3_1.Document, items?: Traversed
         schema.tags.push({
           name: item.tag.name,
           operations: [],
+          components: [],
         })
         tagIndex = schema.tags.length - 1
       }
 
       schema.tags[tagIndex].operations ||= []
+      schema.tags[tagIndex].components ||= []
 
       // Tag
       if ('tag' in child) {
@@ -123,6 +125,11 @@ const transformResult = (originalSchema: OpenAPIV3_1.Document, items?: Traversed
           isWebhook: true,
           information: child.webhook,
           pathParameters: schema.webhooks?.[child.name ?? '']?.parameters,
+        })
+      } else if ('schema' in child) {
+        schema.tags[tagIndex].components.push({
+          name: child.name,
+          schema: child.schema,
         })
       }
     })
