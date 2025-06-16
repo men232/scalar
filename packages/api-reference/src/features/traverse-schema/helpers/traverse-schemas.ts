@@ -16,7 +16,7 @@ const createModelEntry = (
 
   return {
     id,
-    title: name,
+    title: schema.title || name,
     name,
     schema,
   }
