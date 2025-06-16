@@ -74,7 +74,7 @@ const shouldShowParameter = computed(() => {
         class="parameter-item-trigger flex"
         :class="{ 'parameter-item-trigger-open': open }">
         <ScalarIcon
-          class="parameter-item-icon size-4.5"
+          class="parameter-item-icon size-4"
           :icon="open ? 'ChevronDown' : 'ChevronRight'"
           thickness="1.5" />
         <span class="parameter-item-name">
