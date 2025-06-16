@@ -1,8 +1,8 @@
 import type { OpenAPIV3_1 } from '@scalar/openapi-types'
 import type { Spec, TransformedOperation } from '@scalar/types/legacy'
 
-import { createEmptySpecification } from '@/libs/openapi'
 import type { TraversedEntry } from '@/features/traverse-schema'
+import { createEmptySpecification } from '@/libs/openapi'
 import { normalizeHttpMethod } from '@scalar/helpers/http/normalize-http-method'
 
 type AnyObject = Record<string, any>
@@ -163,7 +163,7 @@ const transformResult = (originalSchema: OpenAPIV3_1.Document, items?: Traversed
       item.children.forEach(parseTag)
     }
     // Tags
-    if ('tag' in item) {
+    else if ('tag' in item) {
       parseTag(item)
     }
     // Webhooks
