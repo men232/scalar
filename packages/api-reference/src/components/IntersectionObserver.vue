@@ -14,16 +14,12 @@ const emit = defineEmits<{
 const intersectionObserverRef = ref<HTMLElement>()
 
 const calculateRootMargin = (element: HTMLElement) => {
-  const height = element.offsetHeight
-  // Use of a margin on height to ensure sooner intersection detection.
-  return `${height / 2}px 0px ${height / 2}px 0px`
+  // Trigger when element reaches top 1/3 of viewport
+  return '-33% 0px -67% 0px'
 }
 
 const calculateThreshold = (element: HTMLElement) => {
-  const height = element.offsetHeight
-  // Favor larger threshold if the element is smaller that the screen
-  // to ensure that it is selected
-  return height < window.innerHeight ? 0.8 : 0.5
+  return 0
 }
 
 onMounted(() => {
