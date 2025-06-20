@@ -2,10 +2,13 @@ import type { WorkspaceMeta, WorkspaceDocumentMeta, Workspace } from './schemas/
 import { createMagicProxy } from './helpers/proxy'
 import { isObject } from '@/helpers/general'
 import { getValueByPath } from '@/helpers/json-path-utils'
-import { bundle } from '@scalar/openapi-parser'
+import { bundle, upgrade } from '@scalar/openapi-parser'
 import { fetchUrls } from '@scalar/openapi-parser/plugins-browser'
 import { createNavigation, type createNavigationOptions } from '@/navigation'
 import { extensions } from '@/schemas/extensions'
+import { reactive } from 'vue'
+import { coerceValue } from '@/schemas/typebox-coerce'
+import { OpenAPIDocumentSchema } from '@/schemas/v3.1/strict/openapi-document'
 
 type WorkspaceDocumentMetaInput = { meta?: WorkspaceDocumentMeta; name: string; config?: createNavigationOptions }
 
@@ -19,7 +22,6 @@ type WorkspaceDocumentInput = UrlDoc | ObjectDoc
  *
  * @param workspaceDocument - The document input to resolve, which can be:
  *   - A URL to fetch the document from
- *   - A local file path to read the document from
  *   - A direct document object
  * @returns A promise that resolves to an object containing:
  *   - ok: boolean indicating if the resolution was successful
@@ -64,7 +66,7 @@ export function createWorkspaceStore(workspaceProps?: {
 }) {
   // Create a reactive workspace object with proxied documents
   // Each document is wrapped in a proxy to enable reactive updates and reference resolution
-  const workspace: Workspace = {
+  const workspace = reactive<Workspace>({
     ...workspaceProps?.meta,
     documents: {},
     /**
@@ -74,16 +76,18 @@ export function createWorkspaceStore(workspaceProps?: {
      *
      * @returns The active document or undefined if no document is found
      */
-    get activeDocument(): (typeof workspace.documents)[number] | undefined {
+    get activeDocument(): NonNullable<Workspace['activeDocument']> | undefined {
       const activeDocumentKey =
         workspace[extensions.workspace.activeDocument] ?? Object.keys(workspace.documents)[0] ?? ''
       return workspace.documents[activeDocumentKey]
     },
-  }
+  })
 
   // Add a document to the store synchronously from and in-mem open api document
   function addDocumentSync(input: ObjectDoc) {
-    const { name, meta, document } = input
+    const { name, meta } = input
+
+    const document = coerceValue(OpenAPIDocumentSchema, upgrade(input.document).specification)
 
     // Skip navigation generation if the document already has a server-side generated navigation structure
     if (document[extensions.document.navigation] === undefined) {

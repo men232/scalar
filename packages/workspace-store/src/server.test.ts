@@ -267,12 +267,12 @@ describe('create-server-store', () => {
             },
             'paths': {
               '/planets': {
-                get: { '$ref': 'temp/chunks/doc-1/operations/~1planets/get.json#', $global: true },
+                get: { '$ref': './chunks/doc-1/operations/~1planets/get.json#', $global: true },
               },
             },
             'components': {
               'parameters': {
-                planetId: { '$ref': 'temp/chunks/doc-1/components/parameters/planetId.json#', $global: true },
+                planetId: { '$ref': './chunks/doc-1/components/parameters/planetId.json#', $global: true },
               },
             },
             'x-scalar-navigation': [
@@ -296,12 +296,12 @@ describe('create-server-store', () => {
             },
             'paths': {
               '/planets': {
-                get: { '$ref': 'temp/chunks/doc-2/operations/~1planets/get.json#', $global: true },
+                get: { '$ref': './chunks/doc-2/operations/~1planets/get.json#', $global: true },
               },
             },
             'components': {
               'parameters': {
-                planetId: { '$ref': 'temp/chunks/doc-2/components/parameters/planetId.json#', $global: true },
+                planetId: { '$ref': './chunks/doc-2/components/parameters/planetId.json#', $global: true },
               },
             },
             'x-scalar-navigation': [
@@ -383,6 +383,11 @@ describe('externalize-component-references', () => {
   test('should convert the components with refs correctly for ssr mode', () => {
     const result = externalizeComponentReferences(
       {
+        info: {
+          title: '',
+          version: '',
+        },
+        openapi: '',
         components: {
           schemas: {
             'User': {
@@ -414,6 +419,11 @@ describe('externalize-component-references', () => {
   test('should convert the components with refs correctly for ssg mode', () => {
     const result = externalizeComponentReferences(
       {
+        info: {
+          title: '',
+          version: '',
+        },
+        openapi: '',
         components: {
           schemas: {
             'User': {
@@ -438,7 +448,7 @@ describe('externalize-component-references', () => {
     )
 
     expect(result).toEqual({
-      schemas: { User: { '$ref': 'assets/chunks/name/components/schemas/User.json#', $global: true } },
+      schemas: { User: { '$ref': './chunks/name/components/schemas/User.json#', $global: true } },
     })
   })
 })
@@ -447,6 +457,11 @@ describe('externalize-path-references', () => {
   test('should correctly replace the contents with a ref for ssr mode', () => {
     const result = externalizePathReferences(
       {
+        info: {
+          title: '',
+          version: '',
+        },
+        openapi: '',
         paths: {
           '/test': {
             get: {
@@ -475,6 +490,7 @@ describe('externalize-path-references', () => {
             get: {
               description: 'string',
             },
+            // @ts-ignore
             otherProperty: {
               description: 'I should still be in the output',
             },
@@ -499,6 +515,11 @@ describe('externalize-path-references', () => {
   test('should correctly replace the contents with a ref for ssg mode', () => {
     const result = externalizePathReferences(
       {
+        info: {
+          title: '',
+          version: '',
+        },
+        openapi: '',
         paths: {
           '/test': {
             get: {
@@ -515,7 +536,7 @@ describe('externalize-path-references', () => {
     )
 
     expect(result).toEqual({
-      '/test': { get: { '$ref': 'assets/chunks/name/operations/~1test/get.json#', $global: true } },
+      '/test': { get: { '$ref': './chunks/name/operations/~1test/get.json#', $global: true } },
     })
   })
 })

@@ -16,7 +16,7 @@
     "openapi",
     "scalar"
   ],
-  "version": "0.4.1",
+  "version": "0.5.2",
   "engines": {
     "node": ">=18"
   },
@@ -63,6 +63,7 @@
     "vue": "catalog:*"
   },
   "devDependencies": {
+    "@google-cloud/storage": "catalog:*",
     "@scalar/build-tooling": "workspace:*",
     "fastify": "catalog:*",
     "vite": "catalog:*",

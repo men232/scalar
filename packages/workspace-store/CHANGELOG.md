@@ -1,5 +1,25 @@
 # @scalar/workspace-store
 
+## 0.5.2
+
+### Patch Changes
+
+- 1703e42: fix(workspace-store): relative paths for ssg mode
+
+## 0.5.1
+
+### Patch Changes
+
+- a567796: fix: make the workspace store reactive again
+- Updated dependencies [291f09d]
+  - @scalar/openapi-parser@0.18.0
+
+## 0.5.0
+
+### Minor Changes
+
+- b6a1624: feat(workspace-store): improve workspace store validation
+
 ## 0.4.1
 
 ### Patch Changes

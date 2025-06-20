@@ -1,5 +1,70 @@
 # @scalar/api-reference
 
+## 1.31.17
+
+### Patch Changes
+
+- ca18c0b: feat(api-reference): update and modernize sidebar design
+- Updated dependencies [ca18c0b]
+  - @scalar/themes@0.13.4
+  - @scalar/api-client@2.5.11
+  - @scalar/code-highlight@0.1.4
+  - @scalar/components@0.14.12
+  - @scalar/oas-utils@0.4.7
+
+## 1.31.16
+
+### Patch Changes
+
+- 699df60: feat(components): sidebar search input / button
+- Updated dependencies [699df60]
+  - @scalar/api-client@2.5.10
+  - @scalar/components@0.14.11
+  - @scalar/icons@0.4.4
+
+## 1.31.15
+
+### Patch Changes
+
+- 5f08a45: fix: looks up wrong name for schemas
+- 287eae4: fix: display correct schema type instead of false name
+- 161733e: docs: new README
+- Updated dependencies [979139e]
+- Updated dependencies [aaf90bf]
+  - @scalar/oas-utils@0.4.6
+  - @scalar/api-client@2.5.9
+  - @scalar/components@0.14.10
+
+## 1.31.14
+
+### Patch Changes
+
+- 0a94952: fix: remove duplicate operations in x-tag-groups
+- 0e67143: fix: show content encoding description in schema
+- Updated dependencies [1703e42]
+  - @scalar/workspace-store@0.5.2
+
+## 1.31.13
+
+### Patch Changes
+
+- 482aaf5: fix: ensure x-scalar-ignore applies to the schema models
+- a567796: fix: make the workspace store reactive again
+- Updated dependencies [291f09d]
+- Updated dependencies [a567796]
+  - @scalar/openapi-parser@0.18.0
+  - @scalar/workspace-store@0.5.1
+  - @scalar/api-client@2.5.8
+  - @scalar/oas-utils@0.4.5
+
+## 1.31.12
+
+### Patch Changes
+
+- 796f87f: feat(api-reference): export references useSidebar
+- Updated dependencies [b6a1624]
+  - @scalar/workspace-store@0.5.0
+
 ## 1.31.11
 
 ### Patch Changes
