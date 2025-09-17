@@ -1,6 +1,6 @@
 # Scalar API Reference for Next.js
 
-Next.js enables you to create high-quality web applications with the power of React components. And Scalar enables you to create high-quality API references. What a match, isn’t it?
+Next.js enables you to create high-quality web applications with the power of React components. And Scalar enables you to create high-quality API references. What a match, isn't it?
 
 This plugin provides an easy way to render a beautiful API reference based on an OpenAPI/Swagger file with Next.js.
 
@@ -44,13 +44,11 @@ const config = {
 }
 ```
 
-We wrote a [detailed integration guide for Next.js](/documentation/integrations/nextjs.md).
-
-The Next.js handler takes our universal configuration object, [read more about configuration](https://github.com/scalar/scalar/tree/main/documentation/configuration.md) in the core package README.
+The Next.js handler takes our universal configuration object, [read more about configuration](https://guides.scalar.com/scalar/scalar-api-references/configuration) in the core package README.
 
 ## Themes
 
-By default, we’re using a custom Next.js theme and it’s beautiful. But you can choose [one of our other themes](https://github.com/scalar/scalar/tree/main/packages/themes), too:
+By default, we're using a custom Next.js theme and it's beautiful. But you can choose [one of our other themes](https://guides.scalar.com/scalar/scalar-api-references/themes), too:
 
 ```ts
 const config = {
@@ -77,7 +75,7 @@ export default function References() {
   return (
     <ApiReferenceReact
       configuration={{
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
       }}
     />
   )
@@ -109,13 +107,13 @@ export const GET = ApiReference(config)
 
 ### Create a new Next.js project (optional)
 
-Sometimes, it’s great to start on a blank slate and set up a new project:
+Sometimes, it's great to start on a blank slate and set up a new project:
 
 ```bash
 npx create-next-app@latest my-awesome-app
 ```
 
-You’ll get some questions, you can leave all the default answers – or pick what you prefer:
+You'll get some questions, you can leave all the default answers – or pick what you prefer:
 
 ```plaintext
 ? Would you like to use TypeScript? › No
@@ -154,7 +152,7 @@ npm add @scalar/nextjs-api-reference
 import { ApiReference } from '@scalar/nextjs-api-reference'
 
 const config = {
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
 }
 
 export const GET = ApiReference(config)
@@ -181,7 +179,7 @@ export default function References() {
   return (
     <ApiReferenceReact
       configuration={{
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
       }}
     />
   )

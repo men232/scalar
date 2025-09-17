@@ -1,5 +1,51 @@
 # @scalar/galaxy
 
+## 0.5.8
+
+### Patch Changes
+
+- 0a91180: chore: add another value to the galaxy server variable enum
+- 3473e08: fix: performance issues on script load
+- 71a5647: feat: circular reference between planet ↔ satellite
+
+## 0.5.7
+
+### Patch Changes
+
+- e24ea3f: feat: add response headers to galaxy spec
+
+## 0.5.6
+
+### Patch Changes
+
+- 525b7d7: feat: publish @scalar/galaxy in the Scalar Registry
+
+## 0.5.5
+
+### Patch Changes
+
+- e0061e8: fix: broken internal link
+
+## 0.5.4
+
+### Patch Changes
+
+- 926de55: fix: broken internal link
+
+## 0.5.3
+
+### Patch Changes
+
+- 80a3560: feat: add additonalProperties
+- 80a3560: feat: add exclusiveMinimum and exclusiveMaximum
+- 80a3560: feat: add x-enum-varnames and x-enum-descriptions
+
+## 0.5.2
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+
 ## 0.5.1
 
 ### Patch Changes

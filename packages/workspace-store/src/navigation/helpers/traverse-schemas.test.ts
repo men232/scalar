@@ -1,7 +1,11 @@
-import { describe, it, expect, beforeEach } from 'vitest'
-import { traverseSchemas } from './traverse-schemas'
+import { beforeEach, describe, expect, it } from 'vitest'
+
 import type { TagsMap, TraverseSpecOptions } from '@/navigation/types'
+import { coerceValue } from '@/schemas/typebox-coerce'
 import type { OpenApiDocument } from '@/schemas/v3.1/strict/openapi-document'
+import { OpenAPIDocumentSchema } from '@/schemas/v3.1/strict/openapi-document'
+
+import { traverseSchemas } from './traverse-schemas'
 
 describe('traverseSchemas', () => {
   // Mock getModelId function
@@ -58,7 +62,7 @@ describe('traverseSchemas', () => {
   })
 
   it('should create entries for valid schemas', () => {
-    const content: OpenApiDocument = {
+    const content = coerceValue(OpenAPIDocumentSchema, {
       openapi: '3.1.0',
       info: {
         title: 'Test API',
@@ -82,7 +86,7 @@ describe('traverseSchemas', () => {
           },
         },
       },
-    }
+    })
 
     const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
@@ -110,7 +114,7 @@ describe('traverseSchemas', () => {
   })
 
   it('should skip schemas with x-internal flag', () => {
-    const content: OpenApiDocument = {
+    const content = coerceValue(OpenAPIDocumentSchema, {
       openapi: '3.1.0',
       info: {
         title: 'Test API',
@@ -133,16 +137,16 @@ describe('traverseSchemas', () => {
           },
         },
       },
-    }
+    })
 
     const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
     expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('PublicUser')
+    expect(result[0]?.title).toBe('PublicUser')
   })
 
   it('should skip schemas with x-scalar-ignore flag', () => {
-    const content: OpenApiDocument = {
+    const content = coerceValue(OpenAPIDocumentSchema, {
       openapi: '3.1.0',
       info: {
         title: 'Test API',
@@ -165,16 +169,16 @@ describe('traverseSchemas', () => {
           },
         },
       },
-    }
+    })
 
     const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
     expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('ValidSchema')
+    expect(result[0]?.title).toBe('ValidSchema')
   })
 
   it('should handle schemas with no properties', () => {
-    const content: OpenApiDocument = {
+    const content = coerceValue(OpenAPIDocumentSchema, {
       openapi: '3.1.0',
       info: {
         title: 'Test API',
@@ -187,7 +191,7 @@ describe('traverseSchemas', () => {
           },
         },
       },
-    }
+    })
 
     const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
@@ -202,7 +206,7 @@ describe('traverseSchemas', () => {
   })
 
   it('should handle schemas with special characters in names', () => {
-    const content: OpenApiDocument = {
+    const content = coerceValue(OpenAPIDocumentSchema, {
       openapi: '3.1.0',
       info: {
         title: 'Test API',
@@ -218,17 +222,17 @@ describe('traverseSchemas', () => {
           },
         },
       },
-    }
+    })
 
     const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
     expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('User-Profile')
-    expect(result[0].id).toBe('model-User-Profile')
+    expect(result[0]?.title).toBe('User-Profile')
+    expect(result[0]?.id).toBe('model-User-Profile')
   })
 
   it('should handle multiple filtering conditions', () => {
-    const content: OpenApiDocument = {
+    const content = coerceValue(OpenAPIDocumentSchema, {
       openapi: '3.1.0',
       info: {
         title: 'Test API',
@@ -258,17 +262,57 @@ describe('traverseSchemas', () => {
           },
         },
       },
-    }
+    })
 
     const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
     expect(result).toHaveLength(1)
-    expect(result[0].title).toBe('ValidSchema')
+    expect(result[0]?.title).toBe('ValidSchema')
+  })
+
+  it('uses the title attribute of the schema', () => {
+    const content = coerceValue(OpenAPIDocumentSchema, {
+      openapi: '3.1.0',
+      info: {
+        title: 'Test API',
+        version: '1.0.0',
+      },
+      components: {
+        schemas: {
+          ValidSchema: {
+            title: 'Foobar',
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+            },
+          },
+          InternalSchema: {
+            'x-internal': true,
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+            },
+          },
+          IgnoredSchema: {
+            'x-scalar-ignore': true,
+            type: 'object',
+            properties: {
+              id: { type: 'string' },
+            },
+          },
+        },
+      },
+    })
+
+    const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
+
+    expect(result).toHaveLength(1)
+    expect(result[0]?.title).toBe('Foobar')
   })
 
   describe('x-tags', () => {
     it('should handle schemas with x-tags', () => {
-      const content: OpenApiDocument = {
+      const content = coerceValue(OpenAPIDocumentSchema, {
         openapi: '3.1.0',
         info: {
           title: 'Test API',
@@ -300,7 +344,7 @@ describe('traverseSchemas', () => {
             },
           },
         },
-      }
+      })
 
       const result = traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
@@ -332,7 +376,7 @@ describe('traverseSchemas', () => {
     })
 
     it('should handle schemas with multiple x-tags', () => {
-      const content: OpenApiDocument = {
+      const content = coerceValue(OpenAPIDocumentSchema, {
         openapi: '3.1.0',
         info: {
           title: 'Test API',
@@ -351,7 +395,7 @@ describe('traverseSchemas', () => {
             },
           },
         },
-      }
+      })
 
       traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 
@@ -376,7 +420,7 @@ describe('traverseSchemas', () => {
     })
 
     it('should handle schemas with non-existent x-tags', () => {
-      const content: OpenApiDocument = {
+      const content = coerceValue(OpenAPIDocumentSchema, {
         openapi: '3.1.0',
         info: {
           title: 'Test API',
@@ -393,7 +437,7 @@ describe('traverseSchemas', () => {
             },
           },
         },
-      }
+      })
 
       traverseSchemas(content, mockTagsMap, mockTitlesMap, mockGetModelId)
 

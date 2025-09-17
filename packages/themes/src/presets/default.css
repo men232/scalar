@@ -9,11 +9,11 @@
   --scalar-background-3: #e7e7e7;
   --scalar-background-accent: #8ab4f81f;
 
-  --scalar-color-1: #2a2f45;
+  --scalar-color-1: #1b1b1b;
   --scalar-color-2: #757575;
   --scalar-color-3: #8e8e8e;
 
-  --scalar-color-accent: var(--scalar-color-1);
+  --scalar-color-accent: #0099ff;
   --scalar-border-color: #dfdfdf;
 }
 .dark-mode {
@@ -25,7 +25,7 @@
   --scalar-color-2: #a4a4a4;
   --scalar-color-3: #797979;
 
-  --scalar-color-accent: var(--scalar-color-1);
+  --scalar-color-accent: #00aeff;
   --scalar-background-accent: #3ea6ff1f;
 
   --scalar-border-color: #2d2d2d;
@@ -58,8 +58,11 @@
   --scalar-color-red: #ef0006;
   --scalar-color-yellow: #edbe20;
   --scalar-color-blue: #0082d0;
-  --scalar-color-orange: #fb892c;
+  --scalar-color-orange: #ff5800;
   --scalar-color-purple: #5203d1;
+
+  --scalar-link-color: var(--scalar-color-1);
+  --scalar-link-color-hover: var(--scalar-link-color);
 
   --scalar-button-1: rgba(0, 0, 0, 1);
   --scalar-button-1-hover: rgba(0, 0, 0, 0.8);
@@ -82,6 +85,9 @@
   --scalar-color-orange: #ff8d4d;
   --scalar-color-purple: #b191f9;
 
+  --scalar-link-color: var(--scalar-color-1);
+  --scalar-link-color-hover: var(--scalar-link-color);
+
   --scalar-button-1: rgba(255, 255, 255, 1);
   --scalar-button-1-hover: rgba(255, 255, 255, 0.9);
   --scalar-button-1-color: black;
@@ -96,21 +102,21 @@
 }
 @supports (color: color(display-p3 1 1 1)) {
   .light-mode {
-    --scalar-color-accent: var(--scalar-color-1);
-    --scalar-color-green: color(display-p3 0.023529 0.564706 0.380392 / 1.0);
-    --scalar-color-red: color(display-p3 0.937255 0.0 0.023529 / 1.0);
-    --scalar-color-yellow: color(display-p3 0.929412 0.745098 0.12549 / 1.0);
-    --scalar-color-blue: color(display-p3 0.0 0.509804 0.815686 / 1.0);
-    --scalar-color-orange: color(display-p3 0.984314 0.537255 0.172549 / 1.0);
-    --scalar-color-purple: color(display-p3 0.321569 0.011765 0.819608 / 1.0);
+    --scalar-color-accent: color(display-p3 0 0.6 1 / 1);
+    --scalar-color-green: color(display-p3 0.023529 0.564706 0.380392 / 1);
+    --scalar-color-red: color(display-p3 0.937255 0 0.023529 / 1);
+    --scalar-color-yellow: color(display-p3 0.929412 0.745098 0.12549 / 1);
+    --scalar-color-blue: color(display-p3 0 0.509804 0.815686 / 1);
+    --scalar-color-orange: color(display-p3 1 0.4 0.02);
+    --scalar-color-purple: color(display-p3 0.321569 0.011765 0.819608 / 1);
   }
   .dark-mode {
-    --scalar-color-accent: var(--scalar-color-1);
-    --scalar-color-green: color(display-p3 0.0 0.713725 0.282353 / 1.0);
-    --scalar-color-red: color(display-p3 0.862745 0.105882 0.098039 / 1.0);
-    --scalar-color-yellow: color(display-p3 1.0 0.788235 0.05098 / 1.0);
-    --scalar-color-blue: color(display-p3 0.305882 0.701961 0.92549 / 1.0);
-    --scalar-color-orange: color(display-p3 1.0 0.552941 0.301961 / 1.0);
-    --scalar-color-purple: color(display-p3 0.694118 0.568627 0.976471 / 1.0);
+    --scalar-color-accent: color(display-p3 0.07 0.67 1);
+    --scalar-color-green: color(display-p3 0 0.713725 0.282353 / 1);
+    --scalar-color-red: color(display-p3 0.862745 0.105882 0.098039 / 1);
+    --scalar-color-yellow: color(display-p3 1 0.788235 0.05098 / 1);
+    --scalar-color-blue: color(display-p3 0.305882 0.701961 0.92549 / 1);
+    --scalar-color-orange: color(display-p3 1 0.552941 0.301961 / 1);
+    --scalar-color-purple: color(display-p3 0.694118 0.568627 0.976471 / 1);
   }
 }

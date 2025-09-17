@@ -1,5 +1,183 @@
 # @scalar/postman-to-openapi
 
+## 0.3.32
+
+### Patch Changes
+
+- Updated dependencies [bff46e5]
+  - @scalar/helpers@0.0.11
+  - @scalar/oas-utils@0.4.29
+
+## 0.3.31
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.28
+
+## 0.3.30
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.27
+
+## 0.3.29
+
+### Patch Changes
+
+- Updated dependencies [821717b]
+  - @scalar/oas-utils@0.4.26
+  - @scalar/helpers@0.0.10
+
+## 0.3.28
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.25
+
+## 0.3.27
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.24
+
+## 0.3.26
+
+### Patch Changes
+
+- Updated dependencies [714b197]
+- Updated dependencies [98c55d0]
+- Updated dependencies [cededd8]
+- Updated dependencies [a6ae22a]
+- Updated dependencies [0e747c7]
+- Updated dependencies [976366f]
+  - @scalar/oas-utils@0.4.23
+  - @scalar/helpers@0.0.9
+
+## 0.3.25
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.22
+
+## 0.3.24
+
+### Patch Changes
+
+- Updated dependencies [e2272a1]
+- Updated dependencies [b6f4b60]
+  - @scalar/oas-utils@0.4.21
+
+## 0.3.23
+
+### Patch Changes
+
+- Updated dependencies [bbef120]
+- Updated dependencies [a1429ca]
+- Updated dependencies [66b18fc]
+- Updated dependencies [5f022b5]
+  - @scalar/oas-utils@0.4.20
+  - @scalar/helpers@0.0.8
+  - @scalar/openapi-types@0.3.7
+
+## 0.3.22
+
+### Patch Changes
+
+- Updated dependencies [3de82ac]
+  - @scalar/oas-utils@0.4.19
+  - @scalar/helpers@0.0.7
+  - @scalar/openapi-types@0.3.7
+
+## 0.3.21
+
+### Patch Changes
+
+- Updated dependencies [46bfd2f]
+  - @scalar/oas-utils@0.4.18
+
+## 0.3.20
+
+### Patch Changes
+
+- Updated dependencies [46ebe6e]
+  - @scalar/oas-utils@0.4.17
+
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [c0d6793]
+- Updated dependencies [b957a2c]
+- Updated dependencies [f3d0216]
+  - @scalar/openapi-types@0.3.7
+  - @scalar/oas-utils@0.4.16
+  - @scalar/helpers@0.0.7
+
+## 0.3.18
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.15
+
+## 0.3.17
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/openapi-types@0.3.6
+  - @scalar/oas-utils@0.4.14
+
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies [71958fd]
+  - @scalar/oas-utils@0.4.13
+
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies [c826b3e]
+- Updated dependencies [80acf84]
+  - @scalar/oas-utils@0.4.12
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies [58287f8]
+- Updated dependencies [74fdc0e]
+  - @scalar/oas-utils@0.4.11
+
+## 0.3.13
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/openapi-types@0.3.5
+  - @scalar/oas-utils@0.4.10
+  - @scalar/helpers@0.0.6
+
+## 0.3.12
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+- Updated dependencies [23b150b]
+  - @scalar/openapi-types@0.3.4
+  - @scalar/oas-utils@0.4.9
+  - @scalar/helpers@0.0.5
+
+## 0.3.11
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.8
+
 ## 0.3.10
 
 ### Patch Changes

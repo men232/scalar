@@ -16,13 +16,14 @@
     "swagger",
     "petstore"
   ],
-  "version": "0.5.1",
+  "version": "0.5.8",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
     "build": "scalar-build-esbuild",
     "dev": "npx @scalar/cli document serve ./src/documents/3.1.yaml --watch",
+    "dev:live": "cd src/documents && pnpx http-server --cors",
     "lint:check": "eslint .",
     "lint:fix": "eslint .  --fix",
     "test": "vitest",

@@ -1,5 +1,86 @@
 # @scalar/types
 
+## 0.2.15
+
+### Patch Changes
+
+- abe3842: Add analytic events to api-client + add telemetry option
+
+## 0.2.14
+
+### Patch Changes
+
+- 792c937: Configurable option for sidebar to show method path instead of method summary.
+
+## 0.2.13
+
+### Patch Changes
+
+- 50032be: feat: added config options for sorting schema properties
+
+## 0.2.12
+
+### Patch Changes
+
+- 6a88108: feat: add option to expandAllResponses and expandAllModelSections
+  - @scalar/openapi-types@0.3.7
+
+## 0.2.11
+
+### Patch Changes
+
+- ccf875a: feat: support x-scalar-credentials-location extension
+- 94d6d0c: fix: remove old ssr state and update nuxt for workspace store
+- Updated dependencies [ccf875a]
+  - @scalar/openapi-types@0.3.7
+
+## 0.2.10
+
+### Patch Changes
+
+- fb62e1b: feat: add externalDocs
+
+## 0.2.9
+
+### Patch Changes
+
+- 591562f: feat: add support for x-scalar-security-body extension
+- Updated dependencies [591562f]
+  - @scalar/openapi-types@0.3.6
+
+## 0.2.8
+
+### Patch Changes
+
+- c10e191: feat(oauth2): add support for x-tokenName extension
+
+## 0.2.7
+
+### Patch Changes
+
+- ad2e3e6: feat: new onBeforeRequest hook to modify the request
+
+## 0.2.6
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/openapi-types@0.3.5
+
+## 0.2.5
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+  - @scalar/openapi-types@0.3.4
+
+## 0.2.4
+
+### Patch Changes
+
+- 1468280: feat: allow fine gained download button file type control
+
 ## 0.2.3
 
 ### Patch Changes

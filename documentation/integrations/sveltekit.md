@@ -2,6 +2,8 @@
 
 A SvelteKit integration for the Scalar API Reference
 
+![Screenshot of the SvelteKit integration](/screenshots/sveltekit.png)
+
 ## Installation
 
 ```bash
@@ -16,7 +18,7 @@ import { ScalarApiReference } from '@scalar/sveltekit'
 import type { RequestHandler } from './$types'
 
 const render = ScalarApiReference({
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
 })
 
 export const GET: RequestHandler = () => {

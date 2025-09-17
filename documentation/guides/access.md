@@ -1,10 +1,10 @@
 # Access
-This guide will help you start using our Access Groups to manage user access across your private guides and docs in our dashboard on scalar.com, which can be done alongside our [CLI](/scalar/scalar-cli/getting-started).
+This guide will help you start using our Access Groups to manage user access across your private guides and docs in our dashboard on scalar.com, which can be done alongside our [CLI](https://guides.scalar.com/scalar/scalar-cli/getting-started).
 
-Make sure you have created a Scalar Account & are logged in ([see create account guide](/scalar/scalar-registry/getting-started#create-your-scalar-account))
+Make sure you have created a Scalar Account & are logged in ([see create account guide](https://guides.scalar.com/scalar/scalar-registry/getting-started#create-your-scalar-account))
 
 ## Create your first access group
-Now let's make our first access group
+Now let's make our first access group!
 
 From the [dashboard](https://dashboard.scalar.com) left-most sidebar under Access > Groups, then click Create Access Group.
 
@@ -22,13 +22,13 @@ To add a domain to an access group, type in the domain name you want to give acc
 ![Scalar Add Domain Access](https://api.scalar.com/cdn/images/UCkGjASrXpR8OxgWEj32i/xffMOI_k_Lqhr0kKzYqCM.png "Scalar Add Domain Access")
 
 
-### Add Domains with Access
+### Add Emails with Access
 To add only specific emails to an access group, type in the email you want to give access to and hit "add".
 ![Scalar Add Email Access](https://api.scalar.com/cdn/images/UCkGjASrXpR8OxgWEj32i/sUeH6ekrSfTDB6a7yiQIA.png "Scalar Add Email Access")
 
 
 ## Use the Access Group
-Now let's restrict one of our [Scalar Docs](/scalar/scalar-docs/getting-started) projects to the newly created access group.
+Now let's restrict one of our [Scalar Docs](https://guides.scalar.com/scalar/scalar-docs/getting-started) projects to the newly created access group.
 
 Navigate to your Docs Project and navigate to the Security section, ensure "Private Docs" is enabled then you can allow access to the newly created access group.
 
@@ -40,7 +40,7 @@ Once you selected a group, your docs will be private with only that access group
 
 ![Scalar Private Docs](https://api.scalar.com/cdn/images/UCkGjASrXpR8OxgWEj32i/O5TMvLdShzTbUJtb-8_I-.png "Scalar Private Docs")
 
-You can [customize](/scalar/scalar-docs/getting-started) your login page to your branding if you want, and when you delete the access group changes will be made immedietly and access will be revoked.
+You can [customize](https://guides.scalar.com/scalar/scalar-docs/getting-started) your login page to your branding if you want, and when you delete the access group changes will be made immediately and access will be revoked.
 
 
 

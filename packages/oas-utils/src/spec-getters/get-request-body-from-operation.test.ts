@@ -1,21 +1,20 @@
 import { describe, expect, it } from 'vitest'
+import { createMagicProxy } from '@scalar/json-magic/magic-proxy'
 
 import { getRequestBodyFromOperation } from './get-request-body-from-operation'
 
 describe('getRequestBodyFromOperation', () => {
   it('creates a JSON body from a requestBody schema', () => {
     const body = getRequestBodyFromOperation({
-      information: {
-        requestBody: {
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'integer',
-                    example: 1,
-                  },
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'integer',
+                  example: 1,
                 },
               },
             },
@@ -36,54 +35,20 @@ describe('getRequestBodyFromOperation', () => {
 
   it('ignores charset in mimetypes', () => {
     const body = getRequestBodyFromOperation({
-      information: {
-        requestBody: {
-          content: {
-            'application/json; charset=utf-8': {
-              schema: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'integer',
-                    example: 1,
-                  },
-                },
-              },
-            },
-          },
-        },
-      },
-    })
-
-    const expectedResult = {
-      id: 1,
-    }
-
-    expect(body).toMatchObject({
-      mimeType: 'application/json',
-      text: JSON.stringify(expectedResult, null, 2),
-    })
-  })
-
-  it('creates a JSON body from body parameters', () => {
-    const body = getRequestBodyFromOperation({
-      information: {
-        parameters: [
-          {
-            name: 'body',
-            in: 'body',
+      requestBody: {
+        content: {
+          'application/json; charset=utf-8': {
             schema: {
               type: 'object',
               properties: {
                 id: {
-                  name: 'id',
                   type: 'integer',
                   example: 1,
                 },
               },
             },
           },
-        ],
+        },
       },
     })
 
@@ -98,8 +63,8 @@ describe('getRequestBodyFromOperation', () => {
   })
 
   it('uses example', () => {
-    const body = getRequestBodyFromOperation({
-      information: {
+    const body = getRequestBodyFromOperation(
+      createMagicProxy({
         requestBody: {
           description: 'Sample request body',
           required: false,
@@ -111,13 +76,21 @@ describe('getRequestBodyFromOperation', () => {
                 },
               },
               schema: {
-                $ref: '#/components/schemas/PutDocumentRequest',
+                type: 'object',
+                properties: {
+                  someObject: {
+                    type: 'object',
+                    properties: {
+                      someAttribute: { type: 'string' },
+                    },
+                  },
+                },
               },
             },
           },
         },
-      },
-    })
+      }),
+    )
 
     const expectedResult = {
       someObject: {
@@ -133,26 +106,24 @@ describe('getRequestBodyFromOperation', () => {
 
   it('uses examples', () => {
     const body = getRequestBodyFromOperation({
-      information: {
-        requestBody: {
-          description: 'Sample request body',
-          required: false,
-          content: {
-            'application/json': {
-              examples: {
-                'request-example-1': {
-                  summary: 'an example of a request',
-                  description: 'a longer string than the summary',
-                  value: {
-                    someObject: {
-                      someAttribute: 'attribute1',
-                    },
+      requestBody: {
+        description: 'Sample request body',
+        required: false,
+        content: {
+          'application/json': {
+            examples: {
+              'request-example-1': {
+                summary: 'an example of a request',
+                description: 'a longer string than the summary',
+                value: {
+                  someObject: {
+                    someAttribute: 'attribute1',
                   },
                 },
               },
-              schema: {
-                $ref: '#/components/schemas/PutDocumentRequest',
-              },
+            },
+            schema: {
+              $ref: '#/components/schemas/PutDocumentRequest',
             },
           },
         },
@@ -173,41 +144,39 @@ describe('getRequestBodyFromOperation', () => {
 
   it('creates key-value pair examples from object schema', () => {
     const body = getRequestBodyFromOperation({
-      information: {
-        requestBody: {
-          description: 'Sample request body',
-          content: {
-            'application/json': {
-              schema: {
-                type: 'object',
-                required: [
-                  'recordString',
-                  'recordInteger',
-                  'recordArray',
-                  'recordBoolean',
-                  'recordNullable',
-                  'recordObject',
-                  'recordWithoutAdditionalProperties',
-                ],
-                properties: {
-                  recordString: {
-                    type: 'string',
-                  },
-                  recordInteger: {
-                    type: 'integer',
-                  },
-                  recordArray: {
-                    type: 'array',
-                  },
-                  recordBoolean: {
-                    type: 'boolean',
-                  },
-                  recordNullable: {
-                    nullable: 'true',
-                  },
-                  recordObject: {
-                    type: 'object',
-                  },
+      requestBody: {
+        description: 'Sample request body',
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              required: [
+                'recordString',
+                'recordInteger',
+                'recordArray',
+                'recordBoolean',
+                'recordNullable',
+                'recordObject',
+                'recordWithoutAdditionalProperties',
+              ],
+              properties: {
+                recordString: {
+                  type: 'string',
+                },
+                recordInteger: {
+                  type: 'integer',
+                },
+                recordArray: {
+                  type: 'array',
+                },
+                recordBoolean: {
+                  type: 'boolean',
+                },
+                recordNullable: {
+                  nullable: 'true',
+                },
+                recordObject: {
+                  type: 'object',
                 },
               },
             },
@@ -233,21 +202,19 @@ describe('getRequestBodyFromOperation', () => {
 
   it('adds parameters from a requestBody schema', () => {
     const body = getRequestBodyFromOperation({
-      information: {
-        requestBody: {
-          content: {
-            'application/x-www-form-urlencoded': {
-              schema: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'integer',
-                    example: 1,
-                  },
-                  name: {
-                    type: 'string',
-                    example: 'foobar',
-                  },
+      requestBody: {
+        content: {
+          'application/x-www-form-urlencoded': {
+            schema: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'integer',
+                  example: 1,
+                },
+                name: {
+                  type: 'string',
+                  example: 'foobar',
                 },
               },
             },
@@ -273,17 +240,15 @@ describe('getRequestBodyFromOperation', () => {
 
   it('handles vendor-specific MIME types', () => {
     const body = getRequestBodyFromOperation({
-      information: {
-        requestBody: {
-          content: {
-            'application/vnd.github+json': {
-              schema: {
-                type: 'object',
-                properties: {
-                  id: {
-                    type: 'integer',
-                    example: 1,
-                  },
+      requestBody: {
+        content: {
+          'application/vnd.github+json': {
+            schema: {
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'integer',
+                  example: 1,
                 },
               },
             },

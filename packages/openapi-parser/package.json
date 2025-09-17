@@ -17,7 +17,7 @@
     "parser",
     "typescript"
   ],
-  "version": "0.18.0",
+  "version": "0.20.6",
   "engines": {
     "node": ">=20"
   },
@@ -40,16 +40,6 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./plugins": {
-      "import": "./dist/plugins.js",
-      "types": "./dist/plugins.d.ts",
-      "default": "./dist/plugins.js"
-    },
-    "./plugins-browser": {
-      "import": "./dist/plugins-browser.js",
-      "types": "./dist/plugins-browser.d.ts",
-      "default": "./dist/plugins-browser.js"
-    },
     "./plugins/fetch-urls": {
       "import": "./dist/plugins/fetch-urls/index.js",
       "types": "./dist/plugins/fetch-urls/index.d.ts",
@@ -68,6 +58,9 @@
   "module": "./dist/index.js",
   "sideEffects": false,
   "dependencies": {
+    "@scalar/json-magic": "workspace:*",
+    "@scalar/openapi-types": "workspace:*",
+    "@scalar/openapi-upgrader": "workspace:*",
     "ajv": "^8.17.1",
     "ajv-draft-04": "^1.0.0",
     "ajv-formats": "^3.0.1",
@@ -76,9 +69,8 @@
     "yaml": "catalog:*"
   },
   "devDependencies": {
-    "@apidevtools/swagger-parser": "^10.1.0",
+    "@apidevtools/swagger-parser": "10.1.0",
     "@scalar/build-tooling": "workspace:*",
-    "@scalar/openapi-types": "workspace:*",
     "@scalar/types": "workspace:*",
     "@types/node": "catalog:*",
     "fastify": "catalog:*",

@@ -16,7 +16,7 @@
     "openapi",
     "scalar"
   ],
-  "version": "0.5.2",
+  "version": "0.15.6",
   "engines": {
     "node": ">=18"
   },
@@ -25,6 +25,7 @@
     "dev": "vite-node ./src/index.ts",
     "format": "scalar-format",
     "format:check": "scalar-format-check",
+    "generate-json-schemas": "vite-node ./scripts/generate-json-schemas.ts",
     "lint:check": "eslint .",
     "lint:fix": "eslint .  --fix",
     "test": "vitest",
@@ -33,6 +34,11 @@
   },
   "type": "module",
   "exports": {
+    "./events": {
+      "import": "./dist/events/index.js",
+      "types": "./dist/events/index.d.ts",
+      "default": "./dist/events/index.js"
+    },
     "./client": {
       "import": "./dist/client.js",
       "types": "./dist/client.d.ts",
@@ -42,6 +48,31 @@
       "import": "./dist/schemas.js",
       "types": "./dist/schemas.d.ts",
       "default": "./dist/schemas.js"
+    },
+    "./schemas/*": {
+      "import": "./dist/schemas/*.js",
+      "types": "./dist/schemas/*.d.ts",
+      "default": "./dist/schemas/*.js"
+    },
+    "./helpers/*": {
+      "import": "./dist/helpers/*.js",
+      "types": "./dist/helpers/*.d.ts",
+      "default": "./dist/helpers/*.js"
+    },
+    "./schemas/extensions/*": {
+      "import": "./dist/schemas/extensions/*.js",
+      "types": "./dist/schemas/extensions/*.d.ts",
+      "default": "./dist/schemas/extensions/*.js"
+    },
+    "./schemas/v3.1/*": {
+      "import": "./dist/schemas/v3.1/*.js",
+      "types": "./dist/schemas/v3.1/*.d.ts",
+      "default": "./dist/schemas/v3.1/*.js"
+    },
+    "./schemas/v3.1/strict/*": {
+      "import": "./dist/schemas/v3.1/strict/*.js",
+      "types": "./dist/schemas/v3.1/strict/*.d.ts",
+      "default": "./dist/schemas/v3.1/strict/*.js"
     },
     "./server": {
       "import": "./dist/server.js",
@@ -56,11 +87,15 @@
   "dependencies": {
     "@scalar/code-highlight": "workspace:*",
     "@scalar/helpers": "workspace:*",
-    "@scalar/openapi-parser": "workspace:*",
-    "@scalar/openapi-types": "workspace:*",
-    "@sinclair/typebox": "catalog:*",
+    "@scalar/json-magic": "workspace:*",
+    "@scalar/openapi-upgrader": "workspace:*",
+    "@scalar/snippetz": "workspace:*",
+    "@scalar/typebox": "catalog:*",
+    "@scalar/types": "workspace:*",
     "github-slugger": "^2.0.0",
-    "vue": "catalog:*"
+    "type-fest": "catalog:*",
+    "vue": "catalog:*",
+    "yaml": "catalog:*"
   },
   "devDependencies": {
     "@google-cloud/storage": "catalog:*",

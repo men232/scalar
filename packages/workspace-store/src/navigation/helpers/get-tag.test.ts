@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
+
+import type { TraversedEntry } from '@/schemas/navigation'
+import type { TagObject } from '@/schemas/v3.1/strict/openapi-document'
+
 import { getTag } from './get-tag'
-import type { TraversedEntry } from '@/navigation/types'
-import type { TagObject } from '@/schemas/v3.1/strict/tag'
 
 describe('getTag', () => {
   it('returns existing tag from the dictionary', () => {

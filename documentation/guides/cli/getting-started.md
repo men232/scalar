@@ -21,11 +21,11 @@ If you really want to become friends you should install the CLI:
 npm -g install @scalar/cli
 ```
 
-Otherwise just prefix all commands with `npx @scalar/cli` instead of `scalar`. That’s fine, too.
+Otherwise just prefix all commands with `npx @scalar/cli` instead of `scalar`. That's fine, too.
 
 ### Conflict: EXIST: file already exists
 
-There’s another `scalar` CLI, which is bundled with `git`. If you run into naming conflicts, but never use the other CLI anyway, you can replace it like this:
+There's another `scalar` CLI, which is bundled with `git`. If you run into naming conflicts, but never use the other CLI anyway, you can replace it like this:
 
 ```bash
 npm -g --force install @scalar/cli
@@ -43,13 +43,13 @@ pnpm dlx @scalar/cli help
 
 ## Commands
 
-- [scalar](/scalar/scalar-cli/commands#scalar) CLI to work with OpenAPI files, Markdown/MDX, Scalar Platform
-- [auth](/scalar/scalar-cli/commands#auth) Manage authorization on Scalar platform
-- [document](/scalar/scalar-cli/commands#document) Manage local openapi files
-- [project](/scalar/scalar-cli/commands#project) Manage Scalar docs project
-- [registry](/scalar/scalar-cli/commands#registry) Manage your Scalar registry
-- [team](/scalar/scalar-cli/commands#team) Manage user teams
-- [help](/scalar/scalar-cli/commands#help) Display help for command
+- [scalar](https://guides.scalar.com/scalar/scalar-cli/commands#scalar) CLI to work with OpenAPI files, Markdown/MDX, Scalar Platform
+- [auth](https://guides.scalar.com/scalar/scalar-cli/commands#auth) Manage authorization on Scalar platform
+- [document](https://guides.scalar.com/scalar/scalar-cli/commands#document) Manage local openapi files
+- [project](https://guides.scalar.com/scalar/scalar-cli/commands#project) Manage Scalar docs project
+- [registry](https://guides.scalar.com/scalar/scalar-cli/commands#registry) Manage your Scalar registry
+- [team](https://guides.scalar.com/scalar/scalar-cli/commands#team) Manage user teams
+- [help](https://guides.scalar.com/scalar/scalar-cli/commands#help) Display help for command
 
 ## Authentication
 To authenticate with the Scalar platform you can do the following:
@@ -109,5 +109,5 @@ jobs:
       - name: Validate OpenAPI File
         # Replace `./my-openapi-file.yaml` with the correct path and filename for your project.
         # Or: run `npx @scalar/cli init` and add the config file to your repository.
-        run: npx @scalar/cli validate ./my-openapi-file.yaml
+        run: npx @scalar/cli document validate docs/openapi.yaml
 ```

@@ -1,6 +1,7 @@
 import type { ErrorResponse } from '@/libs/errors'
 import type { Oauth2Flow, Server } from '@scalar/oas-utils/entities/spec'
 import { shouldUseProxy } from '@scalar/oas-utils/helpers'
+import { encode, fromUint8Array } from 'js-base64'
 
 /** Oauth2 security schemes which are not implicit */
 type NonImplicitFlow = Exclude<Oauth2Flow, { type: 'implicit' }>
@@ -22,10 +23,7 @@ const generateCodeVerifier = (): string => {
   crypto.getRandomValues(buffer)
 
   // Base64URL encode the bytes
-  return btoa(String.fromCharCode(...buffer))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=/g, '')
+  return fromUint8Array(buffer, true)
 }
 
 /**
@@ -42,10 +40,7 @@ export const generateCodeChallenge = async (verifier: string, encoding: 'SHA-256
   const digest = await crypto.subtle.digest('SHA-256', data)
 
   // Base64URL encode the bytes
-  return btoa(String.fromCharCode(...new Uint8Array(digest)))
-    .replace(/\+/g, '-')
-    .replace(/\//g, '_')
-    .replace(/=+$/, '')
+  return fromUint8Array(new Uint8Array(digest), true)
 }
 
 /**
@@ -152,7 +147,8 @@ export const authorizeOauth2 = async (
 
           try {
             const urlParams = new URL(authWindow.location.href).searchParams
-            accessToken = urlParams.get('access_token')
+            const tokenName = flow['x-tokenName'] || 'access_token'
+            accessToken = urlParams.get(tokenName)
             code = urlParams.get('code')
 
             error = urlParams.get('error')
@@ -160,7 +156,7 @@ export const authorizeOauth2 = async (
 
             // We may get the properties in a hash
             const hashParams = new URLSearchParams(authWindow.location.href.split('#')[1])
-            accessToken ||= hashParams.get('access_token')
+            accessToken ||= hashParams.get(tokenName)
             code ||= hashParams.get('code')
             error ||= hashParams.get('error')
             errorDescription ||= hashParams.get('error_description')
@@ -247,7 +243,11 @@ export const authorizeServers = async (
     formData.set('scope', scopes)
   }
 
-  if (flow.clientSecret) {
+  // Only add the secret if a credentials location is not specified (backwards compatibility) or is set to body
+  const shouldAddSecretToBody =
+    flow.clientSecret && (!flow['x-scalar-credentials-location'] || flow['x-scalar-credentials-location'] === 'body')
+
+  if (shouldAddSecretToBody) {
     formData.set('client_secret', flow.clientSecret)
   }
   if ('x-scalar-redirect-uri' in flow && flow['x-scalar-redirect-uri']) {
@@ -275,14 +275,28 @@ export const authorizeServers = async (
     formData.set('grant_type', 'client_credentials')
   }
 
+  // Additional request body parameters
+  if (flow['x-scalar-security-body']) {
+    Object.entries(flow['x-scalar-security-body']).forEach(([key, value]) => {
+      if (value) {
+        formData.set(key, value)
+      }
+    })
+  }
+
   try {
     const headers: Record<string, string> = {
       'Content-Type': 'application/x-www-form-urlencoded',
     }
 
+    // Only add the secret if a credentials location is not specified (backwards compatibility) or is set to header
+    const shouldAddSecretToHeader =
+      flow.clientSecret &&
+      (!flow['x-scalar-credentials-location'] || flow['x-scalar-credentials-location'] === 'header')
+
     // Add client id + secret to headers
-    if (flow.clientSecret) {
-      headers.Authorization = `Basic ${btoa(`${flow['x-scalar-client-id']}:${flow.clientSecret}`)}`
+    if (shouldAddSecretToHeader) {
+      headers.Authorization = `Basic ${encode(`${flow['x-scalar-client-id']}:${flow.clientSecret}`)}`
     }
 
     // Check if we should use the proxy
@@ -296,8 +310,13 @@ export const authorizeServers = async (
       headers,
       body: formData,
     })
-    const { access_token } = await resp.json()
-    return [null, access_token]
+    const responseData = await resp.json()
+
+    // Use custom token name if specified, otherwise default to access_token
+    const tokenName = flow['x-tokenName'] || 'access_token'
+    const accessToken = responseData[tokenName]
+
+    return [null, accessToken]
   } catch {
     return [new Error('Failed to get an access token. Please check your credentials.'), null]
   }

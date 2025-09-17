@@ -8,10 +8,11 @@ import type {
 } from '@scalar/oas-utils/entities/spec'
 import { isDefined } from '@scalar/oas-utils/helpers'
 import type { ClientId, TargetId } from '@scalar/snippetz'
+import { encode } from 'js-base64'
 import { computed } from 'vue'
 
 import type { EnvVariables } from '@/libs/env-helpers'
-import { getSnippet } from '@/views/Components/CodeSnippet/helpers/get-snippet'
+import { getHarRequest, getSnippet } from '@/views/Components/CodeSnippet'
 
 const {
   target,
@@ -41,7 +42,7 @@ const secretCredentials = computed(() =>
       return [
         scheme.token,
         scheme.password,
-        btoa(`${scheme.username}:${scheme.password}`),
+        encode(`${scheme.username}:${scheme.password}`),
       ]
     }
     if (scheme.type === 'oauth2') {
@@ -56,13 +57,15 @@ const secretCredentials = computed(() =>
 
 /** Generated code example */
 const content = computed(() => {
-  const [error, payload] = getSnippet(target, client, {
+  const harRequest = getHarRequest({
     operation,
     example,
     server,
     securitySchemes,
     environment,
   })
+
+  const [error, payload] = getSnippet(target, client, harRequest)
   return { error, payload }
 })
 

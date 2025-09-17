@@ -14,7 +14,7 @@ import { useModal } from '@scalar/components'
 import type { RequestEvent, SecurityScheme } from '@scalar/oas-utils/entities/spec'
 import type { Path, PathValue } from '@scalar/object-utils/nested'
 import type { ApiReferenceConfiguration } from '@scalar/types/api-reference'
-import { type InjectionKey, inject, reactive, ref, toRaw } from 'vue'
+import { inject, reactive, ref, toRaw } from 'vue'
 
 export type UpdateScheme = <P extends Path<SecurityScheme>>(
   path: P,
@@ -29,7 +29,7 @@ declare global {
 
 export type CreateWorkspaceStoreOptions = {
   /**
-   * When true, changes made to the store will be saved in the browser’s localStorage.
+   * When true, changes made to the store will be saved in the browser's localStorage.
    *
    * @default true
    */
@@ -40,7 +40,7 @@ export type CreateWorkspaceStoreOptions = {
  * Factory function for creating the centralized store for the API client.
  *
  * This store manages all data and state for the application.
- * It should be instantiated once and injected into the app’s root component.
+ * It should be instantiated once and injected into the app's root component.
  */
 export const createWorkspaceStore = ({
   useLocalStorage = true,
@@ -233,7 +233,8 @@ export const createWorkspaceStore = ({
 }
 
 export type WorkspaceStore = ReturnType<typeof createWorkspaceStore>
-export const WORKSPACE_SYMBOL = Symbol() as InjectionKey<WorkspaceStore>
+/** Set as a string so that different instances of api-client can reference inject the same store */
+export const WORKSPACE_SYMBOL = 'WORKSPACE_SYMBOL' as const
 
 /**
  * Global hook which contains the store for the whole app
@@ -242,7 +243,7 @@ export const WORKSPACE_SYMBOL = Symbol() as InjectionKey<WorkspaceStore>
  * ex: add examples when adding a request
  */
 export const useWorkspace = (): WorkspaceStore => {
-  const store = inject(WORKSPACE_SYMBOL)
+  const store = inject<WorkspaceStore>(WORKSPACE_SYMBOL)
   if (!store) {
     throw new Error('Workspace store not provided')
   }

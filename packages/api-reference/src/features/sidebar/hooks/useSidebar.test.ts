@@ -1,10 +1,11 @@
 import type { OpenAPIV3_1 } from '@scalar/openapi-types'
+import { apiReferenceConfigurationSchema } from '@scalar/types'
+import type { Heading } from '@scalar/types/legacy'
+import type { OperationObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { computed, inject, provide, ref } from 'vue'
 import { createSidebar } from '../helpers/create-sidebar'
 import { SIDEBAR_SYMBOL, useSidebar } from './useSidebar'
-import { apiReferenceConfigurationSchema } from '@scalar/types'
-import type { Heading } from '@scalar/types/legacy'
 
 const EXAMPLE_DOCUMENT = {
   openapi: '3.1.1',
@@ -62,13 +63,13 @@ describe('useSidebar', () => {
       const config = ref(apiReferenceConfigurationSchema.parse({}))
       const options = {
         config,
-        getSectionId: (hashStr?: string) => 'section-1',
+        getSectionId: (_hashStr?: string) => 'section-1',
         getHeadingId: (heading: Heading) => heading.value,
         getOperationId: (
-          operation: { path: string; method: OpenAPIV3_1.HttpMethods } & OpenAPIV3_1.OperationObject,
-          parentTag: OpenAPIV3_1.TagObject,
+          operation: { path: string; method: OpenAPIV3_1.HttpMethods } & OperationObject,
+          _parentTag: OpenAPIV3_1.TagObject,
         ) => operation.summary ?? '',
-        getWebhookId: (webhook?: { name: string; method?: string }, parentTag?: OpenAPIV3_1.TagObject) =>
+        getWebhookId: (webhook?: { name: string; method?: string }, _parentTag?: OpenAPIV3_1.TagObject) =>
           webhook?.name ?? 'webhooks',
         getModelId: (model?: { name: string }) => model?.name ?? '',
         getTagId: (tag: OpenAPIV3_1.TagObject) => tag.name ?? '',

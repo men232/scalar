@@ -1,5 +1,179 @@
 # @scalar/use-codemirror
 
+## 0.12.35
+
+### Patch Changes
+
+- Updated dependencies [498f771]
+- Updated dependencies [8f2a2f2]
+  - @scalar/components@0.14.34
+
+## 0.12.34
+
+### Patch Changes
+
+- @scalar/components@0.14.33
+
+## 0.12.33
+
+### Patch Changes
+
+- @scalar/components@0.14.32
+
+## 0.12.32
+
+### Patch Changes
+
+- Updated dependencies [2249fe3]
+  - @scalar/components@0.14.31
+
+## 0.12.31
+
+### Patch Changes
+
+- @scalar/components@0.14.30
+
+## 0.12.30
+
+### Patch Changes
+
+- Updated dependencies [c470c60]
+  - @scalar/components@0.14.29
+
+## 0.12.29
+
+### Patch Changes
+
+- Updated dependencies [f918582]
+- Updated dependencies [422cb2b]
+  - @scalar/components@0.14.28
+
+## 0.12.28
+
+### Patch Changes
+
+- @scalar/components@0.14.27
+
+## 0.12.27
+
+### Patch Changes
+
+- @scalar/components@0.14.26
+
+## 0.12.26
+
+### Patch Changes
+
+- Updated dependencies [172e397]
+- Updated dependencies [d8b8a5b]
+- Updated dependencies [6c24be9]
+- Updated dependencies [638120c]
+- Updated dependencies [0804cfc]
+  - @scalar/components@0.14.25
+
+## 0.12.25
+
+### Patch Changes
+
+- Updated dependencies [58b9321]
+- Updated dependencies [fbafeab]
+  - @scalar/components@0.14.24
+
+## 0.12.24
+
+### Patch Changes
+
+- @scalar/components@0.14.23
+
+## 0.12.23
+
+### Patch Changes
+
+- Updated dependencies [dd00357]
+  - @scalar/components@0.14.22
+
+## 0.12.22
+
+### Patch Changes
+
+- Updated dependencies [f913898]
+- Updated dependencies [cf5d6a2]
+- Updated dependencies [1af32c0]
+- Updated dependencies [f3d0216]
+- Updated dependencies [af22451]
+  - @scalar/components@0.14.21
+
+## 0.12.21
+
+### Patch Changes
+
+- Updated dependencies [60c7bef]
+- Updated dependencies [cac47ea]
+  - @scalar/components@0.14.20
+
+## 0.12.20
+
+### Patch Changes
+
+- Updated dependencies [a04cc15]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [fbaaa12]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [97721b5]
+- Updated dependencies [85ee2ce]
+  - @scalar/components@0.14.19
+
+## 0.12.19
+
+### Patch Changes
+
+- Updated dependencies [934dff9]
+  - @scalar/components@0.14.18
+
+## 0.12.18
+
+### Patch Changes
+
+- Updated dependencies [cd1c367]
+- Updated dependencies [4d89219]
+- Updated dependencies [244edda]
+- Updated dependencies [1db9130]
+  - @scalar/components@0.14.17
+
+## 0.12.17
+
+### Patch Changes
+
+- Updated dependencies [ca77d70]
+- Updated dependencies [a696604]
+- Updated dependencies [3fdc2f2]
+  - @scalar/components@0.14.16
+
+## 0.12.16
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+  - @scalar/components@0.14.15
+
+## 0.12.15
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+- Updated dependencies [3393c83]
+- Updated dependencies [4f47b3c]
+- Updated dependencies [8e85856]
+  - @scalar/components@0.14.14
+
+## 0.12.14
+
+### Patch Changes
+
+- Updated dependencies [c907685]
+- Updated dependencies [4bbbb32]
+  - @scalar/components@0.14.13
+
 ## 0.12.13
 
 ### Patch Changes

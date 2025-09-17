@@ -2,7 +2,7 @@
 
 The easiest way to render a modern and beautiful API reference based on your Django Ninja OpenAPI document.
 
-![django-ninja](ninja.png)
+![Screenshot of the Django Ninja integration](/screenshots/django-ninja.png)
 
 ## Installation
 
@@ -91,7 +91,7 @@ urlpatterns = [
 
 ```
 
-We’ll save running it for after we install Scalar in the next section.
+We'll save running it for after we install Scalar in the next section.
 
 ### Installing the Scalar API Reference
 
@@ -138,7 +138,7 @@ cd apidemo
 ./manage.py runserver
 ```
 
-Once its running, we can then go to `http://127.0.0.1:8000/api/docs/` to view our API Reference.
+Once it's running, we can then go to `http://127.0.0.1:8000/api/docs/` to view our API Reference.
 
 ![Django Ninja API reference](https://github.com/user-attachments/assets/10a1778a-efa0-4903-b0cb-974ea4135982)
 

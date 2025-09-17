@@ -1,56 +1,61 @@
 import type { ApiReferenceConfiguration } from '@scalar/types/api-reference'
 
 import type { UseNavState } from '@/hooks/useNavState'
-import type { Ref } from 'vue'
 import type { OpenAPIV3_1 } from '@scalar/openapi-types'
+import type {
+  OperationObject,
+  TagObject,
+  SchemaObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import type { Ref } from 'vue'
 
 /** Map of tagNames and their entries */
-export type TagsMap = Map<string, { tag: OpenAPIV3_1.TagObject; entries: TraversedEntry[] }>
+export type TagsMap = Map<string, { tag: TagObject; entries: TraversedEntry[] }>
 
-/** Description entry returned form traversing the document */
+/** Description entry returned from traversing the document */
 export type TraversedDescription = {
   id: string
   title: string
   children?: TraversedDescription[]
 }
 
-/** Operation entry returned form traversing the document */
+/** Operation entry returned from traversing the document */
 export type TraversedOperation = {
   id: string
   title: string
   method: OpenAPIV3_1.HttpMethods
   path: string
-  operation: OpenAPIV3_1.OperationObject
+  operation: OperationObject
 }
 
-/** Model entry returned form traversing the document */
+/** Model entry returned from traversing the document */
 export type TraversedSchema = {
   id: string
   title: string
   name: string
-  schema: OpenAPIV3_1.SchemaObject
+  schema: SchemaObject
 }
 
-/** Tag entry returned form traversing the document, includes tagGroups */
+/** Tag entry returned from traversing the document, includes tagGroups */
 export type TraversedTag = {
   id: string
   title: string
   children: TraversedEntry[]
-  tag: OpenAPIV3_1.TagObject
+  tag: TagObject
   isGroup: boolean
   isWebhooks?: boolean
 }
 
-/** Webhook entry returned form traversing the document, basically the same as an operaation but with name instead of path */
+/** Webhook entry returned from traversing the document, basically the same as an operaation but with name instead of path */
 export type TraversedWebhook = {
   id: string
   title: string
   method: OpenAPIV3_1.HttpMethods
   name: string
-  webhook: OpenAPIV3_1.OperationObject
+  webhook: OperationObject
 }
 
-/** Entries returned form traversing the document */
+/** Entries returned from traversing the document */
 export type TraversedEntry =
   | TraversedDescription
   | TraversedOperation

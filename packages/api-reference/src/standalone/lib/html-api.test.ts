@@ -121,6 +121,57 @@ describe('html-api', () => {
       await flushPromises()
       expect(document.getElementById('mount-point')?.innerHTML).toContain('Updated API')
     })
+
+    it('updates the operations when the configuration changes', async () => {
+      const config = { _integration: 'html' }
+      const app = createApiReference('#mount-point', apiReferenceConfigurationSchema.parse(config))
+
+      // Update configuration
+      app.updateConfiguration({
+        content: JSON.stringify({
+          'openapi': '3.1.0',
+          'info': { 'title': 'Updated API', 'version': '1.0.0' },
+          'paths': {
+            '/test': {
+              'get': {
+                'tags': ['Test'],
+                'summary': 'New Operation',
+              },
+            },
+          },
+        }),
+      })
+
+      // Assert the configuration was updated
+      await flushPromises()
+
+      expect(document.getElementById('tag/test/get/test')).not.toBeNull()
+      expect(document.getElementById('tag/test/get/test')?.innerHTML).toContain('New Operation')
+
+      // Update configuration
+      app.updateConfiguration({
+        content: JSON.stringify({
+          'openapi': '3.1.0',
+          'info': { 'title': 'Updated API', 'version': '1.0.0' },
+          'paths': {
+            '/test': {
+              'post': {
+                'tags': ['Test'],
+                'summary': 'Even newer operation',
+              },
+            },
+          },
+        }),
+      })
+
+      await flushPromises()
+
+      expect(document.getElementById('tag/test/post/test')).not.toBeNull()
+      expect(document.getElementById('tag/test/post/test')?.innerHTML).toContain('Even newer operation')
+
+      // Assert the configuration was updated
+      await flushPromises()
+    })
   })
 
   describe('findDataAttributes (legacy)', () => {
@@ -247,11 +298,11 @@ describe('html-api', () => {
       expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringContaining('The [data-spec-url] HTML API is deprecated'))
     })
 
-    // We can’t log an error anymore, otherwise it would always show for people using the new JS-based API.
+    // We can't log an error anymore, otherwise it would always show for people using the new JS-based API.
     it.skip('handles missing spec elements with error', () => {
       expect(getConfigurationFromDataAttributes(document)).toStrictEqual(baseConfig)
       expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Couldn’t find a [data-spec], [data-spec-url] or <script id="api-reference" /> element. Try adding it like this: %c<div data-spec-url="https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml" />',
+        "Couldn't find a [data-spec], [data-spec-url] or <script id='api-reference' /> element. Try adding it like this: %c<div data-spec-url='https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml' />",
         'font-family: monospace;',
       )
     })

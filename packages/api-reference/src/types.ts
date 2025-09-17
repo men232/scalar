@@ -1,5 +1,6 @@
 import type { AnyApiReferenceConfiguration, ApiReferenceConfiguration } from '@scalar/types/api-reference'
-import type { OpenAPIV3_1, Spec } from '@scalar/types/legacy'
+import type { OpenAPIV3_1 } from '@scalar/types/legacy'
+import type { WorkspaceStore } from '@scalar/workspace-store/client'
 
 export type { ApiReferenceConfiguration }
 
@@ -14,7 +15,7 @@ export type ReferenceLayoutProps = {
   configuration: Partial<ApiReferenceConfiguration>
   /**
    *
-   * The OpenAPI 3.1 document, but all $ref’s are resolved already.
+   * The OpenAPI 3.1 document, but all $ref's are resolved already.
    *
    * @remark You need to add the `originalDocument`, too.
    *
@@ -27,18 +28,18 @@ export type ReferenceLayoutProps = {
    */
   dereferencedDocument?: OpenAPIV3_1.Document
   /**
-   * The raw OpenAPI document. Doesn’t have to be OpenAPI 3.1.
+   * The raw OpenAPI document. Doesn't have to be OpenAPI 3.1.
    */
   originalDocument?: string
   isDark: boolean
   /**
-   * @deprecated We can’t use this anymore. Use `dereferencedDocument` instead.
-   */
-  parsedSpec?: Spec
-  /**
    * @deprecated Use `originalDocument` instead.
    */
   rawSpec?: string
+  /**
+   * @deprecated this is just temporary until we switch to the new store, we prop drill it down
+   */
+  store: WorkspaceStore
 }
 
 export type GettingStartedExamples = 'Petstore' | 'CoinMarketCap'
@@ -81,6 +82,5 @@ export type DocumentSelectorSlot = {
 }
 
 export type ReferenceSlotProps = {
-  spec: Spec
   breadcrumb: string
 }

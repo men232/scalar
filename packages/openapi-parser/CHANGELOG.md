@@ -1,5 +1,101 @@
 # @scalar/openapi-parser
 
+## 0.20.6
+
+### Patch Changes
+
+- @scalar/json-magic@0.4.3
+
+## 0.20.5
+
+### Patch Changes
+
+- 39bbc0e: fix: correctly reflect the changes to parameters on the refs
+- Updated dependencies [3bd1209]
+- Updated dependencies [1943b99]
+  - @scalar/json-magic@0.4.2
+
+## 0.20.4
+
+### Patch Changes
+
+- @scalar/json-magic@0.4.1
+
+## 0.20.3
+
+### Patch Changes
+
+- b8c4b61: fix: migrate global and path item parameters from Swagger 2.0 to OpenAPI 3.0
+
+## 0.20.2
+
+### Patch Changes
+
+- Updated dependencies [06a46f0]
+- Updated dependencies [63283aa]
+- Updated dependencies [99894bc]
+  - @scalar/json-magic@0.4.0
+
+## 0.20.1
+
+### Patch Changes
+
+- Updated dependencies [88385b1]
+  - @scalar/json-magic@0.3.1
+
+## 0.20.0
+
+### Minor Changes
+
+- c418e92: feat(openapi-parser): join multiple openapi documents
+
+### Patch Changes
+
+- d4adeba: fix: ensure upgrader doesn't lose schema properties
+- 66b18fc: feat: update the references to handle $refs from the magic proxy
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- Updated dependencies [b93e1fe]
+- Updated dependencies [0fcd446]
+- Updated dependencies [c4bf497]
+- Updated dependencies [d8adbed]
+- Updated dependencies [0c80ef0]
+  - @scalar/json-magic@0.3.0
+  - @scalar/openapi-types@0.3.7
+
+## 0.19.1
+
+### Patch Changes
+
+- e203e90: fix: can’t import plugins from parser package anymore
+  - @scalar/openapi-types@0.3.7
+
+## 0.19.0
+
+### Minor Changes
+
+- 952bde2: feat(json-magic): move json tooling to the new package
+- 2888e18: feat(openapi-parser): partial bundle to a depth
+
+## 0.18.3
+
+### Patch Changes
+
+- c345d2c: fix: added dependency on @scalar/openapi-types
+- Updated dependencies [ccf875a]
+  - @scalar/openapi-types@0.3.7
+
+## 0.18.2
+
+### Patch Changes
+
+- 1c2b9f3: feat: add application and accessCode to swagger 2 upgrader
+
+## 0.18.1
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+
 ## 0.18.0
 
 ### Minor Changes

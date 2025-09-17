@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net8.0;net9.0</TargetFrameworks>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -25,7 +25,14 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta13" PrivateAssets="all" ExcludeAssets="runtime" NoWarn="NU5104" />
+    <PackageReference Include="NetEscapades.EnumGenerators" Version="1.0.0-beta14" PrivateAssets="all" ExcludeAssets="runtime" NoWarn="NU5104" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\..\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
   </ItemGroup>
 
   <ItemGroup>
@@ -36,7 +43,7 @@
     </EmbeddedResource>
 
     <!-- Include uncompressed files for Debug -->
-    <EmbeddedResource Include="StaticAssets/*.js" Exclude="StaticAssets/*test.js" Condition="'$(Configuration)' == 'Debug'">
+    <EmbeddedResource Include="StaticAssets/*.js;StaticAssets/*.svg" Exclude="StaticAssets/*test.js" Condition="'$(Configuration)' == 'Debug'">
       <LogicalName>$(StaticAssetsLogicalNamePrefix).%(Filename)%(Extension)</LogicalName>
     </EmbeddedResource>
   </ItemGroup>

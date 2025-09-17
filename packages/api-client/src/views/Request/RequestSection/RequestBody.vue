@@ -619,7 +619,7 @@ const selectedExample = computed({
         <template v-else>
           <!-- TODO: remove this as type hack when we add syntax highligting -->
           <CodeInput
-            class="border-t px-1"
+            class="border-t px-3"
             content=""
             :envVariables="envVariables"
             :environment="environment"
@@ -638,6 +638,6 @@ const selectedExample = computed({
 </template>
 <style scoped>
 :deep(.cm-content) {
-  font-size: var(--scalar-mini);
+  font-size: var(--scalar-small);
 }
 </style>

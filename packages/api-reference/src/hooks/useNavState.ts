@@ -2,6 +2,7 @@ import { useConfig } from '@/hooks/useConfig'
 import { combineUrlAndPath } from '@scalar/helpers/url/merge-urls'
 import type { ApiReferenceConfiguration } from '@scalar/types/api-reference'
 import type { Heading, OpenAPIV3_1 } from '@scalar/types/legacy'
+import type { OperationObject, TagObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 import { slug } from 'github-slugger'
 import { type InjectionKey, type Ref, inject, ref } from 'vue'
 
@@ -146,8 +147,8 @@ export const useNavState = (_config?: Ref<ApiReferenceConfiguration>) => {
     operation: {
       path: string
       method: OpenAPIV3_1.HttpMethods
-    } & OpenAPIV3_1.OperationObject,
-    parentTag: OpenAPIV3_1.TagObject,
+    } & OperationObject,
+    parentTag: TagObject,
   ) => {
     if (typeof config.value.generateOperationSlug === 'function') {
       return `${getTagId(parentTag)}/${config.value.generateOperationSlug({

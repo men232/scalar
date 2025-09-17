@@ -1,8 +1,8 @@
 import { URL, fileURLToPath } from 'node:url'
-import tailwindcss from '@tailwindcss/vite'
 import { autoCSSInject, createViteBuildOptions } from '@scalar/build-tooling'
+import tailwindcss from '@tailwindcss/vite'
 import vue from '@vitejs/plugin-vue'
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from 'vite'
 import { version } from './package.json'
 
 export default defineConfig({
@@ -10,6 +10,12 @@ export default defineConfig({
   define: {
     'process.env.NODE_ENV': '"production"',
     'process.env.SCALAR_API_REFERENCE_VERSION': `"${version}"`,
+  },
+  server: {
+    // Enable host binding in dev containers for proper port forwarding
+    // See: https://vite.dev/guide/troubleshooting.html#dev-containers-vs-code-port-forwarding
+    ...(process.env.REMOTE_CONTAINERS && { host: '127.0.0.1' }),
+    allowedHosts: ['localhost', 'host.docker.internal'],
   },
   resolve: {
     alias: {
@@ -27,7 +33,6 @@ export default defineConfig({
       rollupOptions: {
         plugins: [autoCSSInject('references')],
       },
-      target: ['chrome90', 'edge90', 'firefox90', 'safari15'],
     },
   }),
 })

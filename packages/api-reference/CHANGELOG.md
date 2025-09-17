@@ -1,5 +1,663 @@
 # @scalar/api-reference
 
+## 1.35.6
+
+### Patch Changes
+
+- b6a59bd: fix(api-reference): webhook request example display
+- 8f2a2f2: Bump some dependencies to latest
+- Updated dependencies [498f771]
+- Updated dependencies [bff46e5]
+- Updated dependencies [8f2a2f2]
+  - @scalar/components@0.14.34
+  - @scalar/helpers@0.0.11
+  - @scalar/api-client@2.5.33
+  - @scalar/use-hooks@0.2.5
+  - @scalar/themes@0.13.17
+  - @scalar/json-magic@0.4.3
+  - @scalar/oas-utils@0.4.29
+  - @scalar/object-utils@1.2.7
+  - @scalar/workspace-store@0.15.6
+  - @scalar/code-highlight@0.1.9
+  - @scalar/openapi-parser@0.20.6
+
+## 1.35.5
+
+### Patch Changes
+
+- 4e7e8a9: fix: safely check for readonly/writeonly properties
+- Updated dependencies [3bd1209]
+- Updated dependencies [39bbc0e]
+- Updated dependencies [1943b99]
+  - @scalar/json-magic@0.4.2
+  - @scalar/openapi-parser@0.20.5
+  - @scalar/oas-utils@0.4.28
+  - @scalar/workspace-store@0.15.5
+  - @scalar/api-client@2.5.32
+  - @scalar/components@0.14.33
+
+## 1.35.4
+
+### Patch Changes
+
+- Updated dependencies [019a22a]
+- Updated dependencies [f8fc81c]
+  - @scalar/workspace-store@0.15.4
+  - @scalar/api-client@2.5.31
+  - @scalar/oas-utils@0.4.27
+  - @scalar/components@0.14.32
+
+## 1.35.3
+
+### Patch Changes
+
+- 821717b: refactor: schema rendering
+- 821717b: fix: deep resolve response examples
+- 425a954: fix(api-reference): render proper slots
+- Updated dependencies [821717b]
+- Updated dependencies [c173063]
+- Updated dependencies [c173063]
+- Updated dependencies [2249fe3]
+  - @scalar/workspace-store@0.15.3
+  - @scalar/oas-utils@0.4.26
+  - @scalar/helpers@0.0.10
+  - @scalar/api-client@2.5.30
+  - @scalar/components@0.14.31
+  - @scalar/json-magic@0.4.1
+  - @scalar/object-utils@1.2.6
+  - @scalar/openapi-parser@0.20.4
+
+## 1.35.2
+
+### Patch Changes
+
+- Updated dependencies [b8c4b61]
+- Updated dependencies [5eedb97]
+  - @scalar/openapi-parser@0.20.3
+  - @scalar/api-client@2.5.29
+  - @scalar/oas-utils@0.4.25
+  - @scalar/workspace-store@0.15.2
+  - @scalar/components@0.14.30
+
+## 1.35.1
+
+### Patch Changes
+
+- Updated dependencies [c470c60]
+- Updated dependencies [abe3842]
+- Updated dependencies [5a7d388]
+  - @scalar/api-client@2.5.28
+  - @scalar/components@0.14.29
+  - @scalar/types@0.2.15
+  - @scalar/oas-utils@0.4.24
+  - @scalar/openapi-parser@0.20.2
+  - @scalar/snippetz@0.4.9
+  - @scalar/themes@0.13.16
+  - @scalar/workspace-store@0.15.1
+  - @scalar/code-highlight@0.1.9
+
+## 1.35.0
+
+### Minor Changes
+
+- 697f1d0: feat(api-reference): info block
+- 5ad329e: feat: openapi auth selector block
+
+### Patch Changes
+
+- 714b197: feat: support base64 unicode characters
+- 792c937: Configurable option for sidebar to show method path instead of method summary.
+- f918582: feat(api-reference, components): update scalar floating components contraints
+- 549eb02: feat(api-reference): export workspace store hooks
+- 3473e08: fix: performance issues on script load
+- a6ae22a: feat: change the way we declare schemas
+- 94e4762: fix: padding on intro block
+- d5c1d0c: feat(api-reference): custom display for webhook request examples
+- 2077f01: fix: open first tag when not defined in document
+- 0e747c7: fix: initial scroll to id lands in random positions
+- Updated dependencies [ba27329]
+- Updated dependencies [714b197]
+- Updated dependencies [40e79b9]
+- Updated dependencies [06a46f0]
+- Updated dependencies [98c55d0]
+- Updated dependencies [792c937]
+- Updated dependencies [f918582]
+- Updated dependencies [cededd8]
+- Updated dependencies [3473e08]
+- Updated dependencies [a6ae22a]
+- Updated dependencies [422cb2b]
+- Updated dependencies [63283aa]
+- Updated dependencies [8680da6]
+- Updated dependencies [ee605d8]
+- Updated dependencies [2b22eab]
+- Updated dependencies [0e747c7]
+- Updated dependencies [976366f]
+- Updated dependencies [99894bc]
+- Updated dependencies [5ad329e]
+  - @scalar/workspace-store@0.15.0
+  - @scalar/api-client@2.5.27
+  - @scalar/oas-utils@0.4.23
+  - @scalar/snippetz@0.4.8
+  - @scalar/json-magic@0.4.0
+  - @scalar/helpers@0.0.9
+  - @scalar/types@0.2.14
+  - @scalar/components@0.14.28
+  - @scalar/themes@0.13.15
+  - @scalar/openapi-parser@0.20.2
+  - @scalar/object-utils@1.2.5
+  - @scalar/code-highlight@0.1.9
+
+## 1.34.6
+
+### Patch Changes
+
+- 50032be: feat: added config options for sorting schema properties
+- 88385b1: chore: added circular ref to sources for testing
+- Updated dependencies [443c507]
+- Updated dependencies [88385b1]
+- Updated dependencies [50032be]
+  - @scalar/workspace-store@0.14.2
+  - @scalar/json-magic@0.3.1
+  - @scalar/types@0.2.13
+  - @scalar/oas-utils@0.4.22
+  - @scalar/openapi-parser@0.20.1
+  - @scalar/api-client@2.5.26
+  - @scalar/snippetz@0.4.7
+  - @scalar/themes@0.13.14
+  - @scalar/components@0.14.27
+  - @scalar/code-highlight@0.1.9
+
+## 1.34.5
+
+### Patch Changes
+
+- 86d29c1: feat(snippetz): improve indentation handling in objectToString
+- Updated dependencies [86d29c1]
+- Updated dependencies [e2272a1]
+- Updated dependencies [b6f4b60]
+- Updated dependencies [b8776fc]
+  - @scalar/snippetz@0.4.6
+  - @scalar/oas-utils@0.4.21
+  - @scalar/workspace-store@0.14.1
+  - @scalar/api-client@2.5.25
+  - @scalar/components@0.14.26
+
+## 1.34.4
+
+### Patch Changes
+
+- bbef120: fix: remove extra coerces and cleanUp plugin from bundler
+- 24883ab: feat(api-reference): map reference configuration to the new store configuration
+- a1429ca: chore: move to new extensions system for better type safety
+- e499aee: fix: typo in model opening
+- 845e850: fix: deep resolve response examples
+- 66b18fc: feat: update the references to handle $refs from the magic proxy
+- 6eb7c4f: fix: search does not match when the query has a single character word
+- 4e06829: fix: horizontal scrollbars in a VS Code webview
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- 2b89e6f: feat: x-badges
+- 6a88108: feat: add option to expandAllResponses and expandAllModelSections
+- c838a3f: chore: added measurements to workspace store
+- 75d84ed: fix: does not load document when the url/content stays the same
+- 929df42: fix: sidebar links are prefixed with the path
+- 0804cfc: eat(components): Add ScalarMarkdown summary component
+- Updated dependencies [bbef120]
+- Updated dependencies [b93e1fe]
+- Updated dependencies [a1429ca]
+- Updated dependencies [d4adeba]
+- Updated dependencies [5208f06]
+- Updated dependencies [172e397]
+- Updated dependencies [4d509fb]
+- Updated dependencies [66b18fc]
+- Updated dependencies [5f022b5]
+- Updated dependencies [0fcd446]
+- Updated dependencies [d8b8a5b]
+- Updated dependencies [6c24be9]
+- Updated dependencies [6a88108]
+- Updated dependencies [c838a3f]
+- Updated dependencies [c418e92]
+- Updated dependencies [9be6eec]
+- Updated dependencies [c4bf497]
+- Updated dependencies [638120c]
+- Updated dependencies [d8adbed]
+- Updated dependencies [0804cfc]
+- Updated dependencies [0c80ef0]
+  - @scalar/workspace-store@0.14.0
+  - @scalar/oas-utils@0.4.20
+  - @scalar/json-magic@0.3.0
+  - @scalar/openapi-parser@0.20.0
+  - @scalar/api-client@2.5.24
+  - @scalar/components@0.14.25
+  - @scalar/helpers@0.0.8
+  - @scalar/themes@0.13.13
+  - @scalar/types@0.2.12
+  - @scalar/code-highlight@0.1.9
+  - @scalar/icons@0.4.7
+  - @scalar/object-utils@1.2.4
+  - @scalar/openapi-types@0.3.7
+  - @scalar/snippetz@0.4.5
+  - @scalar/use-hooks@0.2.4
+  - @scalar/use-toasts@0.8.0
+
+## 1.34.3
+
+### Patch Changes
+
+- 97f199a: fix(api-reference): path parameters not showing in request example code
+- 0d502cb: chore(workspace-store): clean up client store
+- 3de82ac: fix: uses document url even if it's relative
+- 58b9321: feat: adds scalar code block copy component
+- 2c74892: fix: x-scalar-ignore models schema displayed
+- Updated dependencies [b235392]
+- Updated dependencies [0d502cb]
+- Updated dependencies [e203e90]
+- Updated dependencies [3de82ac]
+- Updated dependencies [58b9321]
+- Updated dependencies [68e4631]
+- Updated dependencies [b1ceaab]
+- Updated dependencies [fbafeab]
+- Updated dependencies [0afc40c]
+- Updated dependencies [128af48]
+- Updated dependencies [376739d]
+  - @scalar/api-client@2.5.23
+  - @scalar/workspace-store@0.13.0
+  - @scalar/openapi-parser@0.19.1
+  - @scalar/oas-utils@0.4.19
+  - @scalar/components@0.14.24
+  - @scalar/icons@0.4.7
+  - @scalar/code-highlight@0.1.9
+  - @scalar/helpers@0.0.7
+  - @scalar/object-utils@1.2.3
+  - @scalar/openapi-types@0.3.7
+  - @scalar/snippetz@0.4.4
+  - @scalar/themes@0.13.12
+  - @scalar/types@0.2.11
+  - @scalar/use-hooks@0.2.4
+  - @scalar/use-toasts@0.8.0
+
+## 1.34.2
+
+### Patch Changes
+
+- 83625c6: fix: cyclic error in client store watcher
+
+## 1.34.1
+
+### Patch Changes
+
+- 4d05839: fix: empty test request modal
+- Updated dependencies [46bfd2f]
+  - @scalar/oas-utils@0.4.18
+  - @scalar/api-client@2.5.22
+  - @scalar/components@0.14.23
+
+## 1.34.0
+
+### Minor Changes
+
+- 2888e18: feat(openapi-parser): partial bundle to a depth
+
+### Patch Changes
+
+- f838a47: feat: link to parameters
+- 94b5d0a: fix: show description when merging allOf properties
+- 0f4a784: fix(api-references): constrain specificity for top level schema properties
+- 5301a80: feat: make content reactive and update workspace store
+- 8113963: refactor: use new data structure for the search
+- fb0c254: fix: lazy loading for maximum loading performance
+- Updated dependencies [952bde2]
+- Updated dependencies [46ebe6e]
+- Updated dependencies [5301a80]
+- Updated dependencies [c02c1c8]
+- Updated dependencies [ae8d1b9]
+- Updated dependencies [b551707]
+- Updated dependencies [8199955]
+- Updated dependencies [dd00357]
+- Updated dependencies [2888e18]
+  - @scalar/workspace-store@0.12.0
+  - @scalar/openapi-parser@0.19.0
+  - @scalar/oas-utils@0.4.17
+  - @scalar/api-client@2.5.21
+  - @scalar/components@0.14.22
+
+## 1.33.0
+
+### Minor Changes
+
+- 2e2f50a: refactor: new main content rendering
+
+### Patch Changes
+
+- 14a737c: feat: add a max height to the operation list
+- 628d44c: fix: ensure intersection observer is enabled when no hash.value
+- 092626d: fix: the order of the client libraries
+- 9c157f1: fix: misalignments in sidebar element icon and title
+- ce9b7ff: fix: increases download link stackking to preserve clickability
+- f65f1fc: feat: updates content type select style and position
+- 4ea9dab: feat: Make the min & max descriptions more descriptive for strings
+- 8d24b91: fix: updates schema enum property style handling
+- 7031d9c: fix(api-reference): reference theme and style fixes
+- 1913f97: feat: merge schema root properties into composition schemas
+- 0f41af6: fix: show anyOf schema when only one item with no type
+- 956a2d1: feat: updates heading anchor style to use latest icons
+- 7ee81f4: fix: can not render operation without responses
+- 94d6d0c: fix: remove old ssr state and update nuxt for workspace store
+- d29c455: fix: select shell/curl as default client lib
+- 319fb56: fix(api-reference): center show schema checkmark
+- 24c9d4c: feat: convert links list to icons only if it needs to scroll
+- c0d6793: feat: ensure we use the path routing base path for relative document url resolution
+- 6953c9f: fix: updates example response schema checkbox style
+- 72924f6: fix: linking to models from search
+- 6f12d2e: fix: hiddenClients config option
+- 8795629: fix: classic layout intersection observer
+- 515162c: fix: adds replaceDocument to createMockStore
+- f3d0216: feat: lazy loading v1.5
+- 7555e44: feat(api-reference): add combobox to client libraries card
+- af22451: feat: increases caret icon usage and style concistency amongst reference and client
+- a5534e6: fix: show path parameters on operation
+- 6b6c72c: fix: hiddenClients: true and move clients to workspace store
+- Updated dependencies [ccf875a]
+- Updated dependencies [fbef7e1]
+- Updated dependencies [f913898]
+- Updated dependencies [9924c47]
+- Updated dependencies [cf5d6a2]
+- Updated dependencies [d4cb86b]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [c345d2c]
+- Updated dependencies [8c731b9]
+- Updated dependencies [952f471]
+- Updated dependencies [a0c92d9]
+- Updated dependencies [1af32c0]
+- Updated dependencies [8c731b9]
+- Updated dependencies [c0d6793]
+- Updated dependencies [77e700b]
+- Updated dependencies [b957a2c]
+- Updated dependencies [3c1e3e3]
+- Updated dependencies [f3d0216]
+- Updated dependencies [af22451]
+- Updated dependencies [a5534e6]
+- Updated dependencies [6b6c72c]
+  - @scalar/openapi-types@0.3.7
+  - @scalar/api-client@2.5.20
+  - @scalar/types@0.2.11
+  - @scalar/components@0.14.21
+  - @scalar/workspace-store@0.11.0
+  - @scalar/code-highlight@0.1.9
+  - @scalar/oas-utils@0.4.16
+  - @scalar/openapi-parser@0.18.3
+  - @scalar/themes@0.13.12
+  - @scalar/helpers@0.0.7
+  - @scalar/snippetz@0.4.4
+  - @scalar/object-utils@1.2.3
+
+## 1.32.10
+
+### Patch Changes
+
+- 3eb8171: fix: value in request example code
+- 60c7bef: fix: updates auth description overflowing line clamp
+- 716a83a: refactor: new request example block
+- 9b4417b: fix: removes unsused prop in layout for request example
+- 2ace00b: fix: prevents introduction card dropdown stacking issue
+- fb62e1b: feat: render External Documentation Objects
+- cac47ea: fix: updates request auth border radius
+- 2ace00b: fix: increases server variables label input font size
+- Updated dependencies [60c7bef]
+- Updated dependencies [e895f86]
+- Updated dependencies [fb62e1b]
+- Updated dependencies [cac47ea]
+- Updated dependencies [fb62e1b]
+- Updated dependencies [1c2b9f3]
+- Updated dependencies [cac47ea]
+  - @scalar/api-client@2.5.19
+  - @scalar/components@0.14.20
+  - @scalar/types@0.2.10
+  - @scalar/themes@0.13.11
+  - @scalar/openapi-parser@0.18.2
+  - @scalar/oas-utils@0.4.15
+  - @scalar/snippetz@0.4.3
+  - @scalar/workspace-store@0.10.2
+  - @scalar/code-highlight@0.1.8
+
+## 1.32.9
+
+### Patch Changes
+
+- 8c6f6fe: fix: rollback workspace store
+
+## 1.32.8
+
+### Patch Changes
+
+- a04cc15: feat(components): create scalar card component
+- b5bcce7: feat: implement new request example openapi block in references
+- 97721b5: fix: prevents navigation on enter in search modal if no result
+- 9978a16: fix: example response has an additional value key
+- 8a67f4f: fix(api-reference): classic layout improvements
+- Updated dependencies [a04cc15]
+- Updated dependencies [591562f]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [fbb7daa]
+- Updated dependencies [3f2ea8a]
+- Updated dependencies [fbaaa12]
+- Updated dependencies [828c894]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [97721b5]
+- Updated dependencies [b5bcce7]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [8a67f4f]
+  - @scalar/components@0.14.19
+  - @scalar/openapi-types@0.3.6
+  - @scalar/api-client@2.5.18
+  - @scalar/types@0.2.9
+  - @scalar/snippetz@0.4.2
+  - @scalar/workspace-store@0.10.1
+  - @scalar/code-highlight@0.1.8
+  - @scalar/themes@0.13.10
+  - @scalar/oas-utils@0.4.14
+  - @scalar/openapi-parser@0.18.1
+
+## 1.32.7
+
+### Patch Changes
+
+- a85480e: feat: lay the groundwork for the block implementation PR
+- 1a6c0a4: feat: increases property font sizes + updates description color
+- 9be7ca9: fix: show description for expandable enum values
+- c2ff19e: fix: updates enum values style
+- 7325520: feat: render additionalProperties and patternProperties
+- 134c455: fix: updates example request selected type presence check for discriminator
+- Updated dependencies [a85480e]
+- Updated dependencies [934dff9]
+- Updated dependencies [8b9c48e]
+- Updated dependencies [6ab3a21]
+- Updated dependencies [71958fd]
+  - @scalar/workspace-store@0.10.0
+  - @scalar/components@0.14.18
+  - @scalar/code-highlight@0.1.7
+  - @scalar/oas-utils@0.4.13
+  - @scalar/api-client@2.5.17
+
+## 1.32.6
+
+### Patch Changes
+
+- 6a7509a: fix: updates last download link style
+- 80acf84: feat: add code sample block wrapper with global state
+- Updated dependencies [a0cadac]
+- Updated dependencies [c10e191]
+- Updated dependencies [661c7e9]
+- Updated dependencies [c826b3e]
+- Updated dependencies [cd1c367]
+- Updated dependencies [903f975]
+- Updated dependencies [244edda]
+- Updated dependencies [80acf84]
+- Updated dependencies [4d89219]
+- Updated dependencies [244edda]
+- Updated dependencies [244edda]
+- Updated dependencies [1db9130]
+- Updated dependencies [9e81b17]
+  - @scalar/workspace-store@0.9.0
+  - @scalar/api-client@2.5.16
+  - @scalar/types@0.2.8
+  - @scalar/themes@0.13.9
+  - @scalar/oas-utils@0.4.12
+  - @scalar/components@0.14.17
+  - @scalar/code-highlight@0.1.6
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/snippetz@0.4.1
+
+## 1.32.5
+
+### Patch Changes
+
+- 5de7e25: fix: classic layout does not show request body
+
+## 1.32.4
+
+### Patch Changes
+
+- b420f18: fix: exclusiveMinimum and exclusiveMaximum are treated as boolean values
+- e8f1856: fix: maintain backwards compatibility on sorting operations by httpVerb
+- cacadd5: fix: consts are rendered as “Schema” in the composition dropdown
+- ad2e3e6: feat: new onBeforeRequest hook to modify the request
+- cacadd5: fix: const value 0, false, null aren’t rendered at all
+- 495588a: refactor: schema type rendering
+- 67d8b9a: fix: updates defined value check in search modal enter action
+- 93b1140: fix: always shows all properties, expand button does nothing
+- 4295067: feat: use xml.name as a fallback for the schema title
+- 8457fde: fix: deprecated operations aren’t striked in the sidebar anymore
+- 2dc9f8d: style: improve search result rendering
+- cacadd5: fix: doesn’t show example if it’s `null`
+- 0474f02: refactor: create parameters from plain Operation Object
+- 7ea11c1: feat: render x-enum-varnames
+- bd3b6d4: fix: shows composition description three times
+- 3fdc2f2: feat(api-reference): unify inconsistent font styles across scalar client and ref, and improve consistency"
+- Updated dependencies [d56f354]
+- Updated dependencies [b6ac5b9]
+- Updated dependencies [a696604]
+- Updated dependencies [b2862d9]
+- Updated dependencies [dbc09b9]
+- Updated dependencies [ad2e3e6]
+- Updated dependencies [58287f8]
+- Updated dependencies [20939a8]
+- Updated dependencies [909cf33]
+- Updated dependencies [b2862d9]
+- Updated dependencies [74fdc0e]
+- Updated dependencies [ca77d70]
+- Updated dependencies [a696604]
+- Updated dependencies [d93f60c]
+- Updated dependencies [3fdc2f2]
+- Updated dependencies [972602f]
+- Updated dependencies [85a81eb]
+- Updated dependencies [f8ef4ab]
+  - @scalar/workspace-store@0.8.0
+  - @scalar/api-client@2.5.15
+  - @scalar/types@0.2.7
+  - @scalar/oas-utils@0.4.11
+  - @scalar/components@0.14.16
+  - @scalar/snippetz@0.4.0
+  - @scalar/themes@0.13.8
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/code-highlight@0.1.5
+
+## 1.32.3
+
+### Patch Changes
+
+- 08e1e84: refactor: decouple search from useConfig
+
+## 1.32.2
+
+### Patch Changes
+
+- 4e0caa1: fix: withDefaults is used with destructured props
+- 4d29320: feat: improve search accuracy
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/code-highlight@0.1.5
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/openapi-types@0.3.5
+  - @scalar/api-client@2.5.14
+  - @scalar/oas-utils@0.4.10
+  - @scalar/use-hooks@0.2.4
+  - @scalar/snippetz@0.3.2
+  - @scalar/helpers@0.0.6
+  - @scalar/themes@0.13.7
+  - @scalar/icons@0.4.6
+  - @scalar/types@0.2.6
+  - @scalar/components@0.14.15
+  - @scalar/workspace-store@0.7.1
+  - @scalar/use-toasts@0.8.0
+
+## 1.32.1
+
+### Patch Changes
+
+- 98ff011: fix(api-references): duplicate section ID for tags on page load
+
+## 1.32.0
+
+### Minor Changes
+
+- 8d8e427: feat(api-reference): load documents on the new store
+
+### Patch Changes
+
+- 533469b: refactor: decouple request code block from the state (not in use yet)
+- a70bcce: refactor: move more code to features folders
+- 6ac48c8: fix: uses empty operation summary for the sidebar entry
+- b7ff99a: refactor: render regular OpenAPI Operation Object
+- fed71e0: fix: does not scroll to anchor on load
+- a983428: feat: use schema title for the sidebar, if available
+- 3393c83: fix: focus is not defined in search
+- Updated dependencies [533469b]
+- Updated dependencies [a05d638]
+- Updated dependencies [8d8e427]
+- Updated dependencies [3393c83]
+- Updated dependencies [23b150b]
+- Updated dependencies [4f47b3c]
+- Updated dependencies [dbbdd70]
+- Updated dependencies [23b150b]
+- Updated dependencies [8e85856]
+  - @scalar/openapi-types@0.3.4
+  - @scalar/api-client@2.5.13
+  - @scalar/components@0.14.14
+  - @scalar/workspace-store@0.7.0
+  - @scalar/icons@0.4.5
+  - @scalar/oas-utils@0.4.9
+  - @scalar/helpers@0.0.5
+  - @scalar/openapi-parser@0.18.0
+  - @scalar/types@0.2.5
+  - @scalar/snippetz@0.3.1
+  - @scalar/themes@0.13.6
+  - @scalar/code-highlight@0.1.4
+
+## 1.31.18
+
+### Patch Changes
+
+- c907685: fix(api-reference): set search button width
+- cd7e1b1: chore: remove unused fixtures
+- 3abe906: feat: show a console error for invalid documents
+- 42bc960: fix(api-reference): rollback targets to avoid PropertyDefinition in AST
+- 1468280: feat: allow fine gained download button file type control
+- Updated dependencies [c907685]
+- Updated dependencies [b97c82a]
+- Updated dependencies [9f786d5]
+- Updated dependencies [4bbbb32]
+- Updated dependencies [1468280]
+  - @scalar/components@0.14.13
+  - @scalar/workspace-store@0.6.0
+  - @scalar/use-hooks@0.2.3
+  - @scalar/themes@0.13.5
+  - @scalar/types@0.2.4
+  - @scalar/api-client@2.5.12
+  - @scalar/code-highlight@0.1.4
+  - @scalar/oas-utils@0.4.8
+  - @scalar/openapi-parser@0.18.0
+  - @scalar/snippetz@0.3.1
+
 ## 1.31.17
 
 ### Patch Changes

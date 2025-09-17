@@ -1,16 +1,17 @@
 import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-import type { TagGroup } from '@scalar/types/legacy'
 import type { ApiReferenceConfiguration } from '@scalar/types/api-reference'
+import type { TagGroup } from '@scalar/types/legacy'
 
 import type { TagsMap, TraversedEntry, TraversedTag } from '@/features/traverse-schema/types'
 import type { UseNavState } from '@/hooks/useNavState'
+import type { TagObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 import { getTag } from './get-tag'
 
 type Options = Pick<UseNavState, 'getTagId'> & Pick<ApiReferenceConfiguration, 'tagsSorter' | 'operationsSorter'>
 
 /** Handles creating entries for tags */
 const createTagEntry = (
-  tag: OpenAPIV3_1.TagObject,
+  tag: TagObject,
   titlesMap: Map<string, string>,
   getTagId: UseNavState['getTagId'],
   children: TraversedEntry[],
@@ -94,8 +95,8 @@ const getSortedTagEntries = (
         const operationB = 'operation' in b ? b.operation : b.webhook
 
         return operationsSorter(
-          { method: a.method, path: pathA, operation: operationA },
-          { method: b.method, path: pathB, operation: operationB },
+          { method: a.method, httpVerb: a.method, path: pathA, operation: operationA },
+          { method: b.method, httpVerb: b.method, path: pathB, operation: operationB },
         )
       })
     }

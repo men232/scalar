@@ -7,7 +7,7 @@ You can pass a — what we call — universal configuration object to fine-tune 
 It is universal, because it works in all environments. You can pass it to the JS API directly, or you can use it in one
 of our integrations.
 
-Let’s say you are working with just an HTML file, that’s how you pass the configuration:
+Let's say you are working with just an HTML file, that's how you pass the configuration:
 
 ```ts
 Scalar.createApiReference('#app', {
@@ -16,12 +16,12 @@ Scalar.createApiReference('#app', {
 })
 ```
 
-Or — just as an example — in the Hono server framework you would pass the same configuration like this:
+Or — just as an example — in the Hono server framework, you would pass the same configuration like this:
 
 ```ts
 app.get(
   '/doc',
-  apiReference({
+  Scalar({
     // Your configuration goes here…
     url: '…'
   }),
@@ -46,7 +46,7 @@ Scalar.createApiReference('#app', {
 
 This can be JSON or YAML.
 
-It’s the recommended way to pass your OpenAPI document. In most cases, the OpenAPI document can be cached by the browser
+It's the recommended way to pass your OpenAPI document. In most cases, the OpenAPI document can be cached by the browser
 and subsequent requests are pretty fast then, even if the document grows over time.
 
 > No OpenAPI document? All backend frameworks have some kind of OpenAPI generator. Just
@@ -87,7 +87,7 @@ Scalar.createApiReference('#app', {
     {
       title: 'Scalar Galaxy', // optional, would fallback to 'API #1'
       slug: 'scalar-galaxy', // optional, would be auto-generated from the title or the index
-      url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+      url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
     },
     // API #2
     {
@@ -109,7 +109,7 @@ Scalar.createApiReference('#app', {
   sources: [
     // API #1
     {
-      url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+      url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
     },
     // API #2
     {
@@ -133,7 +133,7 @@ Scalar.createApiReference('#app', [
   {
     title: 'Scalar Galaxy', // optional, would fallback to 'API #1'
     slug: 'scalar-galaxy', // optional, would be auto-generated from the title or the index
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
     customCss: `body { background-color: #BADA55}`
   },
   // Configuration #2
@@ -154,7 +154,7 @@ By default, the first one in the list will be the default configuration. You can
 ```ts
 Scalar.createApiReference('#app', [
   {
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
   },
   {
     url: 'https://example.com/openapi.json',
@@ -180,7 +180,7 @@ Scalar.createApiReference('#app', [
     sources: [
       // API #1
       {
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
       },
       // API #2
       {
@@ -280,9 +280,21 @@ You can use our hosted proxy:
 
 If you like to run your own, check out our [example proxy written in Go](https://github.com/scalar/scalar/tree/main/projects/proxy-scalar-com).
 
+### fetch?: fetch(input: string | URL | globalThis.Request, init?: RequestInit): Promise<Response>
+
+Custom [fetch function](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) to fetch documents with a custom logic. Can be used to add custom headers, handle auth, etc.
+
+```ts
+{
+  fetch: (input: string | URL | globalThis.Request, init?: RequestInit) => {
+    return window.fetch(input, init)
+  }
+}
+```
+
 ### plugins?: ApiReferencePlugin[]
 
-Pass an array of custom plugins that you want. [Read more about plugins here.](./plugins.md)
+Pass an array of custom plugins that you want. [Read more about plugins here.](https://guides.scalar.com/scalar/scalar-api-references/plugins)
 
 ```js
 {
@@ -302,6 +314,22 @@ Whether the sidebar should be shown.
 }
 ```
 
+### operationTitleSource?: 'summary' | 'path'
+
+Whether the sidebar display text and search should use the operation summary or the operation path.
+
+```js
+{
+  operationTitleSource: 'summary' // Use operation summary (default)
+}
+```
+
+```js
+{
+  operationTitleSource: 'path' // Use operation path
+}
+```
+
 ### hideModels?: boolean
 
 Whether models (`components.schemas` or `definitions`) should be shown in the sidebar, search and content.
@@ -314,11 +342,25 @@ Whether models (`components.schemas` or `definitions`) should be shown in the si
 }
 ```
 
+### documentDownloadType?: 'json' | 'yaml' | 'both' | 'direct' | 'none'
+
+Sets the file type of the document to download, set to `none` to hide the download button
+
+`@default 'both'`
+
+```js
+{
+  documentDownloadType: 'json'
+}
+```
+
+When `'direct'` is passed, it just outputs a regular link to the passed URL.
+
 ### hideDownloadButton?: boolean
 
 Whether to show the "Download OpenAPI Document" button
 
-`@default false`
+`@deprecated Use documentDownloadType: 'none' instead`
 
 ```js
 {
@@ -466,7 +508,7 @@ You can pass information to the config object to configure meta information out 
 {
   metaData: {
     title: 'Page title',
-    description: 'My page page',
+    description: 'My page description',
     ogDescription: 'Still about my my page',
     ogTitle: 'Page title',
     ogImage: 'https://example.com/image.png',
@@ -616,11 +658,19 @@ To make authentication easier you can prefill the credentials for your users:
             'x-usePkce': 'SHA-256',
             // Preselected scopes
             selectedScopes: ['profile', 'email'],
-            // Set additional query parameters for the Authorization request 
+            // Set additional query parameters for the Authorization request
             'x-scalar-security-query': {
               prompt: 'consent',
               audience: 'scalar'
-            }
+            },
+            // Set additional body parameters for the Token request
+            'x-scalar-security-body': {
+              audience: 'scalar'
+            },
+            // Custom token name for non-standard OAuth2 responses (default: 'access_token')
+            'x-tokenName': 'custom_access_token',
+            // Specify where OAuth2 credentials should be sent: 'header' or 'body'
+            'x-scalar-credentials-location': 'header'
           },
           clientCredentials: {
             token: 'client credentials token',
@@ -628,7 +678,11 @@ To make authentication easier you can prefill the credentials for your users:
             clientSecret: 'your-client-secret',
             tokenUrl: 'https://auth.example.com/oauth2/token',
             // Preselected scopes
-            selectedScopes: ['profile', 'api:read']
+            selectedScopes: ['profile', 'api:read'],
+            // Custom token name for non-standard OAuth2 responses (default: 'access_token')
+            'x-tokenName': 'custom_access_token',
+            // Specify where OAuth2 credentials should be sent: 'header' or 'body'
+            'x-scalar-credentials-location': 'body'
           },
           implicit: {
             token: 'implicit flow token',
@@ -636,7 +690,9 @@ To make authentication easier you can prefill the credentials for your users:
             authorizationUrl: 'https://auth.example.com/oauth2/authorize',
             'x-scalar-redirect-uri': 'https://your-app.com/callback',
             // Preselected scopes
-            selectedScopes: ['openid', 'profile']
+            selectedScopes: ['openid', 'profile'],
+            // Custom token name for non-standard OAuth2 responses (default: 'access_token')
+            'x-tokenName': 'custom_access_token'
           },
           password: {
             token: 'password flow token',
@@ -645,7 +701,11 @@ To make authentication easier you can prefill the credentials for your users:
             tokenUrl: 'https://auth.example.com/oauth2/token',
             username: 'default-username',
             password: 'default-password',
-            selectedScopes: ['profile', 'email']
+            selectedScopes: ['profile', 'email'],
+            // Custom token name for non-standard OAuth2 responses (default: 'access_token')
+            'x-tokenName': 'custom_access_token',
+            // Specify where OAuth2 credentials should be sent: 'header' or 'body'
+            'x-scalar-credentials-location': 'header'
           },
         },
         // Set default scopes for all flows
@@ -763,7 +823,7 @@ Configuration for path-based routing instead of hash-based routing. Your server 
 ```js
 {
   pathRouting: {
-    basePath: '/standalone-api-reference/:custom(.*)?'
+    basePath: '/standalone-api-reference'
   }
 }
 ```
@@ -788,6 +848,21 @@ Function to handle redirects in the API reference. Receives either:
       return pathWithHash.replace('/v1/tags/user#operation/get-user', '/v1/tags/user/operation/get-user')
     }
     return null
+  }
+}
+```
+
+### onBeforeRequest?: ({ request: Request }) => void | Promise<void>
+
+Callback function that is fired before a request is sent through the API client.
+
+The function receives the request object and can be used to modify the request before it is sent.
+
+```js
+{
+  onBeforeRequest: ({ request }) => {
+    // Add a custom header to all requests
+    request.headers.set('X-Custom-Header', 'test')
   }
 }
 ```
@@ -877,6 +952,28 @@ By default we only open the relevant tag based on the url, however if you want a
 }
 ```
 
+
+### expandAllModelSections?: boolean
+
+By default the models are all closed in the model section at the bottom, this flag will open them all by default!
+
+```js
+{
+  expandAllModelSections: true
+}
+```
+
+
+### expandAllResponses?: boolean
+
+By default response sections are closed in the operations. This flag will open them by default!
+
+```js
+{
+  expandAllResponses: true
+}
+```
+
 ### tagsSorter?: 'alpha' | (a: Tag, b: Tag) => number
 
 Sort tags alphanumerically (`'alpha'`):
@@ -903,7 +1000,7 @@ Or specify a custom function to sort the tags.
 
 Learn more about Array sort functions: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort
 
-### operationsSorter?: 'alpha' | 'method' | ((a: TransformedOperation, b: TransformedOperation) => number)
+### operationsSorter?: 'alpha' | 'method' | ((a: OperationSortValue, b: OperationSortValue) => number)
 
 ```js
 {
@@ -916,8 +1013,8 @@ Or specify a custom function to sort the operations.
 ```js
 {
   operationsSorter: (a, b) => {
-    const methodOrder = ['GET', 'POST', 'PUT', 'DELETE']
-    const methodComparison = methodOrder.indexOf(a.httpVerb) - methodOrder.indexOf(b.httpVerb)
+    const methodOrder = ['get', 'post', 'put', 'delete']
+    const methodComparison = methodOrder.indexOf(a.method) - methodOrder.indexOf(b.method)
 
     if (methodComparison !== 0) {
       return methodComparison
@@ -925,6 +1022,36 @@ Or specify a custom function to sort the operations.
 
     return a.path.localeCompare(b.path)
   },
+}
+```
+
+> Note: `method` is the HTTP method of the operation, represented as a lowercase string.
+
+### orderRequiredPropertiesFirst?: boolean
+
+Whether to order required properties first in schema objects. When enabled, required properties will be displayed before optional properties in model definitions.
+
+@default true
+
+```js
+{
+  orderRequiredPropertiesFirst: true
+}
+```
+
+### orderSchemaPropertiesBy?: 'alpha' | 'preserve'
+
+Control how schema properties are ordered in model definitions. Can be set to:
+
+- `'alpha'`: Sort properties alphabetically by name
+- `'required'`: Preserve the order from the OpenAPI Document
+
+@default 'alpha'
+
+```js
+// Alphabetical ordering
+{
+  orderSchemaPropertiesBy: 'preserve'
 }
 ```
 

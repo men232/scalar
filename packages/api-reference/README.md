@@ -33,7 +33,7 @@ Interactive API Reference from OpenAPI/Swagger Documents [Try our Demo](https://
     <script>
       Scalar.createApiReference('#app', {
         // The URL of the OpenAPI/Swagger document
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
         // Avoid CORS issues
         proxyUrl: 'https://proxy.scalar.com',
       })
@@ -48,7 +48,7 @@ Interactive API Reference from OpenAPI/Swagger Documents [Try our Demo](https://
 
 ## Community
 
-We are API nerds. You too? Let’s chat on Discord: <https://discord.gg/scalar>
+We are API nerds. You too? Let's chat on Discord: <https://discord.gg/scalar>
 
 ## License
 

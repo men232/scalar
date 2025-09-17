@@ -19,11 +19,7 @@ import {
   hasObtrusiveScrollbars,
   type ThemeId,
 } from '@scalar/themes'
-import {
-  apiReferenceConfigurationSchema,
-  type ApiReferenceConfiguration,
-} from '@scalar/types/api-reference'
-import type { Spec } from '@scalar/types/legacy'
+import { apiReferenceConfigurationSchema } from '@scalar/types/api-reference'
 import { useBreakpoints } from '@scalar/use-hooks/useBreakpoints'
 import { ScalarToasts, useToasts } from '@scalar/use-toasts'
 import { useDebounceFn, useMediaQuery, useResizeObserver } from '@vueuse/core'
@@ -34,7 +30,6 @@ import {
   onUnmounted,
   provide,
   ref,
-  toValue,
   useId,
   watch,
 } from 'vue'
@@ -42,31 +37,27 @@ import {
 import ClassicHeader from '@/components/ClassicHeader.vue'
 import { Content } from '@/components/Content'
 import GettingStarted from '@/components/GettingStarted.vue'
+import { hasLazyLoaded } from '@/components/Lazy/lazyBus'
 import MobileHeader from '@/components/MobileHeader.vue'
-import { Sidebar } from '@/components/Sidebar'
-import { ApiClientModal } from '@/features/ApiClientModal'
-import { useDocumentSource } from '@/features/DocumentSource'
-import { OPENAPI_VERSION_SYMBOL } from '@/features/DownloadLink'
+import { ApiClientModal } from '@/features/api-client-modal'
+import { useDocumentSource } from '@/features/document-source'
 import { SearchButton } from '@/features/Search'
-import { useSidebar } from '@/features/sidebar'
-import { parse } from '@/helpers/parse'
+import { Sidebar, useSidebar } from '@/features/sidebar'
 import { CONFIGURATION_SYMBOL } from '@/hooks/useConfig'
 import { useNavState } from '@/hooks/useNavState'
-import { downloadDocument, downloadEventBus } from '@/libs/download'
-import { createEmptySpecification } from '@/libs/openapi'
 import { createPluginManager, PLUGIN_MANAGER_SYMBOL } from '@/plugins'
-import { useHttpClientStore } from '@/stores/useHttpClientStore'
 import type {
   ReferenceLayoutProps,
   ReferenceLayoutSlot,
   ReferenceSlotProps,
 } from '@/types'
+import { useLegacyStoreEvents } from '@/v2/hooks/use-legacy-store-events'
 
 const {
-  rawSpec,
   configuration: providedConfiguration,
   originalDocument: providedOriginalDocument,
   dereferencedDocument: providedDereferencedDocument,
+  store,
 } = defineProps<ReferenceLayoutProps>()
 
 defineEmits<{
@@ -89,19 +80,13 @@ defineOptions({
   inheritAttrs: false,
 })
 
-const {
-  originalDocument,
-  originalOpenApiVersion,
-  dereferencedDocument,
-  workspaceStore,
-  activeEntitiesStore,
-} = useDocumentSource({
-  configuration,
-  dereferencedDocument: providedDereferencedDocument,
-  originalDocument: providedOriginalDocument,
-})
+const { dereferencedDocument, workspaceStore, activeEntitiesStore } =
+  useDocumentSource({
+    configuration,
+    dereferencedDocument: providedDereferencedDocument,
+    originalDocument: providedOriginalDocument,
+  })
 
-provide(OPENAPI_VERSION_SYMBOL, originalOpenApiVersion)
 provide(WORKSPACE_SYMBOL, workspaceStore)
 provide(ACTIVE_ENTITIES_SYMBOL, activeEntitiesStore)
 
@@ -117,7 +102,9 @@ const isLargeScreen = useMediaQuery('(min-width: 1150px)')
 const elementHeight = ref('100dvh')
 const documentEl = ref<HTMLElement | null>(null)
 useResizeObserver(documentEl, (entries) => {
-  elementHeight.value = entries[0].contentRect.height + 'px'
+  elementHeight.value = entries[0]
+    ? entries[0].contentRect.height + 'px'
+    : '100dvh'
 })
 
 // Check for Obtrusive Scrollbars
@@ -208,7 +195,7 @@ const showRenderedContent = computed(
 
 // To clear hash when scrolled to the top
 const debouncedScroll = useDebounceFn(() => {
-  if (window.scrollY < 50) {
+  if (window.scrollY < 50 && hasLazyLoaded.value) {
     replaceUrlState('')
   }
 })
@@ -217,63 +204,41 @@ const sidebarOpened = ref(false)
 
 // Open a sidebar tag
 watch(dereferencedDocument, (newDoc) => {
-  if (sidebarOpened.value || !newDoc.tags?.length) {
-    return
-  }
-
+  // Scroll to given hash
   if (hash.value) {
     const hashSectionId = getSectionId(hash.value)
     if (hashSectionId) {
       setCollapsedSidebarItem(hashSectionId, true)
     }
-  } else {
+  }
+  // Open the first tag if there are tags defined
+  else if (newDoc.tags?.length) {
     const firstTag = newDoc.tags?.[0]
+
     if (firstTag) {
       setCollapsedSidebarItem(getTagId(firstTag), true)
     }
   }
+  // If there's no tags defined on the document, grab the first tag entry
+  else {
+    const firstTag = items.value.entries.find((item) => 'tag' in item)
+    if (firstTag) {
+      setCollapsedSidebarItem(firstTag.id, true)
+    }
+  }
+
+  // Open the sidebar
   sidebarOpened.value = true
 })
 
-/**
- * Temporarily moved this here so we can use the sidebar items
- * Parsed document (legacy data structure)
- */
-const parsedDocument = ref<Spec>(createEmptySpecification())
-watch(
-  dereferencedDocument,
-  async (newDocument) => {
-    if (!newDocument) {
-      return
-    }
-
-    const result = await parse(newDocument, items.value.entries)
-    parsedDocument.value = result
-  },
-  { immediate: true },
-)
-
 /** This is passed into all of the slots so they have access to the references data */
 const referenceSlotProps = computed<ReferenceSlotProps>(() => ({
-  spec: parsedDocument.value,
   breadcrumb: items.value?.titles.get(hash.value) ?? '',
 }))
-
-// Download documents
-onMounted(() =>
-  downloadEventBus.on(({ filename, format }) => {
-    downloadDocument(
-      toValue(originalDocument) || toValue(rawSpec) || '',
-      filename,
-      format,
-    )
-  }),
-)
 
 onUnmounted(() => {
   // Remove window scroll listener
   window.removeEventListener('scroll', debouncedScroll)
-  downloadEventBus.reset()
 })
 
 /**
@@ -295,27 +260,6 @@ provide(
     plugins: configuration.value.plugins,
   }),
 )
-
-/** Helper utility to map configuration props to the ApiReference internal state */
-function mapConfigToState<K extends keyof ApiReferenceConfiguration>(
-  key: K,
-  setter: (val: NonNullable<ApiReferenceConfiguration[K]>) => any,
-) {
-  watch(
-    () => configuration.value[key],
-    (newValue) => {
-      if (typeof newValue !== 'undefined') {
-        setter(newValue)
-      }
-    },
-    { immediate: true },
-  )
-}
-
-// Hides any client snippets from the references
-const { setExcludedClients, setDefaultHttpClient } = useHttpClientStore()
-mapConfigToState('defaultHttpClient', setDefaultHttpClient)
-mapConfigToState('hiddenClients', setExcludedClients)
 
 const themeStyleTag = computed(
   () => `<style>
@@ -343,6 +287,9 @@ watch(hash, (newHash, oldHash) => {
   }
 })
 
+/** Update the old store to keep it in sync with the new store */
+useLegacyStoreEvents(store, workspaceStore, activeEntitiesStore, documentEl)
+
 // ---------------------------------------------------------------------------
 </script>
 <template>
@@ -368,11 +315,11 @@ watch(hash, (newHash, oldHash) => {
     <!-- Header -->
     <div class="references-header">
       <MobileHeader
-        :breadcrumb="referenceSlotProps.breadcrumb"
         v-if="
           configuration.layout === 'modern' &&
           (configuration.showSidebar ?? true)
-        " />
+        "
+        :breadcrumb="referenceSlotProps.breadcrumb" />
       <slot
         v-bind="referenceSlotProps"
         name="header" />
@@ -398,8 +345,8 @@ watch(hash, (newHash, oldHash) => {
                 v-if="!configuration.hideSearch"
                 class="scalar-api-references-standalone-search">
                 <SearchButton
-                  :searchHotKey="configuration?.searchHotKey"
-                  :spec="parsedDocument" />
+                  :hideModels="configuration?.hideModels"
+                  :searchHotKey="configuration?.searchHotKey" />
               </div>
               <!-- Sidebar Start -->
               <slot
@@ -432,7 +379,7 @@ watch(hash, (newHash, oldHash) => {
         </ScalarErrorBoundary>
       </div>
     </aside>
-    <!-- Swagger file editing -->
+    <!-- Slot for an Editor -->
     <div
       v-show="configuration.isEditable"
       class="references-editor">
@@ -442,41 +389,39 @@ watch(hash, (newHash, oldHash) => {
           name="editor" />
       </div>
     </div>
-    <!-- Rendered reference -->
+    <!-- The Content -->
     <template v-if="showRenderedContent">
       <main
         :aria-label="`Open API Documentation for ${dereferencedDocument?.info?.title}`"
         class="references-rendered">
         <Content
-          :layout="configuration.layout"
-          :document="dereferencedDocument"
-          :parsedSpec="parsedDocument">
+          :config="configuration"
+          :store="store">
           <template #start>
             <slot
               v-bind="referenceSlotProps"
-              name="content-start">
-              <ClassicHeader v-if="configuration.layout === 'classic'">
-                <div
-                  v-if="$slots['document-selector']"
-                  class="w-64 empty:hidden">
-                  <slot name="document-selector" />
-                </div>
-                <SearchButton
-                  v-if="!configuration.hideSearch"
-                  class="t-doc__sidebar"
-                  :searchHotKey="configuration.searchHotKey"
-                  :spec="parsedDocument" />
-                <template #dark-mode-toggle>
-                  <ScalarColorModeToggleIcon
-                    v-if="!configuration.hideDarkModeToggle"
-                    class="text-c-2 hover:text-c-1"
-                    :mode="isDark ? 'dark' : 'light'"
-                    style="transform: scale(1.4)"
-                    variant="icon"
-                    @click="$emit('toggleDarkMode')" />
-                </template>
-              </ClassicHeader>
-            </slot>
+              name="content-start" />
+            <ClassicHeader v-if="configuration.layout === 'classic'">
+              <div
+                v-if="$slots['document-selector']"
+                class="w-64 *:!p-0 empty:hidden">
+                <slot name="document-selector" />
+              </div>
+              <SearchButton
+                v-if="!configuration.hideSearch"
+                class="t-doc__sidebar max-w-64"
+                :hideModels="configuration?.hideModels"
+                :searchHotKey="configuration.searchHotKey" />
+              <template #dark-mode-toggle>
+                <ScalarColorModeToggleIcon
+                  v-if="!configuration.hideDarkModeToggle"
+                  class="text-c-2 hover:text-c-1"
+                  :mode="isDark ? 'dark' : 'light'"
+                  style="transform: scale(1.4)"
+                  variant="icon"
+                  @click="$emit('toggleDarkMode')" />
+              </template>
+            </ClassicHeader>
           </template>
           <template
             v-if="configuration?.isEditable"
@@ -591,7 +536,6 @@ watch(hash, (newHash, oldHash) => {
 }
 .scalar-api-reference.references-classic,
 .references-classic .references-rendered {
-  --full-height: fit-content !important;
   height: initial !important;
   max-height: initial !important;
 }
@@ -702,9 +646,9 @@ watch(hash, (newHash, oldHash) => {
 }
 </style>
 <style scoped>
-/** 
-* Sidebar CSS for standalone 
-* TODO: @brynn move this to the sidebar block OR the ApiReferenceStandalone component 
+/**
+* Sidebar CSS for standalone
+* TODO: @brynn move this to the sidebar block OR the ApiReferenceStandalone component
 * when the new elements are available
 */
 @media (max-width: 1000px) {

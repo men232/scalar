@@ -1,35 +1,47 @@
 <script setup lang="ts">
-import type { Collection, Operation } from '@scalar/oas-utils/entities/spec'
-
-import type { Schemas } from '@/features/Operation/types/schemas'
+import type { HttpMethod } from '@scalar/helpers/http/http-methods'
+import { isHttpMethod } from '@scalar/helpers/http/is-http-method'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
+import type { CallbackObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 
 import Callback from './Callback.vue'
 
-const { callbacks, collection, schemas } = defineProps<{
-  callbacks: Operation['callbacks']
-  collection: Collection
-  schemas?: Schemas
+const {
+  path,
+  method: operationMethod,
+  callbacks,
+} = defineProps<{
+  path: string
+  method: HttpMethod
+  callbacks: CallbackObject
 }>()
 </script>
 
 <template>
-  <div class="mt-6 gap-3">
-    <div class="text-c-1 my-3 text-lg font-medium">Callbacks</div>
+  <div class="callbacks-list gap-3">
+    <div class="callbacks-title text-c-1 my-3 text-lg font-medium">
+      Callbacks
+    </div>
 
     <!-- Loop over names -->
     <template
-      v-for="(callbackUrls, name) in callbacks"
+      v-for="(pathItem, name) in callbacks"
       :key="name">
       <!-- Loop over methods -->
-      <template v-for="(methods, url) in callbackUrls">
-        <Callback
+      <template v-for="(methods, url) in getResolvedRef(pathItem)">
+        <!-- Only HTTP Methods -->
+        <template
           v-for="(callback, method) in methods"
-          :callback="callback"
-          :collection="collection"
-          :method="method"
-          :name="name"
-          :schemas="schemas"
-          :url="url" />
+          :key="method">
+          <Callback
+            v-if="isHttpMethod(method)"
+            :callback="callback"
+            :method="method"
+            :name="name"
+            :operationMethod="operationMethod"
+            :path="path"
+            :url="url" />
+        </template>
       </template>
     </template>
   </div>

@@ -9,14 +9,14 @@ import {
   size,
   useFloating,
 } from '@floating-ui/vue'
-import { type Ref, type Slot, computed, ref, watch } from 'vue'
+import { type Ref, computed, ref } from 'vue'
 
 import { ScalarTeleport } from '../ScalarTeleport'
 import type { FloatingOptions } from './types'
 import { useResizeWithTarget } from './useResizeWithTarget'
 
 const {
-  placement = 'bottom',
+  placement,
   offset = 5,
   resize = false,
   middleware = [],
@@ -26,7 +26,7 @@ const {
 
 defineSlots<{
   /** The reference element for the element in the #floating slot */
-  default(): Slot
+  default(): unknown
   /** The floating element */
   floating?(props: {
     /** The width of the reference element if `resize` is true and placement is on the y axis */
@@ -35,7 +35,7 @@ defineSlots<{
     height?: string
     /** The middleware data return by Floating UI */
     data?: MiddlewareData
-  }): Slot
+  }): unknown
 }>()
 
 defineOptions({ inheritAttrs: false })
@@ -69,26 +69,30 @@ const targetSize = useResizeWithTarget(targetRef, {
 })
 
 const targetWidth = computed(() =>
-  getSideAxis(placement) === 'y' ? targetSize.width.value : undefined,
+  getSideAxis(placement ?? 'bottom') === 'y'
+    ? targetSize.width.value
+    : undefined,
 )
 
 const targetHeight = computed(() =>
-  getSideAxis(placement) === 'x' ? targetSize.height.value : undefined,
+  getSideAxis(placement ?? 'bottom') === 'x'
+    ? targetSize.height.value
+    : undefined,
 )
 const { floatingStyles, middlewareData } = useFloating(targetRef, floatingRef, {
-  placement: computed(() => placement),
+  placement: computed(() => placement ?? 'bottom'),
   whileElementsMounted: autoUpdate,
   middleware: computed(() => [
     offsetMiddleware(offset),
     flip(),
-    shift(),
+    shift({ padding: 10 }),
     size({
       apply({ availableWidth, availableHeight, elements }) {
         // Assign the max width and height to the floating element
         // @see https://floating-ui.com/docs/size
         Object.assign(elements.floating.style, {
-          maxWidth: `${Math.max(0, availableWidth) - 25}px`,
-          maxHeight: `${Math.max(0, availableHeight) - 25}px`,
+          maxWidth: `${Math.max(0, availableWidth) - 20}px`,
+          maxHeight: `${Math.max(0, availableHeight) - 20}px`,
         })
       },
     }),

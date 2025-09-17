@@ -1,11 +1,13 @@
-import { getTag } from './get-tag'
-import type { TagsMap, TraversedOperation, TraverseSpecOptions } from '@/navigation/types'
-import { escapeJsonPointer } from '@scalar/openapi-parser'
 import { isHttpMethod } from '@scalar/helpers/http/is-http-method'
-import type { OpenApiDocument } from '@/schemas/v3.1/strict/openapi-document'
-import { isReference } from '@/schemas/v3.1/type-guard'
-import type { TagObject } from '@/schemas/v3.1/strict/tag'
-import type { OperationObject } from '@/schemas/v3.1/strict/path-operations'
+import { objectKeys } from '@scalar/helpers/object/object-keys'
+import { escapeJsonPointer } from '@scalar/json-magic/utils/escape-json-pointer'
+
+import { getResolvedRef } from '@/helpers/get-resolved-ref'
+import type { TagsMap, TraverseSpecOptions } from '@/navigation/types'
+import type { TraversedOperation } from '@/schemas/navigation'
+import type { OpenApiDocument, OperationObject, TagObject } from '@/schemas/v3.1/strict/openapi-document'
+
+import { getTag } from './get-tag'
 
 /**
  * Creates a traversed operation entry from an OpenAPI operation object.
@@ -29,13 +31,15 @@ const createOperationEntry = (
   getOperationId: TraverseSpecOptions['getOperationId'],
 ): TraversedOperation => {
   const id = getOperationId({ ...operation, method, path }, tag)
-  titlesMap.set(id, operation.summary ?? path)
+  const title = operation.summary?.trim() ? operation.summary : path
+
+  titlesMap.set(id, title)
 
   return {
     id,
-    title: operation.summary ?? path,
+    title,
     path,
-    method: method,
+    method,
     ref,
     type: 'operation',
   }
@@ -67,12 +71,13 @@ export const traversePaths = (
   getOperationId: TraverseSpecOptions['getOperationId'],
 ) => {
   // Traverse paths
-  Object.entries(content.paths ?? {}).forEach(([path, pathItem]) => {
-    const pathEntries = Object.entries(pathItem ?? {}) as [string, OperationObject][]
+  Object.entries(content.paths ?? {}).forEach(([path, pathItemObject]) => {
+    const pathKeys = objectKeys(pathItemObject ?? {}).filter((key) => isHttpMethod(key))
 
-    // Traverse operations
-    pathEntries.forEach(([method, operation]) => {
-      if (isReference(operation)) {
+    pathKeys.forEach((method) => {
+      const _operation = pathItemObject?.[method]
+      const operation = getResolvedRef(_operation)
+      if (!operation) {
         return
       }
 

@@ -5,7 +5,7 @@
 Run the Docker container with your OpenAPI configuration:
 
 ```bash
-docker run -p 8080:8080 -e API_REFERENCE_CONFIG='{"sources":[{"url": "https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json"}],"theme": "purple"}' scalarapi/api-reference:latest
+docker run -p 8080:8080 -e API_REFERENCE_CONFIG='{"sources":[{"url": "https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json"}],"theme": "purple"}' scalarapi/api-reference:latest
 ```
 
 Visit `http://localhost:8080` to see your API reference.
@@ -25,9 +25,9 @@ services:
         {
           "sources": [
             {
-              "url": "https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json"
+              "url": "https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json"
             }
-          ]
+          ],
           "theme": "purple"
         }
 ```
@@ -60,7 +60,7 @@ The container includes a health check endpoint at `/health` that returns `OK` wi
 
 ## Configuration Options
 
-For detailed configuration options, refer to the [main Scalar documentation](https://github.com/scalar/scalar/blob/main/documentation/configuration.md).
+For detailed configuration options, refer to the [main Scalar documentation](https://guides.scalar.com/scalar/scalar-api-references/configuration).
 
 ## Building from Source
 

@@ -1,6 +1,6 @@
 /**
  * This file is copied from @uiw/codemirror-themes.
- * We’ve had issues with the import (something to do with CJS/ESM).
+ * We've had issues with the import (something to do with CJS/ESM).
  *
  * @see https://github.com/uiwjs/react-codemirror
  * @see https://github.com/scalar/scalar/issues/4222
@@ -86,13 +86,13 @@ export const createCodeMirrorTheme = ({ theme, settings = {}, styles = [] }: Cre
       fontFamily: settings.fontFamily,
     }
   }
-  if (settings.gutterBackground) {
+  if (settings.gutterBackground && themeOptions['.cm-gutters']) {
     themeOptions['.cm-gutters'].backgroundColor = settings.gutterBackground
   }
-  if (settings.gutterForeground) {
+  if (settings.gutterForeground && themeOptions['.cm-gutters']) {
     themeOptions['.cm-gutters'].color = settings.gutterForeground
   }
-  if (settings.gutterBorder) {
+  if (settings.gutterBorder && themeOptions['.cm-gutters']) {
     themeOptions['.cm-gutters'].borderRightColor = settings.gutterBorder
   }
 

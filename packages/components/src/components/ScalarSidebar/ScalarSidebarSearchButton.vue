@@ -2,7 +2,7 @@
 import { ScalarIconMagnifyingGlass } from '@scalar/icons'
 import { useBindCx } from '@scalar/use-hooks/useBindCx'
 
-const { hotKey } = defineProps<{
+defineProps<{
   hotKey?: string
 }>()
 
@@ -25,7 +25,7 @@ const { cx } = useBindCx()
     </span>
     <span
       v-if="$slots.shortcut"
-      class="uppercase text-sidebar-c-2 bg-b-2 py-0.75 px-1.25 rounded">
+      class="uppercase text-sidebar-c-2 bg-b-2 leading-none py-1 px-1.25 rounded">
       <span class="sr-only">Keyboard Shortcut:</span>
       <kbd>
         <slot name="shortcut" />

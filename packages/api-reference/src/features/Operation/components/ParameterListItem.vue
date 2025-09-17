@@ -1,84 +1,105 @@
 <script setup lang="ts">
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
-import { ScalarIcon, ScalarMarkdown } from '@scalar/components'
-import type { Request as RequestEntity } from '@scalar/oas-utils/entities/spec'
-import { isDefined } from '@scalar/oas-utils/helpers'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-import type { ContentType } from '@scalar/types/legacy'
+import { ScalarMarkdown } from '@scalar/components'
+import { isDefined } from '@scalar/helpers/array/is-defined'
+import { ScalarIconCaretRight } from '@scalar/icons'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
+import type {
+  ParameterObject,
+  ResponseObject,
+  SchemaObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 import { computed, ref } from 'vue'
 
-import { SchemaProperty } from '@/components/Content/Schema'
+import SchemaProperty from '@/components/Content/Schema/SchemaProperty.vue'
 
 import ContentTypeSelect from './ContentTypeSelect.vue'
-import ParameterHeaders from './ParameterHeaders.vue'
+import Headers from './Headers.vue'
 
-const props = withDefaults(
-  defineProps<{
-    parameter:
-      | NonNullable<RequestEntity['parameters']>[number]
-      | NonNullable<RequestEntity['responses']>[number]
-    showChildren?: boolean
-    collapsableItems?: boolean
-    withExamples?: boolean
-    schemas?: Record<string, OpenAPIV3_1.SchemaObject> | unknown
-  }>(),
-  {
-    showChildren: false,
-    collapsableItems: false,
-    withExamples: true,
-  },
+const {
+  collapsableItems = false,
+  withExamples = true,
+  name,
+  parameter,
+  breadcrumb,
+} = defineProps<{
+  parameter: ParameterObject | ResponseObject
+  name: string
+  collapsableItems?: boolean
+  withExamples?: boolean
+  breadcrumb?: string[]
+}>()
+
+/** Responses and params may both have a schema */
+const schema = computed<SchemaObject | null>(() =>
+  'schema' in parameter && parameter.schema
+    ? getResolvedRef(parameter.schema)
+    : null,
 )
 
-const contentTypes = computed(() => {
-  if (props.parameter.content) {
-    return Object.keys(props.parameter.content)
-  }
-  return []
-})
-const selectedContentType = ref<ContentType>(
-  contentTypes.value[0] as ContentType,
+/** Response and params may both have content */
+const content = computed(() =>
+  'content' in parameter && parameter.content ? parameter.content : null,
 )
-if (props.parameter.content) {
-  if ('application/json' in props.parameter.content) {
-    selectedContentType.value = 'application/json'
-  }
-}
 
-const shouldCollapse = computed<boolean>(() => {
-  return !!(
-    props.collapsableItems &&
-    (props.parameter.content ||
-      props.parameter.headers ||
-      props.parameter.schema)
-  )
+const selectedContentType = ref<string>(Object.keys(content.value || {})[0])
+
+/** Response headers */
+const headers = computed<ResponseObject['headers'] | null>(() =>
+  'headers' in parameter && parameter.headers ? parameter.headers : null,
+)
+
+/** Computed value from the combined schema param and content param */
+const value = computed(() => {
+  const baseSchema = content.value
+    ? content.value?.[selectedContentType.value]?.schema
+    : schema.value
+
+  const deprecated =
+    'deprecated' in parameter ? parameter.deprecated : schema.value?.deprecated
+
+  // Convert examples to schema examples which is an array
+  const paramExamples = 'examples' in parameter ? parameter.examples : {}
+  const arrayExamples = schema.value?.examples ?? []
+  const recordExamples = Object.values({
+    ...paramExamples,
+    ...content.value?.[selectedContentType.value]?.examples,
+  })
+
+  /** Combine param examples with content ones */
+  const examples = [...recordExamples, ...arrayExamples]
+
+  return {
+    ...getResolvedRef(baseSchema),
+    deprecated: deprecated,
+    ...('example' in parameter &&
+      isDefined(parameter.example) && { example: parameter.example }),
+    examples,
+  } as SchemaObject
 })
 
 /**
- * We’re showing request data, read-only parameters should not be shown.
+ * Determines whether this parameter item should be rendered as a collapsible disclosure.
+ * Only collapses when collapsableItems is enabled and the parameter has additional
+ * content to display (content types, headers, or schema details).
  */
-const shouldShowParameter = computed(() => {
-  if (props.parameter.readOnly === true) {
-    return false
-  }
-
-  return true
-})
+const shouldCollapse = computed<boolean>(() =>
+  Boolean(collapsableItems && (content.value || headers.value || schema.value)),
+)
 </script>
 <template>
-  <li
-    v-if="shouldShowParameter"
-    class="parameter-item group/parameter-item relative">
+  <li class="parameter-item group/parameter-item relative">
     <Disclosure v-slot="{ open }">
       <DisclosureButton
         v-if="shouldCollapse"
-        class="parameter-item-trigger flex"
+        class="parameter-item-trigger"
         :class="{ 'parameter-item-trigger-open': open }">
-        <ScalarIcon
-          class="parameter-item-icon size-4"
-          :icon="open ? 'ChevronDown' : 'ChevronRight'"
-          thickness="1.5" />
         <span class="parameter-item-name">
-          {{ parameter.name }}
+          <ScalarIconCaretRight
+            class="parameter-item-icon size-3 transition-transform duration-100"
+            :class="{ 'rotate-90': open }"
+            weight="bold" />
+          <span>{{ name }}</span>
         </span>
         <span class="parameter-item-type">
           <ScalarMarkdown
@@ -90,43 +111,35 @@ const shouldShowParameter = computed(() => {
       <DisclosurePanel
         class="parameter-item-container parameter-item-container-markdown"
         :static="!shouldCollapse">
-        <ParameterHeaders
-          v-if="parameter.headers"
-          :headers="parameter.headers" />
+        <!-- Headers -->
+        <Headers
+          v-if="headers"
+          :breadcrumb="breadcrumb"
+          :headers="headers" />
+
+        <!-- Schema -->
         <SchemaProperty
           is="div"
+          :breadcrumb="breadcrumb"
           compact
           :description="shouldCollapse ? '' : parameter.description"
-          :name="shouldCollapse ? '' : parameter.name"
+          :hideWriteOnly="true"
+          :name="shouldCollapse ? '' : name"
           :noncollapsible="true"
-          :required="parameter.required"
-          :schemas="schemas"
-          :value="{
-            ...(parameter.content
-              ? parameter.content?.[selectedContentType]?.schema
-              : parameter.schema),
-            deprecated: parameter.deprecated,
-            ...(isDefined(parameter.example) && { example: parameter.example }),
-            examples: parameter.content
-              ? {
-                  ...parameter.examples,
-                  ...parameter.content?.[selectedContentType]?.examples,
-                }
-              : parameter.examples || parameter.schema?.examples,
-          }"
+          :required="'required' in parameter && parameter.required"
+          :value="value"
           :withExamples="withExamples" />
       </DisclosurePanel>
     </Disclosure>
+
+    <!-- Content type select -->
     <div
-      class="absolute top-2.5 right-0 opacity-0 group-focus-within/parameter-item:opacity-100 group-hover/parameter-item:opacity-100">
+      class="absolute top-3 right-0 opacity-0 group-focus-within/parameter-item:opacity-100 group-hover/parameter-item:opacity-100">
       <ContentTypeSelect
-        v-if="shouldCollapse && props.parameter.content"
+        v-if="shouldCollapse && content"
+        v-model="selectedContentType"
         class="parameter-item-content-type"
-        :defaultValue="selectedContentType"
-        :requestBody="props.parameter"
-        @selectContentType="
-          ({ contentType }) => (selectedContentType = contentType)
-        " />
+        :content="content" />
     </div>
   </li>
 </template>
@@ -137,9 +150,11 @@ const shouldShowParameter = computed(() => {
   flex-direction: column;
   border-top: var(--scalar-border-width) solid var(--scalar-border-color);
 }
+
 .parameter-item:last-of-type .parameter-schema {
   padding-bottom: 0;
 }
+
 .parameter-item-container {
   padding: 0;
 }
@@ -154,9 +169,12 @@ const shouldShowParameter = computed(() => {
   font-size: var(--scalar-font-size-3);
   font-family: var(--scalar-font-code);
   color: var(--scalar-color-1);
+
+  position: relative;
 }
+
 .parameter-item-type {
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   color: var(--scalar-color-2);
   margin-right: 6px;
   line-height: 1.4;
@@ -165,15 +183,18 @@ const shouldShowParameter = computed(() => {
   width: 100%;
   overflow: hidden;
 }
+
 .parameter-item-trigger-open .parameter-item-type {
   white-space: normal;
 }
+
 /* Match font size of markdown for property-detail-value since first child within accordian is displayed as if it were in the markdown section */
 .parameter-item-trigger
   + .parameter-item-container
   :deep(.property--level-0 > .property-heading .property-detail-value) {
   font-size: var(--scalar-micro);
 }
+
 .parameter-item-required-optional {
   color: var(--scalar-color-2);
   font-weight: var(--scalar-semibold);
@@ -206,18 +227,20 @@ const shouldShowParameter = computed(() => {
   padding-bottom: 9px;
   margin-top: 3px;
 }
+
 .parameter-item-trigger {
+  display: flex;
+  align-items: baseline;
   padding: 12px 0;
   cursor: pointer;
   outline: none;
   text-align: left;
-  position: relative;
-  align-items: baseline;
 }
 
 .parameter-item-trigger-open {
   padding-bottom: 0;
 }
+
 .parameter-item-trigger:after {
   content: '';
   position: absolute;
@@ -225,16 +248,20 @@ const shouldShowParameter = computed(() => {
   width: 100%;
   bottom: 0;
 }
+
 .parameter-item-icon {
   color: var(--scalar-color-3);
   left: -19px;
+  top: 50%;
+  translate: 0 -50%;
   position: absolute;
-  top: 11px;
 }
+
 .parameter-item-trigger:hover .parameter-item-icon,
 .parameter-item-trigger:focus-visible .parameter-item-icon {
   color: var(--scalar-color-1);
 }
+
 .parameter-item-trigger:focus-visible .parameter-item-icon {
   outline: 1px solid var(--scalar-color-accent);
   outline-offset: 2px;

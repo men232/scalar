@@ -1,5 +1,298 @@
 # @scalar/oas-utils
 
+## 0.4.29
+
+### Patch Changes
+
+- Updated dependencies [bff46e5]
+- Updated dependencies [8f2a2f2]
+  - @scalar/helpers@0.0.11
+  - @scalar/themes@0.13.17
+  - @scalar/json-magic@0.4.3
+  - @scalar/object-utils@1.2.7
+  - @scalar/workspace-store@0.15.6
+
+## 0.4.28
+
+### Patch Changes
+
+- Updated dependencies [3bd1209]
+- Updated dependencies [1943b99]
+  - @scalar/json-magic@0.4.2
+  - @scalar/workspace-store@0.15.5
+
+## 0.4.27
+
+### Patch Changes
+
+- Updated dependencies [019a22a]
+  - @scalar/workspace-store@0.15.4
+
+## 0.4.26
+
+### Patch Changes
+
+- 821717b: refactor: schema rendering
+- Updated dependencies [821717b]
+  - @scalar/workspace-store@0.15.3
+  - @scalar/helpers@0.0.10
+  - @scalar/json-magic@0.4.1
+  - @scalar/object-utils@1.2.6
+
+## 0.4.25
+
+### Patch Changes
+
+- @scalar/workspace-store@0.15.2
+
+## 0.4.24
+
+### Patch Changes
+
+- Updated dependencies [abe3842]
+  - @scalar/types@0.2.15
+  - @scalar/themes@0.13.16
+  - @scalar/workspace-store@0.15.1
+
+## 0.4.23
+
+### Patch Changes
+
+- 714b197: feat: support base64 unicode characters
+- 98c55d0: feat: better xml rendering
+- cededd8: fix: schema undefined in example generator
+- a6ae22a: feat: change the way we declare schemas
+- 976366f: feat: upgrade performance of example from schema generator
+- Updated dependencies [ba27329]
+- Updated dependencies [06a46f0]
+- Updated dependencies [98c55d0]
+- Updated dependencies [792c937]
+- Updated dependencies [3473e08]
+- Updated dependencies [a6ae22a]
+- Updated dependencies [63283aa]
+- Updated dependencies [8680da6]
+- Updated dependencies [2b22eab]
+- Updated dependencies [0e747c7]
+- Updated dependencies [99894bc]
+- Updated dependencies [5ad329e]
+  - @scalar/workspace-store@0.15.0
+  - @scalar/json-magic@0.4.0
+  - @scalar/helpers@0.0.9
+  - @scalar/types@0.2.14
+  - @scalar/themes@0.13.15
+  - @scalar/object-utils@1.2.5
+
+## 0.4.22
+
+### Patch Changes
+
+- Updated dependencies [443c507]
+- Updated dependencies [88385b1]
+- Updated dependencies [50032be]
+  - @scalar/workspace-store@0.14.2
+  - @scalar/json-magic@0.3.1
+  - @scalar/types@0.2.13
+  - @scalar/themes@0.13.14
+
+## 0.4.21
+
+### Patch Changes
+
+- e2272a1: fix(oas-utils): use const value as example
+- b6f4b60: fix: skip readOnly properties in request examples
+- Updated dependencies [b8776fc]
+  - @scalar/workspace-store@0.14.1
+
+## 0.4.20
+
+### Patch Changes
+
+- bbef120: fix: remove extra coerces and cleanUp plugin from bundler
+- a1429ca: chore: move to new extensions system for better type safety
+- 66b18fc: feat: update the references to handle $refs from the magic proxy
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- Updated dependencies [bbef120]
+- Updated dependencies [b93e1fe]
+- Updated dependencies [a1429ca]
+- Updated dependencies [5208f06]
+- Updated dependencies [4d509fb]
+- Updated dependencies [66b18fc]
+- Updated dependencies [0fcd446]
+- Updated dependencies [6c24be9]
+- Updated dependencies [6a88108]
+- Updated dependencies [c838a3f]
+- Updated dependencies [9be6eec]
+- Updated dependencies [c4bf497]
+- Updated dependencies [d8adbed]
+- Updated dependencies [0c80ef0]
+  - @scalar/workspace-store@0.14.0
+  - @scalar/json-magic@0.3.0
+  - @scalar/helpers@0.0.8
+  - @scalar/themes@0.13.13
+  - @scalar/types@0.2.12
+  - @scalar/object-utils@1.2.4
+  - @scalar/openapi-types@0.3.7
+
+## 0.4.19
+
+### Patch Changes
+
+- 3de82ac: fix: uses document url even if it's relative
+- Updated dependencies [0d502cb]
+- Updated dependencies [0afc40c]
+- Updated dependencies [128af48]
+  - @scalar/workspace-store@0.13.0
+  - @scalar/helpers@0.0.7
+  - @scalar/object-utils@1.2.3
+  - @scalar/openapi-types@0.3.7
+  - @scalar/themes@0.13.12
+  - @scalar/types@0.2.11
+
+## 0.4.18
+
+### Patch Changes
+
+- 46bfd2f: fix: show path parameter values in request examples
+
+## 0.4.17
+
+### Patch Changes
+
+- 46ebe6e: fix: use schema to example generator for request example request body
+- Updated dependencies [952bde2]
+- Updated dependencies [5301a80]
+- Updated dependencies [ae8d1b9]
+- Updated dependencies [8199955]
+- Updated dependencies [2888e18]
+  - @scalar/workspace-store@0.12.0
+
+## 0.4.16
+
+### Patch Changes
+
+- 94d6d0c: fix: remove old ssr state and update nuxt for workspace store
+- b957a2c: feat: do not use first item of oneOf if it is `type: null`
+- Updated dependencies [ccf875a]
+- Updated dependencies [9924c47]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [952f471]
+- Updated dependencies [a0c92d9]
+- Updated dependencies [c0d6793]
+- Updated dependencies [3c1e3e3]
+- Updated dependencies [f3d0216]
+- Updated dependencies [a5534e6]
+- Updated dependencies [6b6c72c]
+  - @scalar/openapi-types@0.3.7
+  - @scalar/types@0.2.11
+  - @scalar/workspace-store@0.11.0
+  - @scalar/themes@0.13.12
+  - @scalar/helpers@0.0.7
+  - @scalar/object-utils@1.2.3
+
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies [fb62e1b]
+- Updated dependencies [fb62e1b]
+  - @scalar/types@0.2.10
+  - @scalar/themes@0.13.11
+  - @scalar/workspace-store@0.10.2
+
+## 0.4.14
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+- Updated dependencies [3f2ea8a]
+- Updated dependencies [828c894]
+- Updated dependencies [b5bcce7]
+- Updated dependencies [8a67f4f]
+  - @scalar/openapi-types@0.3.6
+  - @scalar/types@0.2.9
+  - @scalar/workspace-store@0.10.1
+  - @scalar/themes@0.13.10
+
+## 0.4.13
+
+### Patch Changes
+
+- 71958fd: fix: include port in server URL
+- Updated dependencies [a85480e]
+- Updated dependencies [8b9c48e]
+  - @scalar/workspace-store@0.10.0
+
+## 0.4.12
+
+### Patch Changes
+
+- c826b3e: fix: uses relative document URL as server URL
+- 80acf84: feat: add code sample block wrapper with global state
+- Updated dependencies [a0cadac]
+- Updated dependencies [c10e191]
+- Updated dependencies [661c7e9]
+- Updated dependencies [80acf84]
+  - @scalar/workspace-store@0.9.0
+  - @scalar/types@0.2.8
+  - @scalar/themes@0.13.9
+
+## 0.4.11
+
+### Patch Changes
+
+- 58287f8: refactor: create request examples without transformed operation
+- 74fdc0e: feat: use documentUrl as fallback server
+- Updated dependencies [d56f354]
+- Updated dependencies [b6ac5b9]
+- Updated dependencies [dbc09b9]
+- Updated dependencies [ad2e3e6]
+- Updated dependencies [20939a8]
+- Updated dependencies [909cf33]
+- Updated dependencies [3fdc2f2]
+- Updated dependencies [f8ef4ab]
+  - @scalar/workspace-store@0.8.0
+  - @scalar/types@0.2.7
+  - @scalar/themes@0.13.8
+
+## 0.4.10
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/openapi-types@0.3.5
+  - @scalar/object-utils@1.2.2
+  - @scalar/helpers@0.0.6
+  - @scalar/themes@0.13.7
+  - @scalar/types@0.2.6
+  - @scalar/workspace-store@0.7.1
+
+## 0.4.9
+
+### Patch Changes
+
+- 23b150b: fix: operation to har helper with real world usecases
+- Updated dependencies [533469b]
+- Updated dependencies [a05d638]
+- Updated dependencies [8d8e427]
+- Updated dependencies [23b150b]
+- Updated dependencies [dbbdd70]
+- Updated dependencies [23b150b]
+  - @scalar/openapi-types@0.3.4
+  - @scalar/workspace-store@0.7.0
+  - @scalar/helpers@0.0.5
+  - @scalar/types@0.2.5
+  - @scalar/themes@0.13.6
+
+## 0.4.8
+
+### Patch Changes
+
+- Updated dependencies [4bbbb32]
+- Updated dependencies [1468280]
+  - @scalar/themes@0.13.5
+  - @scalar/types@0.2.4
+
 ## 0.4.7
 
 ### Patch Changes

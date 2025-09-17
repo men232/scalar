@@ -40,6 +40,8 @@
   --font-weight-normal: var(--scalar-regular);
   --font-weight-medium: var(--scalar-semibold);
   --font-weight-bold: var(--scalar-bold);
+  --font-weight-sidebar: var(--scalar-sidebar-font-weight, var(--scalar-regular));
+  --font-weight-sidebar-active: var(--scalar-sidebar-font-weight-active, var(--scalar-semibold));
 
   /* Colors */
   --color-\*: initial;
@@ -96,6 +98,7 @@
   --color-backdrop: rgba(0, 0, 0, 0.22);
   --color-backdrop-dark: rgba(0, 0, 0, 0.45);
   --color-border: var(--scalar-border-color);
+  --color-border-tooltip: color-mix(in srgb, var(--scalar-tooltip-color), var(--scalar-tooltip-background));
   --color-brand: var(--scalar-brand);
 
   /* - Hardcoded Colors */

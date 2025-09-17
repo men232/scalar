@@ -1,5 +1,334 @@
 # @scalar/aspnetcore
 
+## 2.8.4
+
+### Patch Changes
+
+- 422f01d: feat: add SchemaPropertyOrder and OrderRequiredPropertiesFirst configuration support
+- Updated dependencies [b6a59bd]
+- Updated dependencies [8f2a2f2]
+  - @scalar/api-reference@1.35.6
+
+## 2.8.3
+
+### Patch Changes
+
+- Updated dependencies [4e7e8a9]
+  - @scalar/api-reference@1.35.5
+
+## 2.8.2
+
+### Patch Changes
+
+- @scalar/api-reference@1.35.4
+
+## 2.8.1
+
+### Patch Changes
+
+- 1fc2bfa: chore: bump dependencies
+- Updated dependencies [821717b]
+- Updated dependencies [821717b]
+- Updated dependencies [425a954]
+  - @scalar/api-reference@1.35.3
+
+## 2.8.0
+
+### Minor Changes
+
+- d5e46cf: feat: Use generated ScalarTarget and ScalarClient enums
+
+### Patch Changes
+
+- @scalar/api-reference@1.35.2
+
+## 2.7.4
+
+### Patch Changes
+
+- @scalar/api-reference@1.35.1
+
+## 2.7.3
+
+### Patch Changes
+
+- 7267103: feat: add default favicon
+- a3cc390: feat: move to json converters
+- 792c937: Configurable option for sidebar to show method path instead of method summary.
+- d1c8441: feat: support default OpenAPI document
+- 3473e08: fix: performance issues on script load
+- Updated dependencies [714b197]
+- Updated dependencies [792c937]
+- Updated dependencies [f918582]
+- Updated dependencies [549eb02]
+- Updated dependencies [3473e08]
+- Updated dependencies [a6ae22a]
+- Updated dependencies [94e4762]
+- Updated dependencies [d5c1d0c]
+- Updated dependencies [2077f01]
+- Updated dependencies [0e747c7]
+- Updated dependencies [697f1d0]
+- Updated dependencies [5ad329e]
+  - @scalar/api-reference@1.35.0
+
+## 2.7.2
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+- Updated dependencies [88385b1]
+  - @scalar/api-reference@1.34.6
+
+## 2.7.1
+
+### Patch Changes
+
+- 0210cc7: feat: use json converters for enums
+- Updated dependencies [86d29c1]
+  - @scalar/api-reference@1.34.5
+
+## 2.7.0
+
+### Minor Changes
+
+- bfa1a35: feat: support x-badges extension
+- 7f40ada: feat: support .NET 10 for Scalar.AspNetCore and Scalar.AspNetCore.Microsoft
+
+### Patch Changes
+
+- d76633e: chore(Scalar.AspNetCore): downgrade package for better compatibility
+- Updated dependencies [bbef120]
+- Updated dependencies [24883ab]
+- Updated dependencies [a1429ca]
+- Updated dependencies [e499aee]
+- Updated dependencies [845e850]
+- Updated dependencies [66b18fc]
+- Updated dependencies [6eb7c4f]
+- Updated dependencies [4e06829]
+- Updated dependencies [5f022b5]
+- Updated dependencies [2b89e6f]
+- Updated dependencies [6a88108]
+- Updated dependencies [c838a3f]
+- Updated dependencies [75d84ed]
+- Updated dependencies [929df42]
+- Updated dependencies [0804cfc]
+  - @scalar/api-reference@1.34.4
+
+## 2.6.9
+
+### Patch Changes
+
+- b023f39: fix: added missing clients and targets
+- Updated dependencies [97f199a]
+- Updated dependencies [0d502cb]
+- Updated dependencies [3de82ac]
+- Updated dependencies [58b9321]
+- Updated dependencies [2c74892]
+  - @scalar/api-reference@1.34.3
+
+## 2.6.8
+
+### Patch Changes
+
+- Updated dependencies [83625c6]
+  - @scalar/api-reference@1.34.2
+
+## 2.6.7
+
+### Patch Changes
+
+- Updated dependencies [4d05839]
+  - @scalar/api-reference@1.34.1
+
+## 2.6.6
+
+### Patch Changes
+
+- Updated dependencies [f838a47]
+- Updated dependencies [94b5d0a]
+- Updated dependencies [0f4a784]
+- Updated dependencies [5301a80]
+- Updated dependencies [8113963]
+- Updated dependencies [2888e18]
+- Updated dependencies [fb0c254]
+  - @scalar/api-reference@1.34.0
+
+## 2.6.5
+
+### Patch Changes
+
+- ccf875a: feat: support x-scalar-credentials-location extension
+- Updated dependencies [14a737c]
+- Updated dependencies [628d44c]
+- Updated dependencies [092626d]
+- Updated dependencies [9c157f1]
+- Updated dependencies [ce9b7ff]
+- Updated dependencies [f65f1fc]
+- Updated dependencies [4ea9dab]
+- Updated dependencies [8d24b91]
+- Updated dependencies [7031d9c]
+- Updated dependencies [1913f97]
+- Updated dependencies [0f41af6]
+- Updated dependencies [2e2f50a]
+- Updated dependencies [956a2d1]
+- Updated dependencies [7ee81f4]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [d29c455]
+- Updated dependencies [319fb56]
+- Updated dependencies [24c9d4c]
+- Updated dependencies [c0d6793]
+- Updated dependencies [6953c9f]
+- Updated dependencies [72924f6]
+- Updated dependencies [6f12d2e]
+- Updated dependencies [8795629]
+- Updated dependencies [515162c]
+- Updated dependencies [f3d0216]
+- Updated dependencies [7555e44]
+- Updated dependencies [af22451]
+- Updated dependencies [a5534e6]
+- Updated dependencies [6b6c72c]
+  - @scalar/api-reference@1.33.0
+
+## 2.6.4
+
+### Patch Changes
+
+- Updated dependencies [3eb8171]
+- Updated dependencies [60c7bef]
+- Updated dependencies [716a83a]
+- Updated dependencies [9b4417b]
+- Updated dependencies [2ace00b]
+- Updated dependencies [fb62e1b]
+- Updated dependencies [cac47ea]
+- Updated dependencies [2ace00b]
+  - @scalar/api-reference@1.32.10
+
+## 2.6.3
+
+### Patch Changes
+
+- Updated dependencies [8c6f6fe]
+  - @scalar/api-reference@1.32.9
+
+## 2.6.2
+
+### Patch Changes
+
+- 591562f: feat: add support for x-scalar-security-body extension
+- Updated dependencies [a04cc15]
+- Updated dependencies [b5bcce7]
+- Updated dependencies [97721b5]
+- Updated dependencies [9978a16]
+- Updated dependencies [8a67f4f]
+  - @scalar/api-reference@1.32.8
+
+## 2.6.1
+
+### Patch Changes
+
+- Updated dependencies [a85480e]
+- Updated dependencies [1a6c0a4]
+- Updated dependencies [9be7ca9]
+- Updated dependencies [c2ff19e]
+- Updated dependencies [7325520]
+- Updated dependencies [134c455]
+  - @scalar/api-reference@1.32.7
+
+## 2.6.0
+
+### Minor Changes
+
+- 5d9e89d: feat: return scalar endpoint group instead of endpoint
+
+### Patch Changes
+
+- 9daf5da: feat: support x-tokenName extension
+- Updated dependencies [6a7509a]
+- Updated dependencies [80acf84]
+  - @scalar/api-reference@1.32.6
+
+## 2.5.6
+
+### Patch Changes
+
+- Updated dependencies [5de7e25]
+  - @scalar/api-reference@1.32.5
+
+## 2.5.5
+
+### Patch Changes
+
+- Updated dependencies [b420f18]
+- Updated dependencies [e8f1856]
+- Updated dependencies [cacadd5]
+- Updated dependencies [ad2e3e6]
+- Updated dependencies [cacadd5]
+- Updated dependencies [495588a]
+- Updated dependencies [67d8b9a]
+- Updated dependencies [93b1140]
+- Updated dependencies [4295067]
+- Updated dependencies [8457fde]
+- Updated dependencies [2dc9f8d]
+- Updated dependencies [cacadd5]
+- Updated dependencies [0474f02]
+- Updated dependencies [7ea11c1]
+- Updated dependencies [bd3b6d4]
+- Updated dependencies [3fdc2f2]
+  - @scalar/api-reference@1.32.4
+
+## 2.5.4
+
+### Patch Changes
+
+- Updated dependencies [08e1e84]
+  - @scalar/api-reference@1.32.3
+
+## 2.5.3
+
+### Patch Changes
+
+- Updated dependencies [4e0caa1]
+- Updated dependencies [4d29320]
+- Updated dependencies [2d7f995]
+  - @scalar/api-reference@1.32.2
+
+## 2.5.2
+
+### Patch Changes
+
+- Updated dependencies [98ff011]
+  - @scalar/api-reference@1.32.1
+
+## 2.5.1
+
+### Patch Changes
+
+- 5938c71: docs: simplified Readme
+- Updated dependencies [533469b]
+- Updated dependencies [a70bcce]
+- Updated dependencies [6ac48c8]
+- Updated dependencies [8d8e427]
+- Updated dependencies [b7ff99a]
+- Updated dependencies [fed71e0]
+- Updated dependencies [a983428]
+- Updated dependencies [3393c83]
+  - @scalar/api-reference@1.32.0
+
+## 2.5.0
+
+### Minor Changes
+
+- ca2e48e: feat: add `DocumentDownloadType` configuration and make `HideDownloadButton` obsolete
+
+### Patch Changes
+
+- Updated dependencies [c907685]
+- Updated dependencies [cd7e1b1]
+- Updated dependencies [3abe906]
+- Updated dependencies [42bc960]
+- Updated dependencies [1468280]
+  - @scalar/api-reference@1.31.18
+
 ## 2.4.22
 
 ### Patch Changes

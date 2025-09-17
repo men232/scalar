@@ -1,6 +1,6 @@
 # Scalar API Reference with HTML/JS
 
-To get started, you can use a simple HTML file. It’s the easiest, and probably also the quickest way to get up and running, literally in seconds.
+To get started, you can use a simple HTML file. It's the easiest, and probably also the quickest way to get up and running, literally in seconds.
 
 ```html
 <!doctype html>
@@ -23,7 +23,7 @@ To get started, you can use a simple HTML file. It’s the easiest, and probably
     <script>
       Scalar.createApiReference('#app', {
         // The URL of the OpenAPI/Swagger document
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
         // Avoid CORS issues
         proxyUrl: 'https://proxy.scalar.com',
       })
@@ -36,13 +36,13 @@ This renders our `@scalar/galaxy` OpenAPI example, using the latest version of `
 
 ## Configuration
 
-Check out the [Configuration](../configuration.md) page to learn more about customizing your API reference.
+Check out the [Configuration](https://guides.scalar.com/scalar/scalar-api-references/configuration) page to learn more about customizing your API reference.
 
 ## Version
 
-It’s recommended to use the latest version from jsdelivr. You’ll get continuous updates, fixes and other improvements and that’s also the one we’re testing and monitoring continuously.
+It's recommended to use the latest version from jsdelivr. You'll get continuous updates, fixes and other improvements and that's also the one we're testing and monitoring continuously.
 
-If you really want to stick to a specific version, that’s possible, too. You can just add the version to the URL of the script:
+If you really want to stick to a specific version, that's possible, too. You can just add the version to the URL of the script:
 
 ```html
 <script src="https://cdn.jsdelivr.net/npm/@scalar/api-reference@1.28.5"></script>
@@ -56,7 +56,7 @@ The HTML sample above showed how to integrate Scalar using automatic mounting an
 
 ```ts
 Scalar.createApiReference('#app', {
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
 })
 ```
 
@@ -64,14 +64,14 @@ Scalar.createApiReference('#app', {
 
 ```ts
 const app = Scalar.createApiReference({
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
 })
 
 // Mounting
 app.mount('#app')
 ```
 
-By the way, you don’t have to pass a string. You can pass a HTML element:
+By the way, you don't have to pass a string. You can pass a HTML element:
 
 ```ts
 const element = getElementById('app')
@@ -83,7 +83,7 @@ app.mount(element)
 
 ```ts
 const app = Scalar.createApiReference('#app', {
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
 })
 
 // Updating the configuration
@@ -96,7 +96,7 @@ app.updateConfiguration({
 
 ```ts
 const app = Scalar.createApiReference('#app', {
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
 })
 
 app.destroy()
@@ -107,7 +107,7 @@ app.destroy()
 When using the package in (modern) ECMAScript environment, you can just import the `createApiReference` method from the
 package.
 
-Omit the `Scalar.` prefix then, that’s only necessary when importing the JS from the jsdelivr CDN.
+Omit the `Scalar.` prefix then, that's only necessary when importing the JS from the jsdelivr CDN.
 
 Here is an example:
 
@@ -115,6 +115,6 @@ Here is an example:
 import { createApiReference } from '@scalar/api-reference'
 
 createApiReference('#app', {
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
 })
 ```

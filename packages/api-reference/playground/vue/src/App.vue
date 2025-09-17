@@ -7,7 +7,6 @@ import type { ApiReferenceConfigurationWithSources } from '@scalar/types/api-ref
 import { onMounted, reactive, ref } from 'vue'
 
 import DebugBar from './components/DebugBar.vue'
-import { sources } from './content/sources'
 import { MyCustomPlugin } from './x-custom-extension-plugin/my-custom-plugin'
 
 const containerRef = ref<HTMLDivElement>()
@@ -17,7 +16,12 @@ const plugins = [MyCustomPlugin()]
 const configuration = reactive({
   layout: 'modern' as const,
   theme: 'default' as const,
-  sources: sources,
+  sources: [
+    {
+      title: 'Aone',
+      url: 'http://localhost:3000/docs/openapi.json',
+    },
+  ],
   showSidebar: true,
   withDefaultFonts: true,
   plugins,

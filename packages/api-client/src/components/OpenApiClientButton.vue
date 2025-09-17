@@ -26,6 +26,10 @@ const href = computed((): string | undefined => {
   const urlToImportFrom =
     url ?? (typeof window !== 'undefined' ? window.location.href : undefined)
 
+  if (!urlToImportFrom) {
+    return undefined
+  }
+
   const absoluteUrl = makeUrlAbsolute(urlToImportFrom)
 
   if (!absoluteUrl?.length) {
@@ -37,7 +41,7 @@ const href = computed((): string | undefined => {
     isDevelopment ? 'http://localhost:5065' : 'https://client.scalar.com',
   )
 
-  // URL that we’d like to import
+  // URL that we'd like to import
   link.searchParams.set('url', absoluteUrl)
 
   // Integration identifier

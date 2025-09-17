@@ -6,8 +6,8 @@ import { slug } from 'github-slugger'
 import type { FastifyApiReferenceHooksOptions, FastifyApiReferenceOptions } from './types'
 import { getJavaScriptFile } from './utils/getJavaScriptFile'
 
-import { normalize, toJson, toYaml } from '@scalar/openapi-parser'
 import { getHtmlDocument } from '@scalar/core/libs/html-rendering'
+import { normalize, toJson, toYaml } from '@scalar/openapi-parser'
 import type { ApiReferenceConfiguration } from './types'
 
 /**
@@ -47,79 +47,7 @@ const getJavaScriptUrl = (routePrefix?: string) =>
 /**
  * The custom theme for Fastify
  */
-export const customTheme = `
-.light-mode {
-  color-scheme: light;
-  --scalar-color-1: #1c1e21;
-  --scalar-color-2: #757575;
-  --scalar-color-3: #8e8e8e;
-  --scalar-color-disabled: #b4b1b1;
-  --scalar-color-ghost: #a7a7a7;
-  --scalar-color-accent: #2f8555;
-  --scalar-background-1: #fff;
-  --scalar-background-2: #f5f5f5;
-  --scalar-background-3: #ededed;
-  --scalar-background-4: rgba(0, 0, 0, 0.06);
-  --scalar-background-accent: #2f85551f;
-
-  --scalar-border-color: rgba(0, 0, 0, 0.1);
-  --scalar-scrollbar-color: rgba(0, 0, 0, 0.18);
-  --scalar-scrollbar-color-active: rgba(0, 0, 0, 0.36);
-  --scalar-lifted-brightness: 1;
-  --scalar-backdrop-brightness: 1;
-
-  --scalar-shadow-1: 0 1px 3px 0 rgba(0, 0, 0, 0.11);
-  --scalar-shadow-2: rgba(0, 0, 0, 0.08) 0px 13px 20px 0px,
-    rgba(0, 0, 0, 0.08) 0px 3px 8px 0px, #eeeeed 0px 0 0 1px;
-
-  --scalar-button-1: rgb(49 53 56);
-  --scalar-button-1-color: #fff;
-  --scalar-button-1-hover: rgb(28 31 33);
-
-  --scalar-color-green: #007300;
-  --scalar-color-red: #af272b;
-  --scalar-color-yellow: #b38200;
-  --scalar-color-blue: #3b8ba5;
-  --scalar-color-orange: #fb892c;
-  --scalar-color-purple: #5203d1;
-}
-
-.dark-mode {
-  color-scheme: dark;
-  --scalar-color-1: rgba(255, 255, 255, 0.9);
-  --scalar-color-2: rgba(255, 255, 255, 0.62);
-  --scalar-color-3: rgba(255, 255, 255, 0.44);
-  --scalar-color-disabled: rgba(255, 255, 255, 0.34);
-  --scalar-color-ghost: rgba(255, 255, 255, 0.26);
-  --scalar-color-accent: #27c2a0;
-  --scalar-background-1: #1b1b1d;
-  --scalar-background-2: #242526;
-  --scalar-background-3: #3b3b3b;
-  --scalar-background-4: rgba(255, 255, 255, 0.06);
-  --scalar-background-accent: #27c2a01f;
-
-  --scalar-border-color: rgba(255, 255, 255, 0.1);
-  --scalar-scrollbar-color: rgba(255, 255, 255, 0.24);
-  --scalar-scrollbar-color-active: rgba(255, 255, 255, 0.48);
-  --scalar-lifted-brightness: 1.45;
-  --scalar-backdrop-brightness: 0.5;
-
-  --scalar-shadow-1: 0 1px 3px 0 rgb(0, 0, 0, 0.1);
-  --scalar-shadow-2: rgba(15, 15, 15, 0.2) 0px 3px 6px,
-    rgba(15, 15, 15, 0.4) 0px 9px 24px, 0 0 0 1px rgba(255, 255, 255, 0.1);
-
-  --scalar-button-1: #f6f6f6;
-  --scalar-button-1-color: #000;
-  --scalar-button-1-hover: #e7e7e7;
-
-  --scalar-color-green: #26b226;
-  --scalar-color-red: #fb565b;
-  --scalar-color-yellow: #ffc426;
-  --scalar-color-blue: #6ecfef;
-  --scalar-color-orange: #ff8d4d;
-  --scalar-color-purple: #b191f9;
-}
-`
+export const customTheme = ''
 
 /**
  * The default configuration for Fastify
@@ -163,20 +91,21 @@ const fastifyApiReference = fp<
         }
       }
 
-      if (fastify.hasPlugin('@fastify/swagger')) {
+      // Even if @fastify/swagger is loaded, when the `decorator` option is set, the `swagger` function is not available.
+      if (fastify.hasPlugin('@fastify/swagger') && typeof fastify.swagger === 'function') {
         return {
           type: 'swagger' as const,
-          // @ts-ignore We know that @fastify/swagger is loaded.
-          get: () => fastify.swagger() as OpenAPI.Document,
+          get: () => fastify.swagger(),
         }
       }
+
       return void 0
     })()
 
-    // If no OpenAPI specification is passed and @fastify/swagger isn’t loaded, show a warning.
+    // If no OpenAPI specification is passed and @fastify/swagger isn't loaded, show a warning.
     if (!specSource) {
       fastify.log.warn(
-        '[@scalar/fastify-api-reference] You didn’t provide a spec.content or spec.url, and @fastify/swagger could not be found. Please provide one of these options.',
+        "[@scalar/fastify-api-reference] You didn't provide a `content` or `url`, and @fastify/swagger could not be found. Please provide one of these options.",
       )
 
       return
@@ -205,7 +134,7 @@ const fastifyApiReference = fp<
     fastify.route({
       method: 'GET',
       url: openApiSpecUrlJson,
-      // @ts-ignore We don’t know whether @fastify/swagger is loaded.
+      // @ts-ignore We don't know whether @fastify/swagger is loaded.
       schema: schemaToHideRoute,
       ...hooks,
       ...(options.logLevel && { logLevel: options.logLevel }),
@@ -227,7 +156,7 @@ const fastifyApiReference = fp<
     fastify.route({
       method: 'GET',
       url: openApiSpecUrlYaml,
-      // @ts-ignore We don’t know whether @fastify/swagger is loaded.
+      // @ts-ignore We don't know whether @fastify/swagger is loaded.
       schema: schemaToHideRoute,
       ...hooks,
       ...(options.logLevel && { logLevel: options.logLevel }),
@@ -268,13 +197,13 @@ const fastifyApiReference = fp<
     fastify.route({
       method: 'GET',
       url: `${getRoutePrefix(options.routePrefix)}/`,
-      // We don’t know whether @fastify/swagger is registered, but it doesn’t hurt to add a schema anyway.
-      // @ts-ignore We don’t know whether @fastify/swagger is loaded.
+      // We don't know whether @fastify/swagger is registered, but it doesn't hurt to add a schema anyway.
+      // @ts-ignore We don't know whether @fastify/swagger is loaded.
       schema: schemaToHideRoute,
       ...hooks,
       ...(options.logLevel && { logLevel: options.logLevel }),
       handler(_, reply) {
-        // Redirect if it’s the route without a slash
+        // Redirect if it's the route without a slash
         const currentUrl = new URL(_.url, `${_.protocol}://${_.hostname}`)
 
         if (!currentUrl.pathname.endsWith('/')) {
@@ -298,7 +227,7 @@ const fastifyApiReference = fp<
         return reply.header('Content-Type', 'text/html; charset=utf-8').send(
           getHtmlDocument(
             {
-              // We’re using the bundled JS here by default, but the user can pass a CDN URL.
+              // We're using the bundled JS here by default, but the user can pass a CDN URL.
               cdn: RELATIVE_JAVASCRIPT_PATH,
               ...configuration,
             },
@@ -311,8 +240,8 @@ const fastifyApiReference = fp<
     fastify.route({
       method: 'GET',
       url: getJavaScriptUrl(options.routePrefix),
-      // We don’t know whether @fastify/swagger is registered, but it doesn’t hurt to add a schema anyway.
-      // @ts-ignore We don’t know whether @fastify/swagger is loaded.
+      // We don't know whether @fastify/swagger is registered, but it doesn't hurt to add a schema anyway.
+      // @ts-ignore We don't know whether @fastify/swagger is loaded.
       schema: schemaToHideRoute,
       ...hooks,
       ...(options.logLevel && { logLevel: options.logLevel }),

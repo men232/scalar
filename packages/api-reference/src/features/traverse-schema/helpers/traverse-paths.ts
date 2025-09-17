@@ -2,23 +2,26 @@ import type { OpenAPIV3_1 } from '@scalar/openapi-types'
 
 import type { TraversedEntry, TraversedOperation } from '@/features/traverse-schema/types'
 import type { UseNavState } from '@/hooks/useNavState'
-import { getTag } from './get-tag'
 import { httpMethods } from '@scalar/helpers/http/http-methods'
+import type { OperationObject, TagObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { getTag } from './get-tag'
 
 const createOperationEntry = (
-  operation: OpenAPIV3_1.OperationObject,
+  operation: OperationObject,
   method: OpenAPIV3_1.HttpMethods,
   path = 'Unknown',
-  tag: OpenAPIV3_1.TagObject,
+  tag: TagObject,
   titlesMap: Map<string, string>,
   getOperationId: UseNavState['getOperationId'],
 ): TraversedOperation => {
   const id = getOperationId({ ...operation, method, path }, tag)
-  titlesMap.set(id, operation.summary ?? path)
+  const title = operation.summary?.trim() ? operation.summary : path
+
+  titlesMap.set(id, title)
 
   return {
     id,
-    title: operation.summary ?? path,
+    title,
     path,
     method: method,
     operation,
@@ -33,14 +36,14 @@ const createOperationEntry = (
 export const traversePaths = (
   content: OpenAPIV3_1.Document,
   /** Map of tags and their entries */
-  tagsMap: Map<string, { tag: OpenAPIV3_1.TagObject; entries: TraversedEntry[] }>,
+  tagsMap: Map<string, { tag: TagObject; entries: TraversedEntry[] }>,
   /** Map of titles for the mobile header */
   titlesMap: Map<string, string>,
   getOperationId: UseNavState['getOperationId'],
 ) => {
   // Traverse paths
   Object.entries(content.paths ?? {}).forEach(([path, pathItem]) => {
-    const pathEntries = Object.entries(pathItem ?? {}) as [OpenAPIV3_1.HttpMethods, OpenAPIV3_1.OperationObject][]
+    const pathEntries = Object.entries(pathItem ?? {}) as [OpenAPIV3_1.HttpMethods, OperationObject][]
 
     // Traverse operations
     pathEntries.forEach(([method, operation]) => {

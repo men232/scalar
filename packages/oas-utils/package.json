@@ -16,7 +16,7 @@
     "specification",
     "yaml"
   ],
-  "version": "0.4.7",
+  "version": "0.4.29",
   "engines": {
     "node": ">=20"
   },
@@ -102,13 +102,16 @@
     "@hyperjump/browser": "^1.1.0",
     "@hyperjump/json-schema": "^1.9.6",
     "@scalar/helpers": "workspace:*",
+    "@scalar/json-magic": "workspace:*",
     "@scalar/object-utils": "workspace:*",
     "@scalar/openapi-types": "workspace:*",
     "@scalar/themes": "workspace:*",
     "@scalar/types": "workspace:*",
+    "@scalar/workspace-store": "workspace:*",
     "@types/har-format": "^1.2.15",
-    "flatted": "^3.3.1",
-    "microdiff": "^1.4.0",
+    "flatted": "catalog:*",
+    "js-base64": "catalog:*",
+    "microdiff": "catalog:*",
     "nanoid": "catalog:*",
     "type-fest": "catalog:*",
     "yaml": "catalog:*",

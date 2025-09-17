@@ -1,5 +1,91 @@
 # @scalar/docusaurus
 
+## 0.7.15
+
+### Patch Changes
+
+- Updated dependencies [abe3842]
+  - @scalar/types@0.2.15
+
+## 0.7.14
+
+### Patch Changes
+
+- Updated dependencies [792c937]
+  - @scalar/types@0.2.14
+
+## 0.7.13
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+  - @scalar/types@0.2.13
+
+## 0.7.12
+
+### Patch Changes
+
+- Updated dependencies [6a88108]
+  - @scalar/types@0.2.12
+
+## 0.7.11
+
+### Patch Changes
+
+- 7031d9c: fix(api-reference): reference theme and style fixes
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+  - @scalar/types@0.2.11
+
+## 0.7.10
+
+### Patch Changes
+
+- Updated dependencies [fb62e1b]
+  - @scalar/types@0.2.10
+
+## 0.7.9
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/types@0.2.9
+
+## 0.7.8
+
+### Patch Changes
+
+- Updated dependencies [c10e191]
+  - @scalar/types@0.2.8
+
+## 0.7.7
+
+### Patch Changes
+
+- Updated dependencies [ad2e3e6]
+  - @scalar/types@0.2.7
+
+## 0.7.6
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/types@0.2.6
+
+## 0.7.5
+
+### Patch Changes
+
+- @scalar/types@0.2.5
+
+## 0.7.4
+
+### Patch Changes
+
+- Updated dependencies [1468280]
+  - @scalar/types@0.2.4
+
 ## 0.7.3
 
 ### Patch Changes

@@ -14,10 +14,15 @@
  * No state updates should be handled in children of this components. When updates are required
  * a custom event should be emitted to the workspace store and handled here.
  */
-import { parseJsonOrYaml } from '@scalar/oas-utils/helpers'
+import {
+  REFERENCE_LS_KEYS,
+  safeLocalStorage,
+} from '@scalar/helpers/object/local-storage'
+import { makeUrlAbsolute } from '@scalar/helpers/url/make-url-absolute'
+import { redirectToProxy } from '@scalar/oas-utils/helpers'
 import type {
   AnyApiReferenceConfiguration,
-  ApiReferenceConfiguration,
+  ApiReferenceConfigurationWithSources,
 } from '@scalar/types'
 import { useColorMode } from '@scalar/use-hooks/useColorMode'
 import { type WorkspaceStore } from '@scalar/workspace-store/client'
@@ -25,25 +30,33 @@ import { useSeoMeta } from '@unhead/vue'
 import { useFavicon } from '@vueuse/core'
 import {
   computed,
-  onBeforeUnmount,
-  onMounted,
-  onServerPrefetch,
+  onBeforeMount,
   provide,
   ref,
-  shallowRef,
   toRef,
+  useTemplateRef,
   watch,
 } from 'vue'
 
 import ApiReferenceLayout from '@/components/ApiReferenceLayout.vue'
-import { DocumentSelector } from '@/components/DocumentSelector'
-import { useMultipleDocuments } from '@/hooks/useMultipleDocuments'
+import {
+  DocumentSelector,
+  useMultipleDocuments,
+} from '@/features/multiple-documents'
 import { NAV_STATE_SYMBOL } from '@/hooks/useNavState'
-import { onCustomEvent } from '@/v2/events'
+import { isClient } from '@/v2/blocks/scalar-request-example-block/helpers/find-client'
+import { getDocumentName } from '@/v2/helpers/get-document-name'
+import { mapConfiguration } from '@/v2/helpers/map-configuration'
+import { normalizeContent } from '@/v2/helpers/normalize-content'
+import { useWorkspaceStoreEvents } from '@/v2/hooks/use-workspace-store-events'
 
 const props = defineProps<{
   configuration?: AnyApiReferenceConfiguration
-  getWorkspaceStore: () => WorkspaceStore
+  store: WorkspaceStore
+}>()
+
+defineEmits<{
+  (e: 'updateContent', content: any): void
 }>()
 
 // ---------------------------------------------------------------------------
@@ -66,85 +79,165 @@ const {
   hashPrefix: ref(''),
 })
 
+/**
+ * Creates a proxy function that redirects requests through a proxy URL.
+ * This is used to handle CORS issues by routing requests through a proxy server.
+ *
+ * @param input - The URL or Request object to proxy
+ * @param init - Optional fetch init parameters
+ * @returns A Promise that resolves to the Response from the proxied request
+ */
+const proxy = (
+  input: string | URL | globalThis.Request,
+  // eslint-disable-next-line no-undef
+  init?: RequestInit,
+) => {
+  return fetch(
+    redirectToProxy(selectedConfiguration.value.proxyUrl, input.toString()),
+    init,
+  )
+}
+
 // Provide the intersection observer which has defaults
 provide(NAV_STATE_SYMBOL, { isIntersectionEnabled, hash, hashPrefix })
 
 // ---------------------------------------------------------------------------
 
-const root = shallowRef<HTMLElement | null>(null)
+const root = useTemplateRef<HTMLElement>('root')
+const store = props.store
+
+// Do this a bit quicker than onMounted
+onBeforeMount(() => {
+  const storedClient = safeLocalStorage().getItem(
+    REFERENCE_LS_KEYS.SELECTED_CLIENT,
+  )
+  if (isClient(storedClient) && !store.workspace['x-scalar-default-client']) {
+    store.update('x-scalar-default-client', storedClient)
+  }
+})
 
 /**
- * When the useMultipleDocuments hook is deprecated we will need to handle normalizing the configs.
+ * Adds a document to the workspace store based on the provided configuration.
+ * Handles both in-memory documents (via content) and remote documents (via URL).
+ * If the document is already in the store, it will be updated, otherwise it will be added.
  *
- * TODO: Sources should be externalized from the configuration.
+ * @param config - The document configuration containing either content or URL
+ * @returns The result of adding the document to the store, or undefined if skipped
  */
-const configs = availableDocuments
+const addOrUpdateDocument = async (
+  config: Partial<ApiReferenceConfigurationWithSources>,
+) => {
+  const document = normalizeContent(config.content)
 
-// configs.value.forEach((config) => {
-//   if(config.content) {
-//     const obj = typeof config.content === 'string' ? parseJsonOrYaml(config.content) : config.content
-//     store.addDocument({
-//       name: config.slug ?? ,
-//       document: obj,
-//     })
-//   }
-// })
+  /** Generate a name from the document/config */
+  const name = getDocumentName({
+    name: config.slug || config.title,
+    url: config.url,
+    document,
+  })
 
-/** Injected workspace store. This is provided as functional getter to avoid converting the original object to a reactive prop object
- *
- * In normal standalone mode the ApiReference.vue component will provide the workspace store
- * and this component will use it.
- *
- * In external mode the ApiReference.vue component will not provide the workspace store
- * and this component will use the provided function to get the workspace store.
- */
-const store = props.getWorkspaceStore()
+  // If the document is already in the store, we may want to update it
+  if (store.workspace.documents[name]) {
+    if (document) {
+      // Disable intersection observer to prevent url changing
+      isIntersectionEnabled.value = false
 
-// const staticDocuments = props.configuration
-// props.configuration?.documents?.forEach((document) => {
+      store.replaceDocument(name, document)
 
-onServerPrefetch(() => {
-  // For SSR we want to preload the active document into the store
-  // store.addDocument({
-  //   name: 'test',
-  //   document: {
-  //     openapi: '3.0.0',
-  //   },
-  // })
-})
+      // Lets set it to active as well just in case the name changed
+      store.update('x-scalar-active-document', name)
 
-onMounted(() => {
-  // During client side rendering we load the active document from the URL
-  // NOTE: The UI MUST handle a case where the document is empty
-  // store.addDocument({
-  //   name: 'test',
-  //   document: {
-  //     openapi: '3.0.0',
-  //   },
-  // })
-})
+      // Re-enable intersection observer
+      setTimeout(() => {
+        isIntersectionEnabled.value = true
+      }, 300)
+    }
 
-// onCustomEvent(root, 'scalar-update-sidebar', (event) => {
-//   console.log('scalar-update-sidebar', event)
-// })
+    return
+  }
 
-onCustomEvent(root, 'scalar-update-dark-mode', (event) => {
-  store.update('x-scalar-dark-mode', event.data.value)
-})
+  if (document) {
+    return await store.addDocument({
+      name,
+      document,
+      config: mapConfiguration(config),
+    })
+  }
 
-// onCustomEvent(root, 'scalar-update-active-document', (event) => {
-//   console.log('scalar-update-active-document', event)
-//   store.update('x-scalar-active-document', event.data.value)
-// })
+  if (config.url) {
+    return await store.addDocument({
+      name: config.slug ?? 'default',
+      url: makeUrlAbsolute(config.url, {
+        basePath: selectedConfiguration.value.pathRouting?.basePath,
+      }),
+      fetch: config.fetch ?? proxy,
+      config: mapConfiguration(config),
+    })
+  }
+
+  return
+}
+
+/** Watch for changes to the slug, url, or content */
+watch(
+  [
+    () => selectedConfiguration.value.slug,
+    () => selectedConfiguration.value.url,
+    () => selectedConfiguration.value.content,
+  ],
+  ([newSlug, newUrl, newContent]) => {
+    if (newSlug || newUrl || newContent) {
+      addOrUpdateDocument(selectedConfiguration.value)
+    }
+  },
+  { immediate: true },
+)
+
+/** Set up event listeners for client store events */
+useWorkspaceStoreEvents(store, root)
+
+// Update the workspace store if default client changes
+watch(
+  () => selectedConfiguration.value.defaultHttpClient,
+  (newValue) => {
+    if (newValue) {
+      const { targetKey, clientKey } = newValue
+
+      const clientId = `${targetKey}/${clientKey}`
+      if (isClient(clientId)) {
+        store.update('x-scalar-default-client', clientId)
+      }
+    }
+  },
+  { immediate: true },
+)
 
 // ---------------------------------------------------------------------------
 // TODO: Remove this legacy code block. Directly copied from SingleApiReference.vue
 // Logic should be mapped to the workspace store
 
+/**
+ * Determines the initial color mode based on the dark mode configuration.
+ * Returns 'dark' for explicit true, 'light' for explicit false, or undefined for auto.
+ */
+function getInitialColorMode(
+  darkMode: boolean | undefined,
+): 'dark' | 'light' | undefined {
+  if (darkMode === true) {
+    return 'dark'
+  }
+
+  if (darkMode === false) {
+    return 'light'
+  }
+
+  return undefined
+}
+
 // TODO: persistence should be hoisted into standalone
 // Client side integrations will want to handle dark mode externally
 const { toggleColorMode, isDarkMode } = useColorMode({
-  initialColorMode: selectedConfiguration.value.darkMode ? 'dark' : undefined,
+  initialColorMode: getInitialColorMode(selectedConfiguration.value.darkMode),
   overrideColorMode: selectedConfiguration.value.forceDarkModeState,
 })
 
@@ -158,6 +251,17 @@ watch(
 watch(
   () => isDarkMode.value,
   (newValue) => store.update('x-scalar-dark-mode', newValue),
+  { immediate: true },
+)
+
+// Temporary mapping of active document until we update the standalone component
+watch(
+  () => selectedDocumentIndex.value,
+  (newValue) =>
+    store.update(
+      'x-scalar-active-document',
+      availableDocuments.value[newValue]?.slug,
+    ),
   { immediate: true },
 )
 
@@ -175,27 +279,32 @@ useFavicon(favicon)
 
 <template>
   <!-- SingleApiReference -->
-  <!-- Inject any custom CSS directly into a style tag -->
-  <component
-    :is="'style'"
-    v-if="selectedConfiguration?.customCss">
-    {{ selectedConfiguration.customCss }}
-  </component>
-  <ApiReferenceLayout
-    :configuration="selectedConfiguration"
-    :isDark="!!store.workspace['x-scalar-dark-mode']"
-    @toggleDarkMode="() => toggleColorMode()"
-    @updateContent="$emit('updateContent', $event)">
-    <template #footer><slot name="footer" /></template>
-    <!-- Expose the content end slot as a slot for the footer -->
-    <template #content-end><slot name="footer" /></template>
-    <template #document-selector>
-      <DocumentSelector
-        v-model="selectedDocumentIndex"
-        :options="availableDocuments" />
-    </template>
-    <template #sidebar-start><slot name="sidebar-start" /></template>
-  </ApiReferenceLayout>
+  <div ref="root">
+    <!-- Inject any custom CSS directly into a style tag -->
+    <component
+      :is="'style'"
+      v-if="selectedConfiguration?.customCss">
+      {{ selectedConfiguration.customCss }}
+    </component>
+    <ApiReferenceLayout
+      :configuration="selectedConfiguration"
+      :isDark="!!store.workspace['x-scalar-dark-mode']"
+      :store="store"
+      @toggleDarkMode="() => toggleColorMode()"
+      @updateContent="$emit('updateContent', $event)">
+      <template #document-selector>
+        <DocumentSelector
+          v-model="selectedDocumentIndex"
+          :options="availableDocuments" />
+      </template>
+      <!-- Pass through content, sidebar and footer slots -->
+      <template #content-start><slot name="content-start" /></template>
+      <template #content-end><slot name="content-end" /></template>
+      <template #sidebar-start><slot name="sidebar-start" /></template>
+      <template #sidebar-end><slot name="sidebar-end" /></template>
+      <template #footer><slot name="footer" /></template>
+    </ApiReferenceLayout>
+  </div>
 </template>
 
 <style>

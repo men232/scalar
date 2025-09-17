@@ -1,6 +1,6 @@
-import { visit } from 'unist-util-visit'
 import type { Element } from 'hast'
 import type { Root } from 'mdast'
+import { visit } from 'unist-util-visit'
 
 const ALERT_TYPES = ['note', 'tip', 'important', 'warning', 'caution', 'success'] as const
 
@@ -62,7 +62,7 @@ export function rehypeAlert() {
         } else {
           const skipped = headIndex + 1 < node.children.length && isWhitespace(node.children[headIndex + 1])
           const nextIndex = skipped ? headIndex + 2 : headIndex + 1
-          if (nextIndex >= node.children.length || node.children[nextIndex].type !== 'element') {
+          if (nextIndex >= node.children.length || node.children[nextIndex]?.type !== 'element') {
             return
           }
 
@@ -75,7 +75,7 @@ export function rehypeAlert() {
       ) {
         text.value = text.value.slice(end + 2)
       } else {
-        // Remove the alert marker if it’s not followed by a newline or a non-whitespace character
+        // Remove the alert marker if it's not followed by a newline or a non-whitespace character
         text.value = text.value.replace(/^\s*\[!.*?\]\s*/, '')
       }
 
@@ -83,7 +83,7 @@ export function rehypeAlert() {
       const contentChildren = []
       for (let i = headIndex; i < node.children.length; i++) {
         const child = node.children[i]
-        if (child.type === 'element' && child.tagName === 'p' && child.children) {
+        if (child?.type === 'element' && child.tagName === 'p' && child.children) {
           contentChildren.push(...child.children)
         } else {
           contentChildren.push(child)
@@ -96,6 +96,12 @@ export function rehypeAlert() {
         tagName: 'div',
         properties: { className: ['markdown-alert', `markdown-alert-${alertType}`] },
         children: [
+          {
+            type: 'element',
+            tagName: 'div',
+            properties: { className: ['markdown-alert-icon'] },
+            children: [],
+          },
           {
             type: 'element',
             tagName: 'div',

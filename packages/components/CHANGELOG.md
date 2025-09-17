@@ -1,5 +1,266 @@
 # @scalar/components
 
+## 0.14.34
+
+### Patch Changes
+
+- 498f771: fix(components): default scalar menu links to be <a> tags
+- 8f2a2f2: Bump some dependencies to latest
+- Updated dependencies [bff46e5]
+- Updated dependencies [8f2a2f2]
+  - @scalar/helpers@0.0.11
+  - @scalar/use-hooks@0.2.5
+  - @scalar/themes@0.13.17
+  - @scalar/oas-utils@0.4.29
+  - @scalar/code-highlight@0.1.9
+
+## 0.14.33
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.28
+
+## 0.14.32
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.27
+
+## 0.14.31
+
+### Patch Changes
+
+- 2249fe3: fix: a > img takes the full width
+- Updated dependencies [821717b]
+  - @scalar/oas-utils@0.4.26
+  - @scalar/helpers@0.0.10
+
+## 0.14.30
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.25
+
+## 0.14.29
+
+### Patch Changes
+
+- c470c60: fix(components): update scalar menu button flex
+  - @scalar/oas-utils@0.4.24
+  - @scalar/themes@0.13.16
+  - @scalar/code-highlight@0.1.9
+
+## 0.14.28
+
+### Patch Changes
+
+- f918582: feat(api-reference, components): update scalar floating components contraints
+- 422cb2b: feat(components)!: add "Add new option" slot to combobox
+- Updated dependencies [714b197]
+- Updated dependencies [98c55d0]
+- Updated dependencies [cededd8]
+- Updated dependencies [a6ae22a]
+- Updated dependencies [2b22eab]
+- Updated dependencies [0e747c7]
+- Updated dependencies [976366f]
+  - @scalar/oas-utils@0.4.23
+  - @scalar/helpers@0.0.9
+  - @scalar/themes@0.13.15
+  - @scalar/code-highlight@0.1.9
+
+## 0.14.27
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.22
+- @scalar/themes@0.13.14
+- @scalar/code-highlight@0.1.9
+
+## 0.14.26
+
+### Patch Changes
+
+- Updated dependencies [e2272a1]
+- Updated dependencies [b6f4b60]
+  - @scalar/oas-utils@0.4.21
+
+## 0.14.25
+
+### Patch Changes
+
+- 172e397: feat(components): add hotkey component and tooltip support
+- d8b8a5b: fix(components): add scalar fonts to storybook
+- 6c24be9: feat(components): update scalar hotkey design
+- 638120c: test(components): add additional component snapshots and functionality
+- 0804cfc: eat(components): Add ScalarMarkdown summary component
+- Updated dependencies [bbef120]
+- Updated dependencies [a1429ca]
+- Updated dependencies [66b18fc]
+- Updated dependencies [5f022b5]
+- Updated dependencies [6c24be9]
+  - @scalar/oas-utils@0.4.20
+  - @scalar/helpers@0.0.8
+  - @scalar/themes@0.13.13
+  - @scalar/code-highlight@0.1.9
+  - @scalar/icons@0.4.7
+  - @scalar/use-hooks@0.2.4
+  - @scalar/use-toasts@0.8.0
+
+## 0.14.24
+
+### Patch Changes
+
+- 58b9321: feat: adds scalar code block copy component
+- fbafeab: test(components): add snapshot testing to scalar components
+- Updated dependencies [3de82ac]
+- Updated dependencies [b1ceaab]
+  - @scalar/oas-utils@0.4.19
+  - @scalar/icons@0.4.7
+  - @scalar/code-highlight@0.1.9
+  - @scalar/themes@0.13.12
+  - @scalar/use-hooks@0.2.4
+  - @scalar/use-toasts@0.8.0
+
+## 0.14.23
+
+### Patch Changes
+
+- Updated dependencies [46bfd2f]
+  - @scalar/oas-utils@0.4.18
+
+## 0.14.22
+
+### Patch Changes
+
+- dd00357: feat(components): add support for custom combobox items
+- Updated dependencies [46ebe6e]
+  - @scalar/oas-utils@0.4.17
+
+## 0.14.21
+
+### Patch Changes
+
+- f913898: fix(components): apply tooltip shadow without tailwind variant
+- cf5d6a2: fix(components): make paragraph line height variable
+- 1af32c0: fix: sets scalar markdown contents and p display for in li usage
+- f3d0216: feat: lazy loading v1.5
+- af22451: feat: increases caret icon usage and style concistency amongst reference and client
+- Updated dependencies [d4cb86b]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [952f471]
+- Updated dependencies [b957a2c]
+- Updated dependencies [3c1e3e3]
+  - @scalar/code-highlight@0.1.9
+  - @scalar/oas-utils@0.4.16
+  - @scalar/themes@0.13.12
+
+## 0.14.20
+
+### Patch Changes
+
+- 60c7bef: fix: updates auth description overflowing line clamp
+- cac47ea: fix: sets missing line height contraint and transform reset
+- Updated dependencies [fb62e1b]
+  - @scalar/themes@0.13.11
+  - @scalar/oas-utils@0.4.15
+  - @scalar/code-highlight@0.1.8
+
+## 0.14.19
+
+### Patch Changes
+
+- a04cc15: feat(components): create scalar card component
+- 85ee2ce: feat: updates markdown ordered list style
+- fbaaa12: fix(components): update add scalar classes to always watch for the headless root
+- 85ee2ce: feat: updates markdown alert component style
+- 97721b5: feat: updates scalar search input style
+- 85ee2ce: feat: moves markdown style from code-highlight to components package
+- Updated dependencies [85ee2ce]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [8a67f4f]
+  - @scalar/code-highlight@0.1.8
+  - @scalar/themes@0.13.10
+  - @scalar/oas-utils@0.4.14
+
+## 0.14.18
+
+### Patch Changes
+
+- 934dff9: feat(components): sidebar component follow up
+- Updated dependencies [6ab3a21]
+- Updated dependencies [71958fd]
+  - @scalar/code-highlight@0.1.7
+  - @scalar/oas-utils@0.4.13
+
+## 0.14.17
+
+### Patch Changes
+
+- cd1c367: refactor(components): update slot definitions to use unknown instead of any
+- 4d89219: fix: rollback scalar combobox options timeout
+- 244edda: fix: updates scalar toggle background and width
+- 1db9130: feat(components): add nested sidebar component
+- Updated dependencies [661c7e9]
+- Updated dependencies [c826b3e]
+- Updated dependencies [903f975]
+- Updated dependencies [80acf84]
+  - @scalar/themes@0.13.9
+  - @scalar/oas-utils@0.4.12
+  - @scalar/code-highlight@0.1.6
+
+## 0.14.16
+
+### Patch Changes
+
+- ca77d70: skip tooltip initialization during SSR
+- a696604: fix: favors ref over useTemplateRef in scalar combobox option
+- 3fdc2f2: feat(api-reference): unify inconsistent font styles across scalar client and ref, and improve consistency"
+- Updated dependencies [58287f8]
+- Updated dependencies [74fdc0e]
+- Updated dependencies [3fdc2f2]
+  - @scalar/oas-utils@0.4.11
+  - @scalar/themes@0.13.8
+  - @scalar/code-highlight@0.1.5
+
+## 0.14.15
+
+### Patch Changes
+
+- Updated dependencies [2d7f995]
+  - @scalar/code-highlight@0.1.5
+  - @scalar/oas-utils@0.4.10
+  - @scalar/use-hooks@0.2.4
+  - @scalar/themes@0.13.7
+  - @scalar/icons@0.4.6
+  - @scalar/use-toasts@0.8.0
+
+## 0.14.14
+
+### Patch Changes
+
+- 533469b: refactor: decouple request code block from the state (not in use yet)
+- 3393c83: fix: focus is not defined in search
+- 4f47b3c: feat(components): scalar icon button cleanup
+- 8e85856: fix: autofocus scroll on popover panel
+- Updated dependencies [4f47b3c]
+- Updated dependencies [23b150b]
+  - @scalar/icons@0.4.5
+  - @scalar/oas-utils@0.4.9
+  - @scalar/themes@0.13.6
+  - @scalar/code-highlight@0.1.4
+
+## 0.14.13
+
+### Patch Changes
+
+- c907685: fix(components): set sidebar search button leading
+- 4bbbb32: feat(components): add sidebar sections
+- Updated dependencies [4bbbb32]
+  - @scalar/use-hooks@0.2.3
+  - @scalar/themes@0.13.5
+  - @scalar/code-highlight@0.1.4
+  - @scalar/oas-utils@0.4.8
+
 ## 0.14.12
 
 ### Patch Changes

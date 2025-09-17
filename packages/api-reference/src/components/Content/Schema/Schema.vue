@@ -1,161 +1,108 @@
 <script lang="ts" setup>
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
 import { ScalarIcon, ScalarMarkdown } from '@scalar/components'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-import { computed, inject } from 'vue'
+import type {
+  DiscriminatorObject,
+  SchemaObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { computed } from 'vue'
 
 import ScreenReader from '@/components/ScreenReader.vue'
-import type { Schemas } from '@/features/Operation/types/schemas'
-import { DISCRIMINATOR_CONTEXT } from '@/hooks/useDiscriminator'
 
+import { isTypeObject } from './helpers/is-type-object'
 import SchemaHeading from './SchemaHeading.vue'
+import SchemaObjectProperties from './SchemaObjectProperties.vue'
 import SchemaProperty from './SchemaProperty.vue'
 
-const props = withDefaults(
-  defineProps<{
-    value?:
-      | OpenAPIV3_1.OperationObject
-      | OpenAPIV3_1.SchemaObject
-      | OpenAPIV3_1.ArraySchemaObject
-      | OpenAPIV3_1.NonArraySchemaObject
-      | OpenAPIV3_1.SchemaObject
-      | OpenAPIV3_1.ArraySchemaObject
-      | OpenAPIV3_1.NonArraySchemaObject
-    /** Track how deep we’ve gone */
-    level?: number
-    /* Show as a heading */
-    name?: string
-    /** A tighter layout with less borders and without a heading */
-    compact?: boolean
-    /** Shows a toggle to hide/show children */
-    noncollapsible?: boolean
-    hideHeading?: boolean
-    /** Show a special one way toggle for additional properties, also has a top border when open */
-    additionalProperties?: boolean
-    /** Hide model names in type display */
-    hideModelNames?: boolean
-    /** All schemas for model name retrieval */
-    schemas?: Schemas
-    /** Selected discriminator */
-    discriminator?: string
-    /** Discriminator mapping */
-    discriminatorMapping?: Record<string, string>
-    /** Discriminator property name */
-    discriminatorPropertyName?: string
-    /** Whether the schema has a discriminator */
-    hasDiscriminator?: boolean
-  }>(),
-  { level: 0, noncollapsible: false, hideModelNames: false },
-)
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
+const {
+  schema,
+  level = 0,
+  name,
+  compact,
+  noncollapsible = false,
+  hideHeading,
+  hideReadOnly,
+  hideWriteOnly,
+  additionalProperties,
+  hideModelNames = false,
+  discriminator,
+  breadcrumb,
+} = defineProps<{
+  schema?: SchemaObject
+  /** Track how deep we've gone */
+  level?: number
+  /* Show as a heading */
+  name?: string
+  /** A tighter layout with less borders and without a heading */
+  compact?: boolean
+  /** Shows a toggle to hide/show children */
+  noncollapsible?: boolean
+  /** Hide the heading */
+  hideHeading?: boolean
+  /** Hide read-only properties */
+  hideReadOnly?: boolean
+  /** Hide write-only properties */
+  hideWriteOnly?: boolean
+  /** Show a special one way toggle for additional properties, also has a top border when open */
+  additionalProperties?: boolean
+  /** Hide model names in type display */
+  hideModelNames?: boolean
+  /** Discriminator object */
+  discriminator?: DiscriminatorObject
+  /** Breadcrumb for the schema */
+  breadcrumb?: string[]
 }>()
 
-// Inject the discriminator context
-const discriminatorContext = inject(DISCRIMINATOR_CONTEXT, null)
-
-// Use injected context values or fallback to props for backward compatibility
-const discriminatorMapping = computed(
-  () =>
-    discriminatorContext?.value?.discriminatorMapping ||
-    props.discriminatorMapping ||
-    {},
-)
-const discriminatorPropertyName = computed(
-  () =>
-    discriminatorContext?.value?.discriminatorPropertyName ||
-    props.discriminatorPropertyName ||
-    '',
-)
-const discriminator = computed(
-  () => discriminatorContext?.value?.selectedType || props.discriminator,
-)
-
-/* Returns true if the schema is an object schema */
-const isObjectSchema = (
-  schema: unknown,
-): schema is OpenAPIV3_1.SchemaObject => {
-  return (
-    schema !== null &&
-    typeof schema === 'object' &&
-    'type' in schema &&
-    schema.type === 'object'
-  )
-}
-
-/* Returns the resolved schema from discriminator context when available for display */
-const schema = computed(() => {
-  // Get the merged schema from the discriminator context
-  const mergedSchema = discriminatorContext?.value?.mergedSchema
-
-  // Get the original schema from the props
-  const originalSchema = props.value
-
-  // If the merged schema is an object schema and the original schema is an object schema, return the merged schema
-  if (
-    mergedSchema &&
-    props.level === 0 &&
-    props.hasDiscriminator &&
-    isObjectSchema(originalSchema) &&
-    isObjectSchema(mergedSchema)
-  ) {
-    return mergedSchema
-  }
-
-  // Otherwise fall back to the resolved schema prop or value prop
-  return props.value
+/**
+ * Determines whether to show the collapse/expand toggle button.
+ * We hide the toggle for non-collapsible schemas and root-level schemas.
+ */
+const shouldShowToggle = computed((): boolean => {
+  return !noncollapsible && level > 0
 })
 
-const shouldShowToggle = computed(() => {
-  if (props.noncollapsible || props.level === 0) {
-    return false
+/** Gets the description to show for the schema */
+const schemaDescription = computed(() => {
+  // For the request body we want to show the base description or the first allOf schema description
+  if (schema?.allOf && schema.allOf.length > 0 && name === 'Request Body') {
+    return schema.description || schema.allOf[0].description
   }
 
-  return true
-})
-
-/** Determines whether to show the schema description */
-const shouldShowDescription = computed(() => {
   // Don't show description if there's no description or it's not a string
-  if (
-    !schema.value?.description ||
-    typeof schema.value.description !== 'string'
-  ) {
-    return false
+  if (!schema?.description || typeof schema.description !== 'string') {
+    return null
   }
 
-  // Don't show description if the schema has composition keywords
+  // Don't show description if the schema has other composition keywords
   // This prevents duplicate descriptions when individual schemas are part of compositions
-  if (schema.value.allOf || schema.value.oneOf || schema.value.anyOf) {
-    return false
+  if (schema.oneOf || schema.anyOf) {
+    return null
   }
 
   // Don't show description for enum schemas (they have special handling)
-  if (schema.value.enum) {
-    return false
+  if (schema.enum) {
+    return null
   }
 
-  // Merged allOf schemas at level 0 should not show individual descriptions
-  // to prevent duplicates with the request body description
-  if (props.level === 0) {
-    return false
+  // Will be shown in the properties anyway
+  if (
+    !('properties' in schema) &&
+    !('patternProperties' in schema) &&
+    !('additionalProperties' in schema)
+  ) {
+    return null
   }
 
-  return true
+  // Return the schema's own description
+  return schema.description
 })
 
 // Prevent click action if noncollapsible
-const handleClick = (e: MouseEvent) =>
-  props.noncollapsible && e.stopPropagation()
-
-const handleDiscriminatorChange = (type: string) => {
-  emit('update:modelValue', type)
-}
+const handleClick = (e: MouseEvent) => noncollapsible && e.stopPropagation()
 </script>
 <template>
   <Disclosure
-    v-if="typeof value === 'object' && Object.keys(value).length"
+    v-if="typeof schema === 'object' && Object.keys(schema).length"
     v-slot="{ open }"
     :defaultOpen="noncollapsible">
     <div
@@ -167,18 +114,16 @@ const handleDiscriminatorChange = (type: string) => {
       ]">
       <!-- Schema description -->
       <div
-        v-if="shouldShowDescription"
+        v-if="schemaDescription"
         class="schema-card-description">
-        <template v-if="!schema?.enum">
-          <ScalarMarkdown :value="schema?.description" />
-        </template>
+        <ScalarMarkdown :value="schemaDescription" />
       </div>
       <div
         class="schema-properties"
         :class="{
           'schema-properties-open': open,
         }">
-        <!-- Special toggle to show additional properties -->
+        <!-- Toggle to collapse/expand long lists of properties -->
         <div
           v-if="additionalProperties"
           v-show="!open"
@@ -213,10 +158,10 @@ const handleDiscriminatorChange = (type: string) => {
               icon="Add"
               size="sm" />
             <template v-if="open">
-              Hide {{ value?.title ?? 'Child Attributes' }}
+              Hide {{ schema?.title ?? 'Child Attributes' }}
             </template>
             <template v-else>
-              Show {{ value?.title ?? 'Child Attributes' }}
+              Show {{ schema?.title ?? 'Child Attributes' }}
             </template>
             <ScreenReader v-if="name">for {{ name }}</ScreenReader>
           </template>
@@ -227,148 +172,39 @@ const handleDiscriminatorChange = (type: string) => {
               icon="Add"
               size="sm" />
             <SchemaHeading
-              :name="(value?.title ?? name) as string"
-              :value="value" />
+              :name="schema?.title ?? name"
+              :value="schema" />
           </template>
         </DisclosureButton>
         <DisclosurePanel
+          v-if="!additionalProperties || open"
           as="ul"
           :static="!shouldShowToggle">
-          <!-- Schema properties -->
-          <template
-            v-if="
-              schema &&
-              typeof schema === 'object' &&
-              ('properties' in schema ||
-                'additionalProperties' in schema ||
-                'patternProperties' in schema)
-            ">
-            <!-- Regular properties -->
-            <template v-if="schema.properties">
-              <SchemaProperty
-                v-for="property in Object.keys(schema.properties)"
-                :key="property"
-                :compact="compact"
-                :hideHeading="hideHeading"
-                :level="level + 1"
-                :name="property"
-                :hideModelNames="hideModelNames"
-                :required="
-                  schema.required?.includes(property) ||
-                  schema.properties[property]?.required === true
-                "
-                :schemas="schemas"
-                :resolvedSchema="schema.properties[property]"
-                :value="{
-                  ...schema.properties[property],
-                  parent: schema,
-                  isDiscriminator:
-                    property === discriminatorPropertyName ||
-                    schema.discriminator?.propertyName === property,
-                }"
-                :discriminatorMapping="
-                  schema.discriminator?.mapping || discriminatorMapping
-                "
-                :discriminatorPropertyName="
-                  schema.discriminator?.propertyName ||
-                  discriminatorPropertyName
-                "
-                :isDiscriminator="
-                  property ===
-                  (schema.discriminator?.propertyName ||
-                    discriminatorPropertyName)
-                "
-                :modelValue="discriminator"
-                @update:modelValue="handleDiscriminatorChange" />
-            </template>
+          <!-- Object properties -->
+          <SchemaObjectProperties
+            v-if="isTypeObject(schema)"
+            :breadcrumb="breadcrumb"
+            :compact="compact"
+            :discriminator
+            :hideHeading="hideHeading"
+            :hideModelNames="hideModelNames"
+            :hideReadOnly="hideReadOnly"
+            :hideWriteOnly="hideWriteOnly"
+            :level="level + 1"
+            :schema="schema" />
 
-            <!-- Pattern properties -->
-            <template v-if="schema.patternProperties">
-              <SchemaProperty
-                v-for="property in Object.keys(schema.patternProperties)"
-                :key="property"
-                :compact="compact"
-                :hideHeading="hideHeading"
-                :level="level"
-                :name="property"
-                :hideModelNames="hideModelNames"
-                pattern
-                :schemas="schemas"
-                :value="
-                  value.discriminator?.propertyName === property
-                    ? value
-                    : schema.patternProperties[property]
-                "
-                :discriminatorMapping="discriminatorMapping"
-                :discriminatorPropertyName="discriminatorPropertyName"
-                @update:modelValue="handleDiscriminatorChange" />
-            </template>
-
-            <!-- Additional properties -->
-            <template v-if="schema.additionalProperties">
-              <!--
-                Allows any type of additional property value
-                @see https://swagger.io/docs/specification/data-models/dictionaries/#free-form
-               -->
-              <SchemaProperty
-                v-if="
-                  schema.additionalProperties === true ||
-                  Object.keys(schema.additionalProperties).length === 0 ||
-                  !('type' in schema.additionalProperties)
-                "
-                additional
-                :compact="compact"
-                :hideHeading="hideHeading"
-                :hideModelNames="hideModelNames"
-                :level="level"
-                noncollapsible
-                :schemas="schemas"
-                :value="{
-                  type: 'anything',
-                  ...(typeof schema.additionalProperties === 'object'
-                    ? schema.additionalProperties
-                    : {}),
-                }"
-                :discriminatorMapping="discriminatorMapping"
-                :discriminatorPropertyName="discriminatorPropertyName"
-                @update:modelValue="handleDiscriminatorChange" />
-              <SchemaProperty
-                v-else
-                additional
-                :compact="compact"
-                :hideHeading="hideHeading"
-                :hideModelNames="hideModelNames"
-                :level="level"
-                noncollapsible
-                :schemas="schemas"
-                :value="
-                  value.discriminator?.propertyName === name
-                    ? value
-                    : schema.additionalProperties
-                "
-                :discriminatorMapping="discriminatorMapping"
-                :discriminatorPropertyName="discriminatorPropertyName"
-                @update:modelValue="handleDiscriminatorChange" />
-            </template>
-          </template>
-
-          <!-- Single property -->
+          <!-- Not an object -->
           <template v-else>
             <SchemaProperty
               v-if="schema"
-              :compact="compact"
-              :hideHeading="hideHeading"
-              :hideModelNames="hideModelNames"
-              :level="level"
-              :name="(schema as OpenAPIV3_1.SchemaObject).name"
-              :schemas="schemas"
-              :value="
-                value.discriminator?.propertyName === name ? value : schema
-              "
-              :discriminatorMapping="discriminatorMapping"
-              :discriminatorPropertyName="discriminatorPropertyName"
-              :modelValue="discriminator"
-              @update:modelValue="handleDiscriminatorChange" />
+              :breadcrumb
+              :compact
+              :hideHeading
+              :hideModelNames
+              :hideReadOnly="hideReadOnly"
+              :hideWriteOnly="hideWriteOnly"
+              :level
+              :value="schema" />
           </template>
         </DisclosurePanel>
       </div>
@@ -395,7 +231,7 @@ const handleDiscriminatorChange = (type: string) => {
 
   color: var(--scalar-color-2);
   font-weight: var(--scalar-semibold);
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   border-bottom: var(--scalar-border-width) solid transparent;
 }
 button.schema-card-title {
@@ -414,6 +250,9 @@ button.schema-card-title:hover {
 }
 .schema-properties-open > .schema-properties {
   width: fit-content;
+}
+.schema-card-description {
+  color: var(--scalar-color-2);
 }
 .schema-card-description + .schema-properties {
   width: fit-content;
@@ -454,7 +293,7 @@ button.schema-card-title:hover {
 }
 .schema-card-title--compact {
   color: var(--scalar-color-2);
-  padding: 6px;
+  padding: 6px 10px 6px 8px;
   height: auto;
   border-bottom: none;
 }
@@ -484,7 +323,7 @@ button.schema-card-title:hover {
   border: none;
 }
 :deep(.schema-card-description) p {
-  font-size: var(--scalar-mini, var(--scalar-paragraph));
+  font-size: var(--scalar-small, var(--scalar-paragraph));
   color: var(--scalar-color-2);
   line-height: 1.5;
   margin-bottom: 0;

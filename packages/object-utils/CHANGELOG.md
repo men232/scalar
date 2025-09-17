@@ -1,5 +1,48 @@
 # @scalar/object-utils
 
+## 1.2.7
+
+### Patch Changes
+
+- Updated dependencies [bff46e5]
+  - @scalar/helpers@0.0.11
+
+## 1.2.6
+
+### Patch Changes
+
+- Updated dependencies [821717b]
+  - @scalar/helpers@0.0.10
+
+## 1.2.5
+
+### Patch Changes
+
+- Updated dependencies [98c55d0]
+- Updated dependencies [0e747c7]
+  - @scalar/helpers@0.0.9
+
+## 1.2.4
+
+### Patch Changes
+
+- Updated dependencies [66b18fc]
+  - @scalar/helpers@0.0.8
+
+## 1.2.3
+
+### Patch Changes
+
+- Updated dependencies [c0d6793]
+- Updated dependencies [f3d0216]
+  - @scalar/helpers@0.0.7
+
+## 1.2.2
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+
 ## 1.2.1
 
 ### Patch Changes

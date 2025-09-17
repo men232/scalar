@@ -36,7 +36,7 @@ If you would like to add your own OpenAPI document you can do so with the follow
 export default defineNuxtConfig({
   modules: ['@scalar/nuxt'],
   scalar: {
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
   },
 })
 ```
@@ -50,7 +50,6 @@ export default defineNuxtConfig({
   scalar: {
     darkMode: true,
     hideModels: false,
-    hideDownloadButton: false,
     metaData: {
       title: 'API Documentation by Scalar',
     },
@@ -60,7 +59,7 @@ export default defineNuxtConfig({
     pathRouting: {
       basePath: '/scalar',
     },
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
   },
 })
 ```
@@ -79,13 +78,13 @@ export default defineNuxtConfig({
     proxyUrl: 'https://proxy.scalar.com',
     configurations: [
       {
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml,
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
         pathRouting: {
           basePath: '/yaml',
         },
       },
       {
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
         pathRouting: {
           basePath: '/json',
         },
@@ -108,7 +107,7 @@ export default defineNuxtConfig({
 
 ## Troubleshooting
 
-If you come across any `**** not default export` errors, its likely you are using `pnpm`.
+If you come across any `**** not default export` errors, it's likely you are using `pnpm`.
 A temporary fix for this would be to enable [shamefully-hoist](https://pnpm.io/npmrc#shamefully-hoist) until
 we sort out what is causing the package issues.
 

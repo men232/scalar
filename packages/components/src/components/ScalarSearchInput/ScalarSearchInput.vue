@@ -14,6 +14,7 @@
 export default {}
 </script>
 <script setup lang="ts">
+import { ScalarIconMagnifyingGlass } from '@scalar/icons'
 import { useBindCx } from '@scalar/use-hooks/useBindCx'
 import { ref } from 'vue'
 
@@ -44,9 +45,10 @@ const { classCx, otherAttrs } = useBindCx()
   <label
     v-bind="
       classCx(
-        'flex items-center rounded border text-sm font-medium has-[:focus-visible]:bg-b-1 bg-b-1.5 has-[:focus-visible]:outline h-10 p-3',
+        'flex items-center text-lg font-medium h-10 pl-3 pr-1 py-2 gap-2.25',
       )
     ">
+    <ScalarIconMagnifyingGlass class="text-sidebar-c-search size-4" />
     <input
       ref="inputRef"
       :aria-label="label ?? 'Enter search query'"

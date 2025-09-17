@@ -1,5 +1,94 @@
 # @scalar/nestjs-api-reference
 
+## 1.0.1
+
+### Patch Changes
+
+- @scalar/core@0.3.16
+
+## 1.0.0
+
+### Major Changes
+
+- 2c9c54c: feat!: pure ESM distribution
+
+### Patch Changes
+
+- @scalar/core@0.3.15
+
+## 0.5.14
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+  - @scalar/types@0.2.13
+
+## 0.5.13
+
+### Patch Changes
+
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- Updated dependencies [6a88108]
+  - @scalar/types@0.2.12
+
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+  - @scalar/types@0.2.11
+
+## 0.5.11
+
+### Patch Changes
+
+- Updated dependencies [fb62e1b]
+  - @scalar/types@0.2.10
+
+## 0.5.10
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/types@0.2.9
+
+## 0.5.9
+
+### Patch Changes
+
+- Updated dependencies [c10e191]
+  - @scalar/types@0.2.8
+
+## 0.5.8
+
+### Patch Changes
+
+- a7f0209: feat: render title option
+- Updated dependencies [ad2e3e6]
+  - @scalar/types@0.2.7
+
+## 0.5.7
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/types@0.2.6
+
+## 0.5.6
+
+### Patch Changes
+
+- @scalar/types@0.2.5
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies [1468280]
+  - @scalar/types@0.2.4
+
 ## 0.5.4
 
 ### Patch Changes

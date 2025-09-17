@@ -1,7 +1,8 @@
-import type { TagObject } from '@/schemas/v3.1/strict/tag'
+import type { TagsMap, TraverseSpecOptions } from '@/navigation/types'
+import type { TraversedEntry, TraversedTag } from '@/schemas/navigation'
+import type { OpenApiDocument, TagObject } from '@/schemas/v3.1/strict/openapi-document'
+
 import { getTag } from './get-tag'
-import type { TagsMap, TraversedEntry, TraversedTag, TraverseSpecOptions } from '@/navigation/types'
-import type { OpenApiDocument } from '@/schemas/v3.1/strict/openapi-document'
 
 type Options = Pick<TraverseSpecOptions, 'getTagId' | 'tagsSorter' | 'operationsSorter'>
 
@@ -116,8 +117,8 @@ const getSortedTagEntries = (
         const pathB = b.type === 'operation' ? b.path : b.name
 
         return operationsSorter(
-          { method: a.method, path: pathA, ref: a.ref },
-          { method: b.method, path: pathB, ref: b.ref },
+          { method: a.method, path: pathA, ref: a.ref, httpVerb: a.method },
+          { method: b.method, path: pathB, ref: b.ref, httpVerb: b.method },
         )
       })
     }
@@ -162,8 +163,8 @@ export const traverseTags = (
   const tags = getSortedTagEntries(keys, tagsMap, titlesMap, { getTagId, tagsSorter, operationsSorter })
 
   // Flatten if we only have default tag
-  if (tags.length === 1 && tags[0].title === 'default') {
-    return tags[0].children ?? []
+  if (tags.length === 1 && tags[0]?.title === 'default') {
+    return tags[0]?.children ?? []
   }
 
   return tags

@@ -1,5 +1,29 @@
 # @scalar/build-tooling
 
+## 0.2.7
+
+### Patch Changes
+
+- cef1034: Improve return types for vite options
+
+## 0.2.6
+
+### Patch Changes
+
+- 1f52b45: Outputs the time it took to build types when running tsc/vue-tsc
+
+## 0.2.5
+
+### Patch Changes
+
+- 4502b11: Move to .js bin scripts to avoid vite-node conflicts
+
+## 0.2.4
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+
 ## 0.2.3
 
 ### Patch Changes

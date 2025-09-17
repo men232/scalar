@@ -1,104 +1,248 @@
 <script lang="ts" setup>
 import { isDefined } from '@scalar/helpers/array/is-defined'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-import { computed } from 'vue'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
+import type { SchemaObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import {
+  isArraySchema,
+  isNumberSchema,
+  isStringSchema,
+} from '@scalar/workspace-store/schemas/v3.1/strict/type-guards'
+import { computed, toRef } from 'vue'
 
-import SchemaPropertyExamples from '@/components/Content/Schema/SchemaPropertyExamples.vue'
+import { Badge } from '@/components/Badge'
 import ScreenReader from '@/components/ScreenReader.vue'
-import type { Schemas } from '@/features/Operation/types/schemas'
-import { getDiscriminatorSchemaName } from '@/hooks/useDiscriminator'
 
-import { Badge } from '../../Badge'
+import { getSchemaType } from './helpers/get-schema-type'
 import { getModelName } from './helpers/schema-name'
+import RenderString from './RenderString.vue'
 import SchemaPropertyDetail from './SchemaPropertyDetail.vue'
+import SchemaPropertyExamples from './SchemaPropertyExamples.vue'
 
-const {
-  value,
-  schemas,
-  required = false,
-  withExamples = true,
-  hideModelNames = false,
-} = defineProps<{
-  value?: Record<string, any>
-  enum?: boolean
-  required?: boolean
-  additional?: boolean
-  pattern?: boolean
-  withExamples?: boolean
-  hideModelNames?: boolean
-  schemas?: Schemas
-}>()
+const props = withDefaults(
+  defineProps<{
+    value: SchemaObject | undefined
+    enum?: boolean
+    isDiscriminator?: boolean
+    required?: boolean
+    additional?: boolean
+    withExamples?: boolean
+    hideModelNames?: boolean
+  }>(),
+  {
+    isDiscriminator: false,
+    required: false,
+    withExamples: true,
+    hideModelNames: false,
+  },
+)
 
-const flattenDefaultValue = (value: Record<string, any>) => {
+// Convert to reactive refs for composables
+const valueRef = toRef(props, 'value')
+
+const constValue = computed(() => {
+  if (!valueRef.value) {
+    return undefined
+  }
+
+  const schema = valueRef.value
+
+  // Direct const value
+  if (schema.const !== undefined) {
+    return schema.const
+  }
+
+  // Single-item enum acts as const
+  if (schema.enum?.length === 1) {
+    return schema.enum[0]
+  }
+
+  // Check items for const values (for arrays)
+  if (isArraySchema(schema) && schema.items) {
+    const items = getResolvedRef(schema.items)
+
+    if (isDefined(items.const)) {
+      return items.const
+    }
+
+    if (items.enum?.length === 1) {
+      return items.enum[0]
+    }
+  }
+
+  return undefined
+})
+
+const validationProperties = computed(() => {
+  if (!valueRef.value) {
+    return []
+  }
+
+  const schema = valueRef.value
+  const properties = []
+
+  // Array validation properties
+  if (isArraySchema(schema)) {
+    if (schema.minItems || schema.maxItems) {
+      properties.push({
+        key: 'array-range',
+        value: `${schema.minItems || ''}…${schema.maxItems || ''}`,
+      })
+    }
+
+    // Unique items
+    if (schema.uniqueItems) {
+      properties.push({
+        key: 'unique-items',
+        value: 'unique!',
+      })
+    }
+  }
+
+  // String length properties
+  if (isStringSchema(schema)) {
+    if (schema.minLength) {
+      properties.push({
+        key: 'min-length',
+        prefix: 'min length: ',
+        value: schema.minLength,
+      })
+    }
+
+    if (schema.maxLength) {
+      properties.push({
+        key: 'max-length',
+        prefix: 'max length: ',
+        value: schema.maxLength,
+      })
+    }
+
+    // Pattern
+    if (schema.pattern) {
+      properties.push({
+        key: 'pattern',
+        value: schema.pattern,
+        code: true,
+        truncate: true,
+      })
+    }
+  }
+
+  // Format
+  if (isStringSchema(schema) || isNumberSchema(schema)) {
+    if (schema.format) {
+      properties.push({
+        key: 'format',
+        value: schema.format,
+        truncate: true,
+      })
+    }
+  }
+
+  // Numeric validation properties
+  if (isNumberSchema(schema)) {
+    if (isDefined(schema.exclusiveMinimum)) {
+      properties.push({
+        key: 'exclusive-minimum',
+        prefix: 'greater than: ',
+        value: schema.exclusiveMinimum,
+      })
+    }
+
+    if (isDefined(schema.minimum)) {
+      properties.push({
+        key: 'minimum',
+        prefix: 'min: ',
+        value: schema.minimum,
+      })
+    }
+
+    if (isDefined(schema.exclusiveMaximum)) {
+      properties.push({
+        key: 'exclusive-maximum',
+        prefix: 'less than: ',
+        value: schema.exclusiveMaximum,
+      })
+    }
+
+    if (isDefined(schema.maximum)) {
+      properties.push({
+        key: 'maximum',
+        prefix: 'max: ',
+        value: schema.maximum,
+      })
+    }
+
+    if (isDefined(schema.multipleOf)) {
+      properties.push({
+        key: 'multiple-of',
+        prefix: 'multiple of: ',
+        value: schema.multipleOf,
+      })
+    }
+  }
+
+  return properties
+})
+
+/** Gets the model name */
+const modelName = computed(() => {
+  if (!props.value) {
+    return null
+  }
+
+  return getModelName(props.value, props.hideModelNames)
+})
+
+/** Check if we should show the type information */
+const shouldShowType = computed(() => {
+  if (!props.value || !('type' in props.value)) {
+    return false
+  }
+
+  // Always show type for arrays, even when items have const values
+  if (props.value.type === 'array') {
+    return true
+  }
+
+  // For non-arrays, only show if no const value at the schema level
+  return !constValue.value
+})
+
+/** Get the display type */
+const displayType = computed(() => {
+  if (!props.value) {
+    return ''
+  }
+  return modelName.value || getSchemaType(props.value)
+})
+
+/**
+ * Flattens default values for display purposes.
+ */
+const flattenedDefaultValue = computed(() => {
+  const value = props.value
+
   if (value?.default === null) {
     return 'null'
   }
 
-  if (Array.isArray(value?.default) && value.default.length === 1) {
-    return value.default[0]
+  if (Array.isArray(value?.default) && value?.default.length === 1) {
+    return String(value?.default[0])
   }
 
   if (typeof value?.default === 'string') {
     return JSON.stringify(value.default)
   }
 
+  if (Array.isArray(value?.default)) {
+    return JSON.stringify(value?.default)
+  }
+
+  if (typeof value?.default === 'object') {
+    return JSON.stringify(value?.default)
+  }
+
   return value?.default
-}
-
-const constValue = computed(() => {
-  if (isDefined(value?.const)) {
-    return value?.const
-  }
-
-  if (value?.enum?.length === 1) {
-    return value.enum[0]
-  }
-
-  if (value?.items) {
-    if (isDefined(value.items.const)) {
-      return value.items.const
-    }
-
-    if (value.items.enum?.length === 1) {
-      return value.items.enum[0]
-    }
-  }
-  return null
-})
-
-/** Computes the human-readable type for a schema property. */
-const displayType = computed(() => {
-  if (Array.isArray(value?.type)) {
-    return value.type.join(' | ')
-  }
-
-  if (value?.title) {
-    return value.title
-  }
-
-  if (value?.name) {
-    return value.name
-  }
-
-  if (value?.type && value.contentEncoding) {
-    return `${value.type} • ${value.contentEncoding}`
-  }
-
-  return value?.type ?? ''
-})
-
-/** Gets the model name */
-const modelName = computed(() => {
-  if (!value) {
-    return null
-  }
-
-  return getModelName(
-    value,
-    schemas,
-    hideModelNames,
-    getDiscriminatorSchemaName,
-  )
 })
 </script>
 <template>
@@ -106,137 +250,103 @@ const modelName = computed(() => {
     <div
       v-if="$slots.name"
       class="property-name"
-      :class="{ deprecated: value?.deprecated }">
-      <slot
-        v-if="!pattern"
-        name="name" />
-      <template v-else>&sol;<slot name="name" />&sol;</template>
+      :class="{ deprecated: props.value?.deprecated }">
+      <slot name="name" />
     </div>
     <div
-      v-if="value?.isDiscriminator"
+      v-if="props.isDiscriminator"
       class="property-discriminator">
       Discriminator
     </div>
-    <template v-if="value">
-      <SchemaPropertyDetail v-if="value?.type">
-        <ScreenReader>Type:</ScreenReader>
-        <template v-if="modelName">
-          {{ modelName }}
-        </template>
-        <template v-else>
-          {{ displayType }}
-          {{ value?.nullable ? ' | nullable' : '' }}
-        </template>
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="value.minItems || value.maxItems">
-        {{ value.minItems }}&hellip;{{ value.maxItems }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="value.minLength">
-        <template #prefix>min:</template>
-        {{ value.minLength }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="value.maxLength">
-        <template #prefix>max:</template>
-        {{ value.maxLength }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="value.uniqueItems">
-        unique!
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="value.format">
-        <ScreenReader>Format:</ScreenReader>
-        {{ value.format }}
-      </SchemaPropertyDetail>
+    <template v-if="props.value">
+      <!-- Type information -->
       <SchemaPropertyDetail
-        v-if="isDefined(value.minimum) && value.exclusiveMinimum">
-        <template #prefix>greater than:</template>
-        {{ value.minimum }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail
-        v-if="isDefined(value.minimum) && !value.exclusiveMinimum">
-        <template #prefix>min:</template>
-        {{ value.minimum }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail
-        v-if="isDefined(value.maximum) && value.exclusiveMaximum">
-        <template #prefix>less than:</template>
-        {{ value.maximum }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail
-        v-if="isDefined(value.maximum) && !value.exclusiveMaximum">
-        <template #prefix>max:</template>
-        {{ value.maximum }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="isDefined(value.multipleOf)">
-        <template #prefix>multiple of:</template>
-        {{ value.multipleOf }}
-      </SchemaPropertyDetail>
-      <SchemaPropertyDetail
-        v-if="value.pattern"
-        code
+        v-if="shouldShowType"
         truncate>
-        <ScreenReader>Pattern:</ScreenReader>
-        {{ value.pattern }}
+        <ScreenReader>Type: </ScreenReader>{{ displayType }}
       </SchemaPropertyDetail>
-      <SchemaPropertyDetail v-if="$props.enum">enum</SchemaPropertyDetail>
+
+      <!-- Dynamic validation properties from composable -->
       <SchemaPropertyDetail
-        v-if="value.default !== undefined"
+        v-for="property in validationProperties"
+        :key="property.key"
+        :code="property.code"
+        :truncate="property.truncate">
+        <ScreenReader v-if="property.key === 'format'">Format:</ScreenReader>
+        <ScreenReader v-else-if="property.key === 'pattern'">
+          Pattern:
+        </ScreenReader>
+        <template
+          v-if="property.prefix"
+          #prefix>
+          {{ property.prefix }}
+        </template>
+        {{ property.value }}
+      </SchemaPropertyDetail>
+
+      <!-- Enum indicator -->
+      <SchemaPropertyDetail v-if="props.enum">enum</SchemaPropertyDetail>
+
+      <!-- Default value -->
+      <SchemaPropertyDetail
+        v-if="flattenedDefaultValue !== undefined"
         truncate>
-        <template #prefix>default:</template>
-        {{ flattenDefaultValue(value) }}
+        <template #prefix>default:</template>{{ flattenedDefaultValue }}
       </SchemaPropertyDetail>
     </template>
     <div
-      v-if="additional"
+      v-if="props.additional"
       class="property-additional">
-      <template v-if="value?.['x-additionalPropertiesName']">
-        {{ value['x-additionalPropertiesName'] }}
+      <template v-if="props.value?.['x-additionalPropertiesName']">
+        {{ props.value['x-additionalPropertiesName'] }}
       </template>
       <template v-else>additional properties</template>
     </div>
     <div
-      v-if="pattern"
-      class="property-pattern">
-      <Badge>pattern</Badge>
-    </div>
-    <div
-      v-if="value?.deprecated"
+      v-if="props.value?.deprecated"
       class="property-deprecated">
       <Badge>deprecated</Badge>
     </div>
+    <!-- Don't use `isDefined` here, we want to show `const` when the value is `null` -->
     <div
-      v-if="isDefined(constValue)"
+      v-if="constValue !== undefined"
       class="property-const">
       <SchemaPropertyDetail truncate>
-        <template #prefix>const:</template>
-        {{ constValue }}
+        <template #prefix>const: </template>
+        <RenderString :value="constValue" />
       </SchemaPropertyDetail>
     </div>
     <template v-else>
-      <!-- Shows only when a composition is used (so value?.type is undefined) -->
-      <SchemaPropertyDetail v-if="value?.nullable === true">
+      <!-- Shows only when a composition is used (so props.value?.type is undefined) -->
+      <SchemaPropertyDetail v-if="(props.value as any)?.nullable === true">
         nullable
       </SchemaPropertyDetail>
     </template>
     <div
-      v-if="value?.writeOnly"
+      v-if="props.value?.writeOnly"
       class="property-write-only">
       write-only
     </div>
     <div
-      v-else-if="value?.readOnly"
+      v-else-if="props.value?.readOnly"
       class="property-read-only">
       read-only
     </div>
     <div
-      v-if="required"
+      v-if="props.required"
       class="property-required">
       required
     </div>
     <!-- examples -->
     <SchemaPropertyExamples
-      v-if="withExamples"
-      :examples="value?.examples"
-      :example="value?.example || value?.items?.example" />
+      v-if="props.withExamples"
+      :example="
+        props.value?.example ||
+        (props.value &&
+          isArraySchema(props.value) &&
+          getResolvedRef(props.value?.items)?.example)
+      "
+      :examples="props.value?.examples" />
   </div>
 </template>
 <style scoped>
@@ -269,7 +379,6 @@ const modelName = computed(() => {
   font-family: var(--scalar-font-code);
   font-weight: var(--scalar-semibold);
   font-size: var(--scalar-font-size-3);
-  overflow: hidden;
   white-space: normal;
   overflow-wrap: break-word;
 }
@@ -284,27 +393,27 @@ const modelName = computed(() => {
 }
 
 .property-required {
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   color: var(--scalar-color-orange);
 }
 
 .property-read-only {
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   color: var(--scalar-color-blue);
 }
 
 .property-write-only {
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   color: var(--scalar-color-green);
 }
 
 .property-discriminator {
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   color: var(--scalar-color-purple);
 }
 
 .property-detail {
-  font-size: var(--scalar-micro);
+  font-size: var(--scalar-mini);
   color: var(--scalar-color-2);
   display: flex;
   align-items: center;

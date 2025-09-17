@@ -406,6 +406,16 @@ const { handleDragEnd, isDroppable } = environmentDragHandlerFactory(
   activeWorkspaceCollections,
   collectionMutators,
 )
+
+watch(
+  () => route.query.openEnvironmentModal,
+  (newVal) => {
+    if (newVal === 'true') {
+      openEnvironmentModal()
+    }
+  },
+  { immediate: true },
+)
 </script>
 <template>
   <ViewLayout>
@@ -537,7 +547,6 @@ const { handleDragEnd, isDroppable } = environmentDragHandlerFactory(
           class="py-2 pr-2 pl-px md:px-4"
           :envVariables="activeEnvVariables"
           :environment="activeEnvironment"
-          isCopyable
           language="json"
           lineNumbers
           lint

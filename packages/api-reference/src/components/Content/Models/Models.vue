@@ -1,116 +1,55 @@
 <script setup lang="ts">
-import { ScalarErrorBoundary } from '@scalar/components'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-import { computed, useId } from 'vue'
+import type { ApiReferenceConfiguration } from '@scalar/types'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
+import type { OpenApiDocument } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { computed } from 'vue'
 
-import { useSidebar } from '@/features/sidebar'
+import { Lazy } from '@/components/Lazy'
 import { useNavState } from '@/hooks/useNavState'
 
-import {
-  CompactSection,
-  Section,
-  SectionContainer,
-  SectionHeader,
-  SectionHeaderTag,
-} from '../../Section'
-import ShowMoreButton from '../../ShowMoreButton.vue'
-import { Lazy } from '../Lazy'
-import { Schema, SchemaHeading } from '../Schema'
+import ClassicLayout from './ClassicLayout.vue'
+import ModernLayout from './ModernLayout.vue'
 
-const props = defineProps<{
-  schemas?: Record<string, OpenAPIV3_1.SchemaObject> | unknown
+const { document } = defineProps<{
+  document: OpenApiDocument
+  config: ApiReferenceConfiguration
 }>()
 
-const headerId = useId()
+const { hash } = useNavState()
 
-const MAX_MODELS_INITIALLY_SHOWN = 10
+/** Array of the name and value of all component schemas */
+const schemas = computed(() => {
+  const _schemas = document.components?.schemas
 
-const { collapsedSidebarItems } = useSidebar()
-const { getModelId } = useNavState()
-
-const showAllModels = computed(
-  () =>
-    Object.keys(props.schemas ?? {}).length <= MAX_MODELS_INITIALLY_SHOWN ||
-    collapsedSidebarItems[getModelId()],
-)
-
-const models = computed(() => {
-  const allModels = Object.keys(props.schemas ?? {})
-
-  if (showAllModels.value) {
-    return allModels
+  if (!_schemas) {
+    return []
   }
 
-  // return only first MAX_MODELS_INITIALLY_SHOWN models
-  return allModels.slice(0, MAX_MODELS_INITIALLY_SHOWN)
+  const entries = Object.entries(_schemas)
+
+  /** Remove any internal or ignored schemas */
+  return entries.flatMap(([name, _schema]) => {
+    const schema = getResolvedRef(_schema)
+    if (schema['x-internal'] || schema['x-scalar-ignore']) {
+      return []
+    }
+
+    // Need the type assertion because of the typescript limitation
+    return [{ name, schema }]
+  })
 })
 </script>
 <template>
-  <SectionContainer
-    v-if="schemas"
-    id="models">
-    <Section :aria-labelledby="headerId">
-      <SectionHeader>
-        <SectionHeaderTag
-          :id="headerId"
-          :level="2">
-          Models
-        </SectionHeaderTag>
-      </SectionHeader>
-      <Lazy
-        id="models"
-        :isLazy="false" />
-      <div
-        class="models-list"
-        :class="{ 'models-list-truncated': !showAllModels }">
-        <Lazy
-          v-for="name in models"
-          :id="getModelId({ name })"
-          :key="name"
-          isLazy>
-          <CompactSection
-            :id="getModelId({ name })"
-            class="models-list-item"
-            :label="name">
-            <template #heading>
-              <SectionHeaderTag :level="3">
-                <SchemaHeading
-                  :name="(schemas as any)[name].title ?? name"
-                  :value="(schemas as any)[name]" />
-              </SectionHeaderTag>
-            </template>
-            <ScalarErrorBoundary>
-              <Schema
-                noncollapsible
-                :hideHeading="true"
-                :hideModelNames="true"
-                :schemas="schemas"
-                :level="1"
-                :value="(schemas as any)[name]" />
-            </ScalarErrorBoundary>
-          </CompactSection>
-        </Lazy>
-      </div>
-      <ShowMoreButton
-        v-if="!showAllModels"
-        :id="getModelId()"
-        class="show-more-models" />
-    </Section>
-  </SectionContainer>
+  <Lazy
+    v-if="schemas && Object.keys(schemas).length > 0"
+    id="models"
+    :isLazy="Boolean(hash) && !hash.startsWith('model')">
+    <ClassicLayout
+      v-if="config?.layout === 'classic'"
+      :models="schemas" />
+    <ModernLayout
+      v-else
+      :config="config"
+      :schemas="schemas" />
+  </Lazy>
 </template>
-<style scoped>
-.models-list {
-  display: contents;
-}
-.models-list-truncated .models-list-item:last-child {
-  border-bottom: var(--scalar-border-width) solid var(--scalar-border-color);
-}
-.show-more-models {
-  margin-top: 32px;
-  top: 0px;
-}
-/* increase z-index for hover of examples */
-.models-list-item:hover {
-  z-index: 10;
-}
-</style>

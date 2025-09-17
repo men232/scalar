@@ -1,29 +1,17 @@
 <script setup lang="ts">
-import type { Request as RequestEntity } from '@scalar/oas-utils/entities/spec'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-
-import type { Schemas } from '@/features/Operation/types/schemas'
+import type {
+  ParameterObject,
+  RequestBodyObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 
 import ParameterList from './ParameterList.vue'
 import RequestBody from './RequestBody.vue'
 
-const {
-  parameters = [],
-  requestBody,
-  schemas,
-} = defineProps<{
-  parameters?: OpenAPIV3_1.ParameterObject[]
-  requestBody?: OpenAPIV3_1.RequestBodyObject | undefined
-  schemas?: Schemas
+const { parameters = [], requestBody } = defineProps<{
+  breadcrumb?: string[]
+  parameters?: ParameterObject[]
+  requestBody?: RequestBodyObject | undefined
 }>()
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
-}>()
-
-const handleDiscriminatorChange = (type: string) => {
-  emit('update:modelValue', type)
-}
 
 const filterParameters = (where: 'path' | 'query' | 'header' | 'cookie') =>
   parameters?.filter((parameter) => parameter.in === where) ?? []
@@ -31,38 +19,37 @@ const filterParameters = (where: 'path' | 'query' | 'header' | 'cookie') =>
 <template>
   <!-- Path parameters-->
   <ParameterList
-    :parameters="filterParameters('path')"
-    :schemas="schemas">
+    :breadcrumb="breadcrumb ? [...breadcrumb, 'path'] : undefined"
+    :parameters="filterParameters('path')">
     <template #title>Path Parameters</template>
   </ParameterList>
 
   <!-- Query parameters -->
   <ParameterList
-    :parameters="filterParameters('query')"
-    :schemas="schemas">
+    :breadcrumb="breadcrumb ? [...breadcrumb, 'query'] : undefined"
+    :parameters="filterParameters('query')">
     <template #title>Query Parameters</template>
   </ParameterList>
 
   <!-- Headers -->
   <ParameterList
-    :parameters="filterParameters('header')"
-    :schemas="schemas">
+    :breadcrumb="breadcrumb ? [...breadcrumb, 'headers'] : undefined"
+    :parameters="filterParameters('header')">
     <template #title>Headers</template>
   </ParameterList>
 
   <!-- Cookies -->
   <ParameterList
-    :parameters="filterParameters('cookie')"
-    :schemas="schemas">
+    :breadcrumb="breadcrumb ? [...breadcrumb, 'cookies'] : undefined"
+    :parameters="filterParameters('cookie')">
     <template #title>Cookies</template>
   </ParameterList>
 
   <!-- Request body -->
   <RequestBody
     v-if="requestBody"
-    :requestBody="requestBody"
-    :schemas="schemas"
-    @update:modelValue="handleDiscriminatorChange">
+    :breadcrumb="breadcrumb ? [...breadcrumb, 'body'] : undefined"
+    :requestBody="requestBody">
     <template #title>Body</template>
   </RequestBody>
 </template>

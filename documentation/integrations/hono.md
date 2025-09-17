@@ -2,7 +2,7 @@
 
 This middleware provides an easy way to render a beautiful API reference based on an OpenAPI/Swagger document with Hono.
 
-![hono-js](https://github.com/scalar/scalar/assets/6176314/6f5a2102-e377-4d4e-9cfb-a512f5e0a9ba)
+![Screenshot of the Hono integration](/screenshots/hono.png)
 
 ## Installation
 
@@ -34,7 +34,7 @@ app.get('/scalar', Scalar((c) => {
 export default app
 ```
 
-The Hono middleware takes our universal configuration object, [read more about configuration](https://github.com/scalar/scalar/blob/main/documentation/configuration.md) in the core package README.
+The Hono middleware takes our universal configuration object, [read more about configuration](https://guides.scalar.com/scalar/scalar-api-references/configuration) in the core package README.
 
 ### Themes
 
@@ -52,7 +52,7 @@ app.get('/scalar', Scalar({
 
 ### Custom page title
 
-There’s one additional option to set the page title:
+There's one additional option to set the page title:
 
 ```ts
 import { Scalar } from '@scalar/hono-api-reference'

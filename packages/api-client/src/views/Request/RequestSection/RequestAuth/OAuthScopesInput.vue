@@ -44,11 +44,19 @@ function setScope(id: string, checked: boolean) {
   }
 }
 
-function selectAllScopes() {
+const allScopesSelected = computed(
+  () => flow?.selectedScopes?.length === Object.keys(flow?.scopes ?? {}).length,
+)
+
+const selectAllScopes = () => {
   updateScheme(
     `flows.${flow.type}.selectedScopes`,
     Object.keys(flow?.scopes ?? {}),
   )
+}
+
+const deselectAllScopes = () => {
+  updateScheme(`flows.${flow.type}.selectedScopes`, [])
 }
 </script>
 
@@ -71,18 +79,26 @@ function selectAllScopes() {
             {{ Object.keys(flow?.scopes ?? {}).length || 0 }}
           </div>
           <div class="flex items-center gap-1.75">
+            <!-- Deselect All -->
             <ScalarButton
-              v-if="
-                flow?.selectedScopes?.length > 4 &&
-                open &&
-                flow?.selectedScopes?.length <
-                  Object.keys(flow?.scopes ?? {}).length
-              "
-              class="text-c-3 hover:bg-b-2 hover:text-c-1 rounded px-1.5"
+              v-if="allScopesSelected"
+              class="pr-0.75 pl-1 transition-none"
               size="sm"
+              variant="ghost"
+              @click.stop="deselectAllScopes">
+              Deselect All
+            </ScalarButton>
+
+            <!-- Select All -->
+            <ScalarButton
+              v-if="!allScopesSelected"
+              class="pr-0.75 pl-1 transition-none"
+              size="sm"
+              variant="ghost"
               @click.stop="selectAllScopes">
               Select All
             </ScalarButton>
+
             <ScalarIcon
               class="text-c-3 group-hover/scopes-accordion:text-c-2"
               :icon="open ? 'ChevronDown' : 'ChevronRight'"

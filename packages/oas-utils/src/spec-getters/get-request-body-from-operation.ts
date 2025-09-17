@@ -1,6 +1,8 @@
 import { json2xml } from '@scalar/helpers/file/json2xml'
-import type { ContentType, TransformedOperation } from '@scalar/types/legacy'
+import type { ContentType } from '@scalar/types/legacy'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
 
+import type { Operation } from '@/entities/spec'
 import { normalizeMimeTypeObject } from '@/helpers/normalize-mime-type-object'
 import { prettyPrintJson } from '@/helpers/pretty-print-json'
 import { getExampleFromSchema } from './get-example-from-schema'
@@ -49,7 +51,7 @@ const standardMimeTypes: ContentType[] = [
  * Get the request body from the operation.
  */
 export function getRequestBodyFromOperation(
-  operation: Pick<TransformedOperation, 'pathParameters' | 'information'>,
+  operation: Pick<Operation, 'requestBody' | 'parameters'>,
   selectedExampleKey?: string | number,
   omitEmptyAndOptionalProperties?: boolean,
 ): {
@@ -60,7 +62,7 @@ export function getRequestBodyFromOperation(
     value?: string | File
   }[]
 } | null {
-  const originalContent = operation.information?.requestBody?.content
+  const originalContent = operation.requestBody?.content
   const content = normalizeMimeTypeObject(originalContent)
 
   // First try to find a standard mime type
@@ -74,13 +76,13 @@ export function getRequestBodyFromOperation(
   /** Examples */
   const examples = content?.[mimeType]?.examples ?? content?.['application/json']?.examples
 
-  // Let’s use the first example
+  // Let's use the first example
   const selectedExample = examples?.[selectedExampleKey ?? Object.keys(examples ?? {})[0] ?? '']
 
   if (selectedExample) {
     return {
       mimeType,
-      text: prettyPrintJson(selectedExample?.value),
+      text: prettyPrintJson('value' in selectedExample ? selectedExample.value : selectedExample),
     }
   }
 
@@ -93,8 +95,9 @@ export function getRequestBodyFromOperation(
    * parameters cannot exist together for the same operation.”
    */
   const bodyParameters = getParametersFromOperation(
-    operation.information?.parameters ?? [],
-    operation.pathParameters ?? [],
+    operation.parameters ?? [],
+    // TODO: Add path parameters
+    [], // operation.path ?? [],
     'body',
     false,
   )
@@ -124,8 +127,9 @@ export function getRequestBodyFromOperation(
    */
 
   const formDataParameters = getParametersFromOperation(
-    operation.information?.parameters ?? [],
-    operation.pathParameters ?? [],
+    operation.parameters ?? [],
+    // TODO: Add path parameters
+    [], // operation.path ?? [],
     'formData',
     false,
   )
@@ -160,7 +164,7 @@ export function getRequestBodyFromOperation(
   // Update the JSON handling section
   if (isJsonLike) {
     const exampleFromSchema = requestBodyObject?.schema
-      ? getExampleFromSchema(requestBodyObject?.schema, {
+      ? getExampleFromSchema(getResolvedRef(requestBodyObject?.schema), {
           mode: 'write',
           omitEmptyAndOptionalProperties: omitEmptyAndOptionalProperties ?? false,
         })
@@ -177,7 +181,7 @@ export function getRequestBodyFromOperation(
   // XML
   if (mimeType === 'application/xml') {
     const exampleFromSchema = requestBodyObject?.schema
-      ? getExampleFromSchema(requestBodyObject?.schema, {
+      ? getExampleFromSchema(getResolvedRef(requestBodyObject?.schema), {
           xml: true,
           mode: 'write',
         })
@@ -185,7 +189,7 @@ export function getRequestBodyFromOperation(
 
     return {
       mimeType,
-      text: example ?? json2xml(exampleFromSchema, '  '),
+      text: example ?? json2xml(exampleFromSchema),
     }
   }
 
@@ -200,7 +204,7 @@ export function getRequestBodyFromOperation(
   // Plain text
   if (mimeType === 'text/plain') {
     const exampleFromSchema = requestBodyObject?.schema
-      ? getExampleFromSchema(requestBodyObject?.schema, {
+      ? getExampleFromSchema(getResolvedRef(requestBodyObject?.schema), {
           xml: true,
           mode: 'write',
         })
@@ -215,7 +219,7 @@ export function getRequestBodyFromOperation(
   // URL encoded data
   if (mimeType === 'multipart/form-data' || mimeType === 'application/x-www-form-urlencoded') {
     const exampleFromSchema = requestBodyObject?.schema
-      ? getExampleFromSchema(requestBodyObject?.schema, {
+      ? getExampleFromSchema(getResolvedRef(requestBodyObject?.schema), {
           xml: true,
           mode: 'write',
         })

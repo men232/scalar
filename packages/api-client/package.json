@@ -18,7 +18,7 @@
     "rest",
     "testing"
   ],
-  "version": "2.5.11",
+  "version": "2.5.33",
   "engines": {
     "node": ">=20"
   },
@@ -200,8 +200,9 @@
   ],
   "module": "dist/index.js",
   "dependencies": {
-    "@headlessui/tailwindcss": "^0.2.0",
-    "@headlessui/vue": "^1.7.20",
+    "@headlessui/tailwindcss": "catalog:*",
+    "@headlessui/vue": "catalog:*",
+    "@scalar/analytics-client": "workspace:*",
     "@scalar/components": "workspace:*",
     "@scalar/draggable": "workspace:*",
     "@scalar/helpers": "workspace:*",
@@ -218,12 +219,14 @@
     "@scalar/use-codemirror": "workspace:*",
     "@scalar/use-hooks": "workspace:*",
     "@scalar/use-toasts": "workspace:*",
-    "@scalar/use-tooltip": "workspace:*",
+    "@scalar/workspace-store": "workspace:*",
+    "@types/har-format": "^1.2.15",
     "@vueuse/core": "catalog:*",
     "@vueuse/integrations": "catalog:*",
     "focus-trap": "^7",
-    "fuse.js": "^7.0.0",
-    "microdiff": "^1.4.0",
+    "fuse.js": "catalog:*",
+    "js-base64": "catalog:*",
+    "microdiff": "catalog:*",
     "nanoid": "catalog:*",
     "pretty-bytes": "^6.1.1",
     "pretty-ms": "^8.0.0",

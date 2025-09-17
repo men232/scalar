@@ -15,12 +15,12 @@
     "css-variables",
     "scalar"
   ],
-  "version": "0.13.4",
+  "version": "0.13.17",
   "engines": {
     "node": ">=20"
   },
   "scripts": {
-    "build": "vite build && pnpm types:build && tsc-alias -p tsconfig.build.json",
+    "build": "scalar-build-vite",
     "format": "scalar-format",
     "format:check": "scalar-format-check",
     "lint:check": "scalar-lint-check",
@@ -53,10 +53,8 @@
   "devDependencies": {
     "@scalar/build-tooling": "workspace:*",
     "@vitejs/plugin-vue": "catalog:*",
-    "@vitest/coverage-v8": "^1.6.0",
     "tailwindcss": "catalog:*",
     "vite": "catalog:*",
-    "vite-plugin-static-copy": "^1.0.2",
     "vitest": "catalog:*"
   }
 }

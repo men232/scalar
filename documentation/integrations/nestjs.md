@@ -40,7 +40,7 @@ const OpenApiSpecification =
   )
 ```
 
-Recommended: If you’re serving an OpenAPI/Swagger file already, you can pass an URL, too:
+Recommended: If you're serving an OpenAPI/Swagger file already, you can pass an URL, too:
 
 ```ts
 import { apiReference } from '@scalar/nestjs-api-reference'
@@ -49,6 +49,22 @@ app.use(
   '/reference',
   apiReference({
     url: '/openapi.json',
+  }),
+)
+```
+
+## Using with Fastify Adapter
+
+When using NestJS with the Fastify adapter instead of Express, you need to set the `withFastify` option to `true`:
+
+```ts
+/* ... */
+
+app.use(
+  '/reference',
+  apiReference({
+    url: '/openapi.json',
+    withFastify: true, // Required when using Fastify adapter
   }),
 )
 ```

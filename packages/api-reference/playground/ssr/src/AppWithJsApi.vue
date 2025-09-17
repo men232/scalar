@@ -1,6 +1,6 @@
 <script setup lang="ts">
 /**
- * TODO: This works, but doesn’t render anything on the server. Sooo we have some work ahead of us.
+ * TODO: This works, but doesn't render anything on the server. Sooo we have some work ahead of us.
  */
 import { onMounted, ref } from 'vue'
 
@@ -14,7 +14,7 @@ onMounted(() => {
   }
 
   createApiReference(containerRef.value, {
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
   })
 })
 </script>

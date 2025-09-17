@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getHttpMethodInfo } from '@scalar/helpers/http/http-info'
+import type { HttpMethod } from '@scalar/helpers/http/http-methods'
 import { normalizeHttpMethod } from '@scalar/helpers/http/normalize-http-method'
-import type { OpenAPI } from '@scalar/openapi-types'
 import { computed, type Component } from 'vue'
 
 const props = defineProps<{
@@ -12,11 +12,13 @@ const props = defineProps<{
   /** Whether or not to abbreviated the slot content */
   short?: boolean
   /** The HTTP method to show */
-  method: OpenAPI.HttpMethod | string
+  method: HttpMethod | string
 }>()
 
 /** Grabs the method info object which contains abbreviation, color, and background color etc */
-const httpMethodInfo = computed(() => getHttpMethodInfo(props.method))
+const httpMethodInfo = computed(() =>
+  getHttpMethodInfo(String(props.method || '')),
+)
 
 /** Full method name */
 const normalized = computed(() => normalizeHttpMethod(props.method))

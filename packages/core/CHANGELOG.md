@@ -1,5 +1,99 @@
 # @scalar/core
 
+## 0.3.16
+
+### Patch Changes
+
+- Updated dependencies [abe3842]
+  - @scalar/types@0.2.15
+
+## 0.3.15
+
+### Patch Changes
+
+- Updated dependencies [792c937]
+  - @scalar/types@0.2.14
+
+## 0.3.14
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+  - @scalar/types@0.2.13
+
+## 0.3.13
+
+### Patch Changes
+
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- Updated dependencies [6a88108]
+  - @scalar/types@0.2.12
+
+## 0.3.12
+
+### Patch Changes
+
+- 7dfbe9e: fix: dynamically handle function properties
+  - @scalar/types@0.2.11
+
+## 0.3.11
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+  - @scalar/types@0.2.11
+
+## 0.3.10
+
+### Patch Changes
+
+- Updated dependencies [fb62e1b]
+  - @scalar/types@0.2.10
+
+## 0.3.9
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/types@0.2.9
+
+## 0.3.8
+
+### Patch Changes
+
+- Updated dependencies [c10e191]
+  - @scalar/types@0.2.8
+
+## 0.3.7
+
+### Patch Changes
+
+- 66347d4: fix: handle config properties that accept both string and function types
+- Updated dependencies [ad2e3e6]
+  - @scalar/types@0.2.7
+
+## 0.3.6
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/types@0.2.6
+
+## 0.3.5
+
+### Patch Changes
+
+- @scalar/types@0.2.5
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies [1468280]
+  - @scalar/types@0.2.4
+
 ## 0.3.3
 
 ### Patch Changes

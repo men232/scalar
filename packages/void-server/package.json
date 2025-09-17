@@ -15,7 +15,7 @@
     "http testing",
     "hono"
   ],
-  "version": "2.2.0",
+  "version": "2.2.4",
   "engines": {
     "node": ">=20"
   },
@@ -47,8 +47,9 @@
   "module": "dist/index.js",
   "dependencies": {
     "@hono/node-server": "^1.11.0",
-    "hono": "^4.6.5",
-    "object-to-xml": "^2.0.0"
+    "@scalar/helpers": "workspace:*",
+    "hono": "catalog:*",
+    "js-base64": "catalog:*"
   },
   "devDependencies": {
     "@scalar/build-tooling": "workspace:*",

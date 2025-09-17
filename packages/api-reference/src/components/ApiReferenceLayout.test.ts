@@ -1,10 +1,13 @@
+import { dereference, normalize } from '@scalar/openapi-parser'
+import type { OpenAPIV3_1 } from '@scalar/openapi-types'
+import { upgrade } from '@scalar/openapi-upgrader'
+import { createWorkspaceStore } from '@scalar/workspace-store/client'
 import { renderToString } from '@vue/server-renderer'
 import { describe, expect, it, test, vi } from 'vitest'
 import { createSSRApp, h } from 'vue'
 
-import { dereference, upgrade } from '@scalar/openapi-parser'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
 import ApiReferenceLayout from './ApiReferenceLayout.vue'
+import type { UnknownObject } from '@scalar/types/utils'
 
 const EXAMPLE_API_DEFINITIONS = [
   {
@@ -14,12 +17,12 @@ const EXAMPLE_API_DEFINITIONS = [
   },
   {
     title: 'Scalar Galaxy',
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
     name: 'scalar-galaxy-1.json',
   },
   {
     title: 'Scalar Galaxy',
-    url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+    url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
     name: 'scalar-galaxy-2.yaml',
   },
   {
@@ -64,6 +67,8 @@ const EXAMPLE_API_DEFINITIONS = [
   },
 ]
 
+const mockStore = createWorkspaceStore()
+
 describe('ApiReferenceLayout', () => {
   it('has the title in the HTML output', async () => {
     const document = {
@@ -75,7 +80,7 @@ describe('ApiReferenceLayout', () => {
       paths: {},
     }
 
-    const { specification: upgradedDocument } = upgrade(document)
+    const upgradedDocument = upgrade(document)
     const { schema } = await dereference(upgradedDocument)
 
     const app = createSSRApp({
@@ -85,6 +90,7 @@ describe('ApiReferenceLayout', () => {
           isDark: false,
           dereferencedDocument: schema as OpenAPIV3_1.Document,
           originalDocument: JSON.stringify(document),
+          store: mockStore,
         }),
     })
 
@@ -116,7 +122,8 @@ test.concurrent.each(files)('$title ($url)', { timeout: 45 * 1000 }, async ({ ti
     throw new Error('Failed to fetch')
   }
 
-  const { specification: upgradedDocument } = upgrade(document)
+  const normalizedDocument = normalize(document) as UnknownObject
+  const upgradedDocument = upgrade(normalizedDocument)
 
   const { schema } = await dereference(upgradedDocument)
 
@@ -127,6 +134,7 @@ test.concurrent.each(files)('$title ($url)', { timeout: 45 * 1000 }, async ({ ti
         isDark: false,
         dereferencedDocument: schema as OpenAPIV3_1.Document,
         originalDocument: document,
+        store: mockStore,
       }),
   })
 

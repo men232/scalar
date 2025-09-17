@@ -1,47 +1,26 @@
 <script setup lang="ts">
-import {
-  cva,
-  ScalarButton,
-  ScalarIcon,
-  ScalarListbox,
-} from '@scalar/components'
-import type { ContentType, RequestBody } from '@scalar/types/legacy'
-import { computed, ref } from 'vue'
+import { cva, ScalarButton, ScalarListbox } from '@scalar/components'
+import { ScalarIconCaretDown } from '@scalar/icons'
+import type { MediaTypeObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { computed } from 'vue'
 
 import ScreenReader from '@/components/ScreenReader.vue'
 
-const prop = defineProps<{
-  requestBody?: RequestBody
-  defaultValue?: ContentType
+const { content } = defineProps<{
+  content: Record<string, MediaTypeObject> | undefined
 }>()
 
-const emit = defineEmits<{
-  (e: 'selectContentType', payload: { contentType: ContentType }): void
-}>()
+/** The selected content type with two-way binding */
+const selectedContentType = defineModel<string>({ required: true })
 
-const handleSelectContentType = (option: any) => {
-  if (option?.id) {
-    emit('selectContentType', { contentType: option.id as ContentType })
-  }
-}
-
-const contentTypes = computed(() => {
-  if (prop.requestBody?.content) {
-    return Object.keys(prop.requestBody.content)
-  }
-  return []
-})
-
-const selectedContentType = ref<ContentType>(
-  prop.defaultValue || (contentTypes.value[0] as ContentType),
-)
+const contentTypes = computed(() => Object.keys(content ?? {}))
 
 const selectedOption = computed({
   get: () =>
     options.value.find((option) => option.id === selectedContentType.value),
   set: (option) => {
     if (option) {
-      selectedContentType.value = option.id as ContentType
+      selectedContentType.value = option.id
     }
   },
 })
@@ -66,27 +45,24 @@ const contentTypeSelect = cva({
 </script>
 <template>
   <ScalarListbox
-    v-if="prop?.requestBody && contentTypes.length > 1"
+    v-if="contentTypes.length > 1"
     v-model="selectedOption"
-    class="font-normal"
     :options="options"
-    placement="bottom-end"
-    @update:modelValue="handleSelectContentType">
+    placement="bottom-end">
     <ScalarButton
       class="h-fit"
       :class="contentTypeSelect({ dropdown: true })"
       variant="ghost">
       <ScreenReader>Selected Content Type:</ScreenReader>
       <span>{{ selectedContentType }}</span>
-      <ScalarIcon
-        class="ui-open:rotate-180 ml-auto"
-        icon="ChevronDown"
-        size="sm"
-        thickness="2" />
+      <ScalarIconCaretDown
+        class="ui-open:rotate-180 size-2.75 transition-transform duration-100"
+        weight="bold" />
     </ScalarButton>
   </ScalarListbox>
   <div
     v-else
+    class="selected-content-type"
     :class="contentTypeSelect({ dropdown: false })"
     tabindex="0">
     <span>{{ selectedContentType }}</span>

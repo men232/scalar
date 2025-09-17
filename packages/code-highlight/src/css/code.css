@@ -15,7 +15,6 @@
     font-size: inherit;
     color: var(--scalar-color-2);
     font-family: var(--scalar-font-code);
-    display: inline-block;
     counter-reset: linenumber;
   }
   .hljs {
@@ -28,7 +27,7 @@
     display: inline-block;
     counter-increment: linenumber;
     content: counter(linenumber);
-    margin-right: 0.7em;
+    margin-right: 0.875rem;
     /* Variable is set on the code element by the plugin when line numbers are used */
     min-width: calc(var(--line-digits) * 1ch);
     text-align: right;

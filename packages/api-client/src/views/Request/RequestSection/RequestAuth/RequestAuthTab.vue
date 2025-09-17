@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import { ScalarMarkdown } from '@scalar/components'
-import {
-  CLIENT_LS_KEYS,
-  safeLocalStorage,
-} from '@scalar/helpers/object/local-storage'
+import { ScalarMarkdownSummary } from '@scalar/components'
 import type { Environment } from '@scalar/oas-utils/entities/environment'
 import type {
   Collection,
@@ -11,18 +7,14 @@ import type {
   Server,
 } from '@scalar/oas-utils/entities/spec'
 import type { Workspace } from '@scalar/oas-utils/entities/workspace'
-import { isDefined } from '@scalar/oas-utils/helpers'
 import type { Path, PathValue } from '@scalar/object-utils/nested'
-import type { Entries } from 'type-fest'
 import { capitalize, computed, onMounted, ref } from 'vue'
 
 import { DataTableCell, DataTableRow } from '@/components/DataTable'
 import type { EnvVariable } from '@/store/active-entities'
 import { useWorkspace } from '@/store/store'
-import {
-  updateScheme as _updateScheme,
-  type Auth,
-} from '@/views/Request/RequestSection/helpers/update-scheme'
+import { updateScheme as _updateScheme } from '@/views/Request/RequestSection/helpers/update-scheme'
+import { restoreAuthFromLocalStorage } from '@/views/Request/RequestSection/RequestAuth/helpers/restore-auth-from-local-storage'
 
 import OAuth2 from './OAuth2.vue'
 import RequestAuthDataTableInput from './RequestAuthDataTableInput.vue'
@@ -47,9 +39,16 @@ const {
   workspace: Workspace
 }>()
 
+const emits = defineEmits<{
+  authorized: []
+}>()
+
+defineSlots<{
+  'oauth-actions'?: () => unknown
+}>()
+
 const storeContext = useWorkspace()
-const { collectionMutators, securitySchemes, securitySchemeMutators } =
-  storeContext
+const { securitySchemes } = storeContext
 const security = computed(() =>
   securitySchemeUids.map((uid) => ({
     scheme: securitySchemes[uid],
@@ -103,54 +102,7 @@ onMounted(() => {
     return
   }
 
-  const auth: Auth<Path<SecurityScheme>> = JSON.parse(
-    safeLocalStorage().getItem(CLIENT_LS_KEYS.AUTH) ?? '{}',
-  )
-
-  /** Map the security scheme name key to the uid */
-  const dict = Object.keys(securitySchemes).reduce(
-    (acc, key) => {
-      const scheme = securitySchemes[key]
-      if (scheme) {
-        acc[scheme.nameKey] = scheme.uid
-      }
-      return acc
-    },
-    {} as Record<string, SecurityScheme['uid']>,
-  )
-
-  /** Now we can use the dict to restore the auth from local storage */
-  Object.entries(auth).forEach(([key, entry]) => {
-    const uid = dict[key]
-    if (uid) {
-      const entries = Object.entries(entry) as Entries<typeof entry>
-      entries.forEach(([path, value]) => {
-        securitySchemeMutators.edit(uid, path, value)
-      })
-    }
-  })
-
-  /** Restore the selected security scheme uids */
-  try {
-    const selectedSchemeUids: (string | string[])[] = JSON.parse(
-      safeLocalStorage().getItem(CLIENT_LS_KEYS.SELECTED_SECURITY_SCHEMES) ??
-        '',
-    )
-
-    // Convert back to uids
-    const uids = selectedSchemeUids
-      .map((nameKeys) => {
-        if (Array.isArray(nameKeys)) {
-          return nameKeys.map((key) => dict[key]).filter(isDefined)
-        }
-        return dict[nameKeys]
-      })
-      .filter(isDefined)
-
-    collectionMutators.edit(collection.uid, 'selectedSecuritySchemeUids', uids)
-  } catch (e) {
-    // Nothing to restore
-  }
+  restoreAuthFromLocalStorage(storeContext, collection.uid)
 })
 
 /** To make prop drilling a little easier */
@@ -166,15 +118,14 @@ const dataTableInputProps = {
     v-for="{ scheme } in security"
     :key="scheme?.uid">
     <!-- Header -->
-    <DataTableRow
-      v-if="security.length > 1"
-      :class="{
-        'request-example-references-header': layout === 'reference',
-      }">
+    <DataTableRow v-if="security.length > 1 && scheme">
       <DataTableCell
-        class="text-c-2 flex items-center pl-3"
-        :class="layout === 'reference' && 'border-b'">
-        {{ generateLabel(scheme!) }}
+        :aria-label="generateLabel(scheme)"
+        class="text-c-2 group/auth flex items-center leading-[22px] whitespace-nowrap outline-none hover:whitespace-normal">
+        <p
+          class="bg-b-1 text-c-2 outline-b-3 top-0 z-1 h-full w-full overflow-hidden px-3 py-1.25 text-ellipsis group-hover/auth:absolute group-hover/auth:h-auto group-hover/auth:border-b *:first:line-clamp-1 *:first:text-ellipsis group-hover/auth:*:first:line-clamp-none">
+          {{ generateLabel(scheme) }}
+        </p>
       </DataTableCell>
     </DataTableRow>
 
@@ -182,9 +133,9 @@ const dataTableInputProps = {
     <DataTableRow v-if="scheme?.description && security.length <= 1">
       <DataTableCell
         :aria-label="scheme.description"
-        class="text-c-2 auth-description-container group/auth -mb-0.25 flex items-center whitespace-nowrap outline-none hover:whitespace-normal">
-        <ScalarMarkdown
-          class="auth-description bg-b-1 text-c-2 outline-b-3 top-0 z-1 line-clamp-1 h-full w-full px-3 py-1.5 group-hover/auth:line-clamp-none"
+        class="max-h-[auto]">
+        <ScalarMarkdownSummary
+          class="auth-description bg-b-1 text-c-2 min-w-0 flex-1 px-3 py-1.25"
           :value="scheme.description" />
       </DataTableCell>
     </DataTableRow>
@@ -210,9 +161,6 @@ const dataTableInputProps = {
           <RequestAuthDataTableInput
             v-bind="dataTableInputProps"
             class="text-c-2"
-            :containerClass="
-              layout === 'reference' && 'auth-blend-required border-t'
-            "
             :modelValue="scheme.username"
             placeholder="janedoe"
             required
@@ -262,12 +210,12 @@ const dataTableInputProps = {
       <DataTableRow>
         <div
           v-if="Object.keys(scheme.flows).length > 1"
-          class="flex min-h-8 border-t text-sm">
+          class="flex min-h-8 border-t text-base">
           <div class="flex h-8 max-w-full gap-2.5 overflow-x-auto px-3">
             <button
               v-for="(_, key, ind) in scheme?.flows"
               :key="key"
-              class="floating-bg text-c-3 relative cursor-pointer border-b-[1px] border-transparent py-1 text-sm font-medium"
+              class="floating-bg text-c-3 relative cursor-pointer border-b-[1px] border-transparent py-1 text-base font-medium"
               :class="{
                 '!text-c-1 !rounded-none border-b-[1px] !border-current':
                   layout !== 'reference' &&
@@ -294,41 +242,22 @@ const dataTableInputProps = {
           :persistAuth="persistAuth"
           :scheme="scheme"
           :server="server"
-          :workspace="workspace" />
+          :workspace="workspace"
+          @authorized="emits('authorized')">
+          <template #oauth-actions>
+            <slot name="oauth-actions" />
+          </template>
+        </OAuth2>
       </template>
     </template>
 
     <!-- Open ID Connect -->
     <template v-else-if="scheme?.type === 'openIdConnect'">
       <div
-        class="text-c-3 bg-b-1 flex min-h-[calc(4rem+1px)] items-center justify-center border-t border-b-0 px-4 text-sm"
+        class="text-c-3 bg-b-1 flex min-h-[calc(4rem+1px)] items-center justify-center border-t border-b-0 px-4 text-base"
         :class="{ 'rounded-b-lg': layout === 'reference' }">
         Coming soon
       </div>
     </template>
   </template>
 </template>
-
-<style scoped>
-.auth-blend-required :deep(.scalar-input-required),
-.auth-blend-required :deep(.required) {
-  background: var(--scalar-background-2);
-  --tw-bg-base: var(--scalar-background-2);
-  --tw-shadow: -8px 0 4px var(--scalar-background-2);
-}
-
-.request-example-references-header :deep(+ tr > td) {
-  border-top: 0;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
-}
-
-.scalar-data-table .auth-description-container .auth-description {
-  outline: 0.5px solid var(--scalar-border-color);
-}
-
-.scalar-data-table .auth-description-container:hover .auth-description {
-  position: absolute;
-  height: auto;
-}
-</style>

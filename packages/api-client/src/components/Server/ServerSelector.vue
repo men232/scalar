@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { ScalarButton, ScalarIcon, ScalarListbox } from '@scalar/components'
+import { ScalarButton, ScalarListbox } from '@scalar/components'
+import { ScalarIconCaretDown } from '@scalar/icons'
 import type { Collection, Server } from '@scalar/oas-utils/entities/spec'
 import { computed, watch } from 'vue'
 
@@ -87,21 +88,21 @@ const serverUrlWithoutTrailingSlash = computed(() => {
     placement="bottom-start"
     resize
     :target="target"
-    :teleport="`#${target}`">
+    :teleport="`#${target}`"
+    class="group">
     <ScalarButton
-      class="bg-b-1 text-c-1 h-auto w-full justify-start gap-0.75 overflow-x-auto rounded-t-none rounded-b-lg px-3 py-1.5 text-xs font-normal whitespace-nowrap -outline-offset-1 lg:text-sm"
+      class="bg-b-1 text-c-1 h-auto w-full justify-start gap-1.5 overflow-x-auto rounded-t-none rounded-b-lg px-3 py-1.5 text-base font-normal whitespace-nowrap -outline-offset-1"
       variant="ghost">
       <span class="sr-only">Server:</span>
       <span class="overflow-x-auto">{{ serverUrlWithoutTrailingSlash }}</span>
-      <ScalarIcon
-        class="text-c-2"
-        icon="ChevronDown"
-        size="sm" />
+      <ScalarIconCaretDown
+        weight="bold"
+        class="text-c-2 ui-open:rotate-180 mt-0.25 size-3 transition-transform duration-100" />
     </ScalarButton>
   </ScalarListbox>
   <div
     v-else
-    class="text-c-1 flex h-auto w-full items-center gap-0.75 rounded-b-lg px-3 py-1.5 text-xs whitespace-nowrap lg:text-sm">
+    class="text-c-1 flex h-auto w-full items-center gap-0.75 rounded-b-lg px-3 py-1.5 text-base leading-[20px] whitespace-nowrap">
     <span class="sr-only">Server:</span>
     <span class="overflow-x-auto">{{ serverUrlWithoutTrailingSlash }}</span>
   </div>

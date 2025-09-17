@@ -1,5 +1,88 @@
 # @scalar/snippetz
 
+## 0.4.9
+
+### Patch Changes
+
+- Updated dependencies [abe3842]
+  - @scalar/types@0.2.15
+
+## 0.4.8
+
+### Patch Changes
+
+- 40e79b9: fix(snippetz): use correct query format in ofetch snippets
+- Updated dependencies [792c937]
+  - @scalar/types@0.2.14
+
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+  - @scalar/types@0.2.13
+
+## 0.4.6
+
+### Patch Changes
+
+- 86d29c1: feat(snippetz): improve indentation handling in objectToString
+
+## 0.4.5
+
+### Patch Changes
+
+- Updated dependencies [6a88108]
+  - @scalar/types@0.2.12
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+  - @scalar/types@0.2.11
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies [fb62e1b]
+  - @scalar/types@0.2.10
+
+## 0.4.2
+
+### Patch Changes
+
+- fbb7daa: feat: improved rust/reqwest output
+- Updated dependencies [591562f]
+  - @scalar/types@0.2.9
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies [c10e191]
+  - @scalar/types@0.2.8
+
+## 0.4.0
+
+### Minor Changes
+
+- 85a81eb: add Rust reqwest async/sync
+
+### Patch Changes
+
+- d93f60c: chore(snippetz): move @scalar/types to dependencies
+- Updated dependencies [ad2e3e6]
+  - @scalar/types@0.2.7
+
+## 0.3.2
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+
 ## 0.3.1
 
 ### Patch Changes

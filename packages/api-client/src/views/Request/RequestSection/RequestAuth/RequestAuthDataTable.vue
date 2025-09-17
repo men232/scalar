@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useModal } from '@scalar/components'
+import { isDefined } from '@scalar/helpers/array/is-defined'
 import type { Environment } from '@scalar/oas-utils/entities/environment'
 import type {
   Collection,
@@ -10,6 +11,7 @@ import type { Workspace } from '@scalar/oas-utils/entities/workspace'
 import { computed, ref, watch } from 'vue'
 
 import { DataTable } from '@/components/DataTable'
+import { useWorkspace } from '@/store'
 import type { EnvVariable } from '@/store/active-entities'
 
 import DeleteRequestAuthModal from './DeleteRequestAuthModal.vue'
@@ -35,6 +37,16 @@ const {
   workspace: Workspace
 }>()
 
+const emits = defineEmits<{
+  authorized: []
+  activeSchemes: [schemes: SecurityScheme[]]
+}>()
+
+defineSlots<{
+  'oauth-actions'?: () => unknown
+}>()
+
+const { securitySchemes } = useWorkspace()
 const deleteSchemeModal = useModal()
 const selectedScheme = ref<{ id: SecurityScheme['uid']; label: string } | null>(
   null,
@@ -45,18 +57,40 @@ const activeAuthIndex = ref(0)
 
 /** Return currently selected schemes including complex auth */
 const activeScheme = computed(() => {
+  if (!selectedSchemeOptions || selectedSchemeOptions.length === 0) {
+    return []
+  }
+
   const option = selectedSchemeOptions[activeAuthIndex.value]
   if (!option) {
     return []
   }
-  const keys = option?.id.split(',')
+
+  const keys = option.id.split(',').filter(Boolean)
   return keys.length > 1 ? keys : [option.id]
 })
+
+/** Emit active schemes */
+watch(
+  activeScheme,
+  (newActiveSchemes) => {
+    emits(
+      'activeSchemes',
+      newActiveSchemes
+        .map((scheme) => securitySchemes[scheme])
+        .filter(isDefined),
+    )
+  },
+  { immediate: true },
+)
+
+/** Return true if there are any active schemes */
+const hasActiveSchemes = computed(() => activeScheme.value.length > 0)
 
 watch(
   () => selectedSchemeOptions,
   (newOptions) => {
-    if (!newOptions[activeAuthIndex.value]) {
+    if (!newOptions || !newOptions[activeAuthIndex.value]) {
       activeAuthIndex.value = Math.max(0, activeAuthIndex.value - 1)
     }
   },
@@ -66,8 +100,8 @@ watch(
   <form @submit.prevent>
     <div
       v-if="selectedSchemeOptions.length > 1"
-      class="box-content flex h-8 flex-wrap gap-x-2.5 overflow-hidden border border-b-0 px-3"
-      :class="layout === 'client' && 'border-r-0'">
+      class="box-content flex flex-wrap gap-x-2.5 overflow-hidden border border-b-0 px-3"
+      :class="layout === 'client' && 'border-x-0'">
       <div
         v-for="(option, index) in selectedSchemeOptions"
         :key="option.id"
@@ -88,7 +122,7 @@ watch(
     </div>
 
     <DataTable
-      v-if="activeScheme.length"
+      v-if="hasActiveSchemes"
       class="flex-1"
       :class="layout === 'reference' && 'bg-b-1 rounded-b-lg border border-t-0'"
       :columns="['']"
@@ -101,7 +135,12 @@ watch(
         :persistAuth="persistAuth"
         :securitySchemeUids="activeScheme"
         :server="server"
-        :workspace="workspace" />
+        :workspace="workspace"
+        @authorized="emits('authorized')">
+        <template #oauth-actions>
+          <slot name="oauth-actions" />
+        </template>
+      </RequestAuthTab>
     </DataTable>
 
     <div

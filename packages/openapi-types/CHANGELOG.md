@@ -1,5 +1,29 @@
 # @scalar/openapi-types
 
+## 0.3.7
+
+### Patch Changes
+
+- ccf875a: feat: support x-scalar-credentials-location extension
+
+## 0.3.6
+
+### Patch Changes
+
+- 591562f: feat: add support for x-scalar-security-body extension
+
+## 0.3.5
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+
+## 0.3.4
+
+### Patch Changes
+
+- 533469b: refactor: decouple request code block from the state (not in use yet)
+
 ## 0.3.3
 
 ### Patch Changes

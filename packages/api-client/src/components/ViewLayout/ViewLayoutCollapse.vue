@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
 import { ScalarIcon } from '@scalar/components'
-import { useId } from 'vue'
+import { onMounted, ref, useId } from 'vue'
 
 const {
   defaultOpen = true,
@@ -13,16 +13,32 @@ const {
   layout?: 'client' | 'reference'
 }>()
 
+const emit = defineEmits<{
+  (e: 'update:modelValue', v: boolean): void
+}>()
+
 const id = useId()
+const isOpen = ref(defaultOpen)
+
+const toggleOpen = () => {
+  isOpen.value = !isOpen.value
+  emit('update:modelValue', isOpen.value)
+}
+
+onMounted(() => {
+  emit('update:modelValue', isOpen.value)
+})
 </script>
+
 <template>
   <Disclosure
     v-slot="{ open }"
     as="div"
-    class="group/collapse focus-within:text-c-1 text-c-2 border-b"
+    class="group/collapse focus-within:text-c-1 text-c-2 last:ui-open:border-b-0 border-b"
     :class="{ 'last-of-type:first-of-type:border-b-0': layout === 'reference' }"
     :defaultOpen="defaultOpen"
-    :static="layout === 'reference' ? true : undefined">
+    :static="layout === 'reference' ? true : undefined"
+    @click="toggleOpen">
     <section
       :aria-labelledby="id"
       class="contents">
@@ -31,7 +47,7 @@ const id = useId()
         :class="layout === 'reference' && 'rounded-t-lg border border-b-0'">
         <DisclosureButton
           :class="[
-            'hover:text-c-1 group box-content flex max-h-8 flex-1 items-center gap-2.5 overflow-hidden px-1 py-1.5 text-sm font-medium outline-none md:px-1.5 xl:pr-0.5 xl:pl-2',
+            'hover:text-c-1 group box-content flex max-h-8 flex-1 items-center gap-2.5 overflow-hidden px-1 py-1.5 text-base font-medium outline-none md:px-1.5 xl:pr-0.5 xl:pl-2',
             { '!pl-3': layout === 'reference' },
           ]"
           :disabled="layout === 'reference'">
@@ -42,7 +58,8 @@ const id = useId()
             ]"
             icon="ChevronRight"
             size="md" />
-          <h2 class="text-c-1 flex flex-1 items-center gap-1.5">
+          <h2
+            class="text-c-1 m-0 flex flex-1 items-center gap-1.5 leading-[20px]">
             <span
               :id="id"
               class="contents">
@@ -65,7 +82,7 @@ const id = useId()
         </DisclosureButton>
         <div
           v-if="$slots.actions"
-          class="ui-not-open:invisible flex items-center gap-2 pr-2">
+          class="ui-not-open:hidden flex items-center gap-2 pr-0.75">
           <slot
             name="actions"
             :open="open" />

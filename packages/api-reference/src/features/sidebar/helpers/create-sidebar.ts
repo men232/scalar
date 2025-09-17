@@ -1,12 +1,11 @@
 import type { OpenAPIV3_1 } from '@scalar/openapi-types'
 
-import { computed, reactive, ref, type Ref } from 'vue'
-import { lazyBus } from '@/components/Content/Lazy/lazyBus'
+import { lazyBus } from '@/components/Lazy'
+import { type Ref, computed, reactive, ref } from 'vue'
 
 import type { TraverseSpecOptions } from '@/features/traverse-schema'
 import { traverseDocument } from '@/features/traverse-schema'
 import { scrollToId } from '@scalar/helpers/dom/scroll-to-id'
-import { measure } from '@scalar/helpers/testing/measure'
 
 /** Track which sidebar items are opened */
 type CollapsedSidebarItems = Record<string, boolean>
@@ -42,7 +41,7 @@ export const createSidebar = (dereferencedDocument: Ref<OpenAPIV3_1.Document>, o
       // We use the lazyBus to check when the target has loaded then scroll to it
       if (!collapsedSidebarItems[sectionId]) {
         const unsubscribe = lazyBus.on((ev) => {
-          if (ev.id === operationId) {
+          if (ev.loaded === operationId) {
             scrollToId(operationId, focus)
             unsubscribe()
           }
@@ -56,7 +55,7 @@ export const createSidebar = (dereferencedDocument: Ref<OpenAPIV3_1.Document>, o
 
   /** Sidebar items */
   const items = computed(() => {
-    const result = measure('traverseDocument', () => traverseDocument(dereferencedDocument.value, options))
+    const result = traverseDocument(dereferencedDocument.value, options)
 
     // Open all tags
     if (options.config.value.defaultOpenAllTags) {

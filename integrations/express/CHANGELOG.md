@@ -1,5 +1,90 @@
 # @scalar/express-api-reference
 
+## 0.8.18
+
+### Patch Changes
+
+- @scalar/core@0.3.16
+
+## 0.8.17
+
+### Patch Changes
+
+- @scalar/core@0.3.15
+
+## 0.8.16
+
+### Patch Changes
+
+- @scalar/core@0.3.14
+
+## 0.8.15
+
+### Patch Changes
+
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- Updated dependencies [5f022b5]
+  - @scalar/core@0.3.13
+
+## 0.8.14
+
+### Patch Changes
+
+- Updated dependencies [7dfbe9e]
+  - @scalar/core@0.3.12
+
+## 0.8.13
+
+### Patch Changes
+
+- 7031d9c: fix(api-reference): reference theme and style fixes
+  - @scalar/core@0.3.11
+
+## 0.8.12
+
+### Patch Changes
+
+- @scalar/core@0.3.10
+
+## 0.8.11
+
+### Patch Changes
+
+- @scalar/core@0.3.9
+
+## 0.8.10
+
+### Patch Changes
+
+- @scalar/core@0.3.8
+
+## 0.8.9
+
+### Patch Changes
+
+- Updated dependencies [66347d4]
+  - @scalar/core@0.3.7
+
+## 0.8.8
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/core@0.3.6
+
+## 0.8.7
+
+### Patch Changes
+
+- @scalar/core@0.3.5
+
+## 0.8.6
+
+### Patch Changes
+
+- @scalar/core@0.3.4
+
 ## 0.8.5
 
 ### Patch Changes

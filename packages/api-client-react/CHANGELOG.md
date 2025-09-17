@@ -1,5 +1,204 @@
 # @scalar/api-client-react
 
+## 1.3.38
+
+### Patch Changes
+
+- Updated dependencies [8f2a2f2]
+  - @scalar/api-client@2.5.33
+
+## 1.3.37
+
+### Patch Changes
+
+- @scalar/api-client@2.5.32
+
+## 1.3.36
+
+### Patch Changes
+
+- Updated dependencies [f8fc81c]
+  - @scalar/api-client@2.5.31
+
+## 1.3.35
+
+### Patch Changes
+
+- Updated dependencies [c173063]
+- Updated dependencies [c173063]
+  - @scalar/api-client@2.5.30
+
+## 1.3.34
+
+### Patch Changes
+
+- Updated dependencies [5eedb97]
+  - @scalar/api-client@2.5.29
+
+## 1.3.33
+
+### Patch Changes
+
+- Updated dependencies [c470c60]
+- Updated dependencies [abe3842]
+- Updated dependencies [5a7d388]
+  - @scalar/api-client@2.5.28
+  - @scalar/types@0.2.15
+
+## 1.3.32
+
+### Patch Changes
+
+- Updated dependencies [714b197]
+- Updated dependencies [792c937]
+- Updated dependencies [ee605d8]
+  - @scalar/api-client@2.5.27
+  - @scalar/types@0.2.14
+
+## 1.3.31
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+  - @scalar/types@0.2.13
+  - @scalar/api-client@2.5.26
+
+## 1.3.30
+
+### Patch Changes
+
+- @scalar/api-client@2.5.25
+
+## 1.3.29
+
+### Patch Changes
+
+- 5f022b5: feat: use registry.scalar.com URLs as example
+- Updated dependencies [172e397]
+- Updated dependencies [5f022b5]
+- Updated dependencies [6a88108]
+- Updated dependencies [0804cfc]
+  - @scalar/api-client@2.5.24
+  - @scalar/types@0.2.12
+
+## 1.3.28
+
+### Patch Changes
+
+- Updated dependencies [b235392]
+- Updated dependencies [58b9321]
+- Updated dependencies [68e4631]
+- Updated dependencies [376739d]
+  - @scalar/api-client@2.5.23
+  - @scalar/types@0.2.11
+
+## 1.3.27
+
+### Patch Changes
+
+- @scalar/api-client@2.5.22
+
+## 1.3.26
+
+### Patch Changes
+
+- Updated dependencies [c02c1c8]
+- Updated dependencies [b551707]
+- Updated dependencies [dd00357]
+  - @scalar/api-client@2.5.21
+
+## 1.3.25
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [fbef7e1]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [8c731b9]
+- Updated dependencies [8c731b9]
+- Updated dependencies [c0d6793]
+- Updated dependencies [77e700b]
+- Updated dependencies [af22451]
+  - @scalar/api-client@2.5.20
+  - @scalar/types@0.2.11
+
+## 1.3.24
+
+### Patch Changes
+
+- Updated dependencies [60c7bef]
+- Updated dependencies [e895f86]
+- Updated dependencies [fb62e1b]
+- Updated dependencies [cac47ea]
+- Updated dependencies [cac47ea]
+  - @scalar/api-client@2.5.19
+  - @scalar/types@0.2.10
+
+## 1.3.23
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/api-client@2.5.18
+  - @scalar/types@0.2.9
+
+## 1.3.22
+
+### Patch Changes
+
+- @scalar/api-client@2.5.17
+
+## 1.3.21
+
+### Patch Changes
+
+- Updated dependencies [c10e191]
+- Updated dependencies [244edda]
+- Updated dependencies [244edda]
+- Updated dependencies [9e81b17]
+  - @scalar/api-client@2.5.16
+  - @scalar/types@0.2.8
+
+## 1.3.20
+
+### Patch Changes
+
+- Updated dependencies [a696604]
+- Updated dependencies [b2862d9]
+- Updated dependencies [ad2e3e6]
+- Updated dependencies [b2862d9]
+- Updated dependencies [74fdc0e]
+- Updated dependencies [3fdc2f2]
+- Updated dependencies [972602f]
+  - @scalar/api-client@2.5.15
+  - @scalar/types@0.2.7
+
+## 1.3.19
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/api-client@2.5.14
+  - @scalar/types@0.2.6
+
+## 1.3.18
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+- Updated dependencies [4f47b3c]
+  - @scalar/api-client@2.5.13
+  - @scalar/types@0.2.5
+
+## 1.3.17
+
+### Patch Changes
+
+- Updated dependencies [1468280]
+  - @scalar/types@0.2.4
+  - @scalar/api-client@2.5.12
+
 ## 1.3.16
 
 ### Patch Changes

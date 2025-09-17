@@ -1,5 +1,111 @@
 # @scalar/import
 
+## 0.4.24
+
+### Patch Changes
+
+- Updated dependencies [bff46e5]
+  - @scalar/helpers@0.0.11
+  - @scalar/openapi-parser@0.20.6
+
+## 0.4.23
+
+### Patch Changes
+
+- Updated dependencies [39bbc0e]
+  - @scalar/openapi-parser@0.20.5
+
+## 0.4.22
+
+### Patch Changes
+
+- Updated dependencies [821717b]
+  - @scalar/helpers@0.0.10
+  - @scalar/openapi-parser@0.20.4
+
+## 0.4.21
+
+### Patch Changes
+
+- Updated dependencies [b8c4b61]
+  - @scalar/openapi-parser@0.20.3
+
+## 0.4.20
+
+### Patch Changes
+
+- Updated dependencies [98c55d0]
+- Updated dependencies [0e747c7]
+  - @scalar/helpers@0.0.9
+  - @scalar/openapi-parser@0.20.2
+
+## 0.4.19
+
+### Patch Changes
+
+- @scalar/openapi-parser@0.20.1
+
+## 0.4.18
+
+### Patch Changes
+
+- Updated dependencies [d4adeba]
+- Updated dependencies [66b18fc]
+- Updated dependencies [5f022b5]
+- Updated dependencies [c418e92]
+  - @scalar/openapi-parser@0.20.0
+  - @scalar/helpers@0.0.8
+
+## 0.4.17
+
+### Patch Changes
+
+- Updated dependencies [e203e90]
+  - @scalar/openapi-parser@0.19.1
+  - @scalar/helpers@0.0.7
+
+## 0.4.16
+
+### Patch Changes
+
+- Updated dependencies [952bde2]
+- Updated dependencies [2888e18]
+  - @scalar/openapi-parser@0.19.0
+
+## 0.4.15
+
+### Patch Changes
+
+- Updated dependencies [c345d2c]
+- Updated dependencies [c0d6793]
+- Updated dependencies [f3d0216]
+  - @scalar/openapi-parser@0.18.3
+  - @scalar/helpers@0.0.7
+
+## 0.4.14
+
+### Patch Changes
+
+- Updated dependencies [1c2b9f3]
+  - @scalar/openapi-parser@0.18.2
+
+## 0.4.13
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/helpers@0.0.6
+
+## 0.4.12
+
+### Patch Changes
+
+- Updated dependencies [23b150b]
+  - @scalar/helpers@0.0.5
+  - @scalar/openapi-parser@0.18.0
+
 ## 0.4.11
 
 ### Patch Changes

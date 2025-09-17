@@ -1,60 +1,59 @@
 <script lang="ts" setup>
-import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue'
-import { ScalarIcon, ScalarMarkdown } from '@scalar/components'
-import { computed, inject, type Component } from 'vue'
+import { ScalarMarkdown } from '@scalar/components'
+import { isDefined } from '@scalar/helpers/array/is-defined'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
+import type {
+  DiscriminatorObject,
+  SchemaObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { isArraySchema } from '@scalar/workspace-store/schemas/v3.1/strict/type-guards'
+import { computed, type Component } from 'vue'
 
-import {
-  compositions,
-  optimizeValueForDisplay,
-} from '@/components/Content/Schema/helpers/optimizeValueForDisplay'
-import { SpecificationExtension } from '@/components/SpecificationExtension'
-import type { Schemas } from '@/features/Operation/types/schemas'
-import { DISCRIMINATOR_CONTEXT } from '@/hooks/useDiscriminator'
+import { WithBreadcrumb } from '@/components/Anchor'
+import { isTypeObject } from '@/components/Content/Schema/helpers/is-type-object'
+import { SpecificationExtension } from '@/features/specification-extension'
 
+import { optimizeValueForDisplay } from './helpers/optimize-value-for-display'
+import { compositions } from './helpers/schema-composition'
 import Schema from './Schema.vue'
 import SchemaComposition from './SchemaComposition.vue'
-import SchemaDiscriminator from './SchemaDiscriminator.vue'
+import SchemaEnumValues from './SchemaEnumValues.vue'
 import SchemaPropertyHeading from './SchemaPropertyHeading.vue'
 
 /**
- * Note: We’re taking in a prop called `value` which should be a JSON Schema.
+ * Note: We're taking in a prop called `value` which should be a JSON Schema.
  *
- * We’re using `optimizeValueForDisplay` to merge null types in compositions (anyOf, allOf, oneOf, not).
+ * We're using `optimizeValueForDisplay` to merge null types in compositions (anyOf, allOf, oneOf, not).
  * So you should basically use the optimizedValue everywhere in the component.
  */
 
 const props = withDefaults(
   defineProps<{
     is?: string | Component
-    value?: Record<string, any>
+    value: SchemaObject | undefined
     noncollapsible?: boolean
     level?: number
     name?: string
     required?: boolean
     compact?: boolean
+    discriminator?: DiscriminatorObject
     description?: string
-    additional?: boolean
-    pattern?: boolean
-    withExamples?: boolean
     hideModelNames?: boolean
-    schemas?: Schemas
     hideHeading?: boolean
-    discriminatorMapping?: Record<string, string>
-    discriminatorPropertyName?: string
-    isDiscriminator?: boolean
+    /** Hide read-only properties */
+    hideReadOnly?: boolean
+    /** Hide write-only properties */
+    hideWriteOnly?: boolean
+    variant?: 'additionalProperties' | 'patternProperties'
+    breadcrumb?: string[]
   }>(),
   {
     level: 0,
     required: false,
     compact: false,
-    withExamples: true,
     hideModelNames: false,
   },
 )
-
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
-}>()
 
 const descriptions: Record<string, Record<string, string>> = {
   integer: {
@@ -74,29 +73,6 @@ const descriptions: Record<string, Record<string, string>> = {
   },
 }
 
-const displayDescription = (
-  description: string | undefined,
-  value?: Record<string, any>,
-) => {
-  if (value?.properties) {
-    return null
-  }
-
-  if (value?.additionalProperties) {
-    return null
-  }
-
-  if (value?.patternProperties) {
-    return null
-  }
-
-  if (value?.allOf) {
-    return null
-  }
-
-  return description || value?.description || null
-}
-
 const generatePropertyDescription = (property?: Record<string, any>) => {
   if (!property) {
     return null
@@ -114,66 +90,49 @@ const generatePropertyDescription = (property?: Record<string, any>) => {
 const getEnumFromValue = (value?: Record<string, any>): any[] | [] =>
   value?.enum || value?.items?.enum || []
 
-// These helpers manage how enum values are displayed:
-//
-// - For enums with 9 or fewer values, all values are shown.
-// - For enums with more than 9 values, only first 5 are shown initially.
-// - A “Show more” button reveals the remaining values.
-const hasLongEnumList = computed(
-  () => getEnumFromValue(optimizedValue.value).length > 9,
-)
-const initialEnumCount = computed(() => (hasLongEnumList.value ? 5 : 9))
-const visibleEnumValues = computed(() =>
-  getEnumFromValue(optimizedValue.value).slice(0, initialEnumCount.value),
-)
-const remainingEnumValues = computed(() =>
-  getEnumFromValue(optimizedValue.value).slice(initialEnumCount.value),
-)
-
 /** Simplified composition with `null` type. */
 const optimizedValue = computed(() => optimizeValueForDisplay(props.value))
 
-// Inject the discriminator context
-const discriminatorContext = inject(DISCRIMINATOR_CONTEXT, null)
+const displayDescription = computed(() => {
+  const value = optimizedValue.value
 
-/** Handle schema value according to discriminator context */
-const schema = computed(() => {
-  // Prevent recursion in discriminator context presence
-  if (props.level > 0) {
-    return optimizedValue.value
+  if (!value) {
+    return null
   }
 
-  if (discriminatorContext?.value?.mergedSchema) {
-    return discriminatorContext.value.mergedSchema
+  if ('properties' in value) {
+    return null
   }
 
-  return optimizedValue.value
-})
+  if ('additionalProperties' in value) {
+    return null
+  }
 
-/** Get the current selected discriminator schema with the first as default */
-const currentDiscriminator = computed(() => {
-  return (
-    discriminatorContext?.value?.selectedType ||
-    (props.discriminatorMapping
-      ? Object.keys(props.discriminatorMapping)[0]
-      : '')
-  )
+  if ('patternProperties' in value) {
+    return null
+  }
+
+  if (value?.allOf) {
+    return null
+  }
+
+  if (value?.allOf) {
+    return null
+  }
+
+  return props.description || value?.description || null
 })
 
 // Display the property heading if any of the following are true
 const displayPropertyHeading = (
   value?: Record<string, any>,
   name?: string,
-  additional?: boolean,
-  pattern?: boolean,
   required?: boolean,
 ) => {
   return (
     name ||
-    additional ||
-    pattern ||
     value?.deprecated ||
-    value?.const ||
+    value?.const !== undefined ||
     (value?.enum && value.enum.length === 1) ||
     value?.type ||
     value?.nullable === true ||
@@ -183,24 +142,24 @@ const displayPropertyHeading = (
   )
 }
 
-// Handle discriminator type change
-const handleDiscriminatorChange = (type: string) => {
-  emit('update:modelValue', type)
-}
-
 /**
  * Checks if array items have complex structure
  * like: objects, references, discriminators, or compositions
  */
 const hasComplexArrayItems = computed(() => {
   const value = optimizedValue.value
-  if (!value?.items || typeof value.items !== 'object') {
+  if (!value || !isArraySchema(value) || typeof value.items !== 'object') {
     return false
   }
 
   const items = value.items
   return (
-    ('type' in items && ['object'].includes(items.type)) ||
+    ('type' in items &&
+      items.type &&
+      (Array.isArray(items.type)
+        ? items.type.includes('object')
+        : ['object'].includes(items.type))) ||
+    'properties' in items ||
     '$ref' in items ||
     'discriminator' in items ||
     'allOf' in items ||
@@ -212,6 +171,7 @@ const hasComplexArrayItems = computed(() => {
 const shouldRenderArrayItemComposition = (composition: string): boolean => {
   const value = optimizedValue.value
   if (
+    (value && isArraySchema(value) === false) ||
     !value?.items ||
     typeof value.items !== 'object' ||
     !(composition in value.items)
@@ -234,25 +194,61 @@ const shouldRenderObjectProperties = computed(() => {
   }
 
   const value = optimizedValue.value
-  const isObjectType =
-    value.type === 'object' ||
-    (Array.isArray(value.type) && value.type.includes('object'))
+  const isObjectType = isTypeObject(value)
 
-  const hasPropertiesToRender = value.properties || value.additionalProperties
+  const hasPropertiesToRender =
+    'properties' in value || 'additionalProperties' in value
 
   return isObjectType && hasPropertiesToRender
 })
 
-const shouldShowEnumDescriptions = computed(() => {
-  if (!optimizedValue.value?.['x-enumDescriptions']) {
-    return false
+const shouldHaveLink = computed(() => props.level <= 1)
+
+/**
+ * Computes which compositions should be rendered and with which values.
+ * This consolidates the template logic for better performance and readability.
+ */
+const compositionsToRender = computed(() => {
+  if (!optimizedValue.value) {
+    return []
   }
 
-  const enumDescriptions = optimizedValue.value['x-enumDescriptions']
+  return compositions
+    .map((composition) => {
+      // Check if we should render property composition
+      const hasPropertyComposition =
+        optimizedValue.value?.[composition] &&
+        !(
+          isArraySchema(optimizedValue.value) &&
+          optimizedValue.value?.items &&
+          typeof composition === 'string' &&
+          typeof optimizedValue.value.items === 'object' &&
+          composition in optimizedValue.value.items
+        )
 
-  return (
-    typeof enumDescriptions === 'object' && !Array.isArray(enumDescriptions)
-  )
+      if (hasPropertyComposition) {
+        return {
+          composition,
+          value: optimizedValue.value,
+        }
+      }
+
+      // Check if we should render array item composition
+      if (
+        shouldRenderArrayItemComposition(composition) &&
+        optimizedValue.value &&
+        isArraySchema(optimizedValue.value) &&
+        optimizedValue.value.items
+      ) {
+        return {
+          composition,
+          value: optimizedValue.value.items,
+        }
+      }
+
+      return null
+    })
+    .filter(isDefined)
 })
 </script>
 <template>
@@ -260,7 +256,6 @@ const shouldShowEnumDescriptions = computed(() => {
     :is="is ?? 'li'"
     class="property"
     :class="[
-      !displayDescription(description, optimizedValue) ? '' : '',
       `property--level-${level}`,
       {
         'property--compact': compact,
@@ -268,26 +263,34 @@ const shouldShowEnumDescriptions = computed(() => {
       },
     ]">
     <SchemaPropertyHeading
-      v-if="
-        displayPropertyHeading(
-          optimizedValue,
-          name,
-          additional,
-          pattern,
-          required,
-        )
-      "
-      :additional="additional"
+      v-if="displayPropertyHeading(optimizedValue, name, required)"
+      class="group"
       :enum="getEnumFromValue(optimizedValue).length > 0"
-      :pattern="pattern"
-      :required="required"
-      :value="optimizedValue"
-      :schemas="schemas"
-      :hideModelNames="hideModelNames">
+      :hideModelNames
+      :isDiscriminator="discriminator && discriminator.propertyName === name"
+      :required
+      :value="optimizedValue">
       <template
         v-if="name"
         #name>
-        {{ name }}
+        <WithBreadcrumb
+          :breadcrumb="
+            shouldHaveLink && breadcrumb ? [...breadcrumb, name] : undefined
+          ">
+          <template v-if="variant === 'patternProperties'">
+            <span class="property-name-pattern-properties">
+              {{ name }}
+            </span>
+          </template>
+          <template v-else-if="variant === 'additionalProperties'">
+            <span class="property-name-additional-properties">
+              {{ name }}
+            </span>
+          </template>
+          <template v-else>
+            {{ name }}
+          </template>
+        </WithBreadcrumb>
       </template>
       <template
         v-if="optimizedValue?.example"
@@ -296,12 +299,12 @@ const shouldShowEnumDescriptions = computed(() => {
         {{ optimizedValue.example }}
       </template>
     </SchemaPropertyHeading>
+
     <!-- Description -->
     <div
-      v-if="displayDescription(description, optimizedValue)"
+      v-if="displayDescription"
       class="property-description">
-      <ScalarMarkdown
-        :value="displayDescription(description, optimizedValue)" />
+      <ScalarMarkdown :value="displayDescription" />
     </div>
     <div
       v-else-if="generatePropertyDescription(optimizedValue)"
@@ -309,152 +312,71 @@ const shouldShowEnumDescriptions = computed(() => {
       <ScalarMarkdown
         :value="generatePropertyDescription(optimizedValue) || ''" />
     </div>
+
     <!-- Enum -->
-    <div
-      v-if="getEnumFromValue(optimizedValue)?.length > 0 && !isDiscriminator"
-      class="property-enum">
-      <template v-if="shouldShowEnumDescriptions">
-        <div class="property-list">
-          <div
-            v-for="enumValue in getEnumFromValue(optimizedValue)"
-            :key="enumValue"
-            class="property">
-            <div class="property-heading">
-              <div class="property-name">
-                {{ enumValue }}
-              </div>
-            </div>
-            <div class="property-description">
-              <ScalarMarkdown
-                :value="optimizedValue?.['x-enumDescriptions']?.[enumValue]" />
-            </div>
-          </div>
-        </div>
-      </template>
-      <template v-else>
-        <ul class="property-enum-values">
-          <li
-            v-for="enumValue in visibleEnumValues"
-            :key="enumValue"
-            class="property-enum-value">
-            <span class="property-enum-value-label">
-              {{ enumValue }}
-            </span>
-          </li>
-          <Disclosure
-            v-if="hasLongEnumList"
-            v-slot="{ open }">
-            <DisclosurePanel>
-              <li
-                v-for="enumValue in remainingEnumValues"
-                :key="enumValue"
-                class="property-enum-value">
-                <span class="property-enum-value-label">
-                  {{ enumValue }}
-                </span>
-              </li>
-            </DisclosurePanel>
-            <DisclosureButton class="enum-toggle-button">
-              <ScalarIcon
-                class="enum-toggle-button-icon"
-                :class="{ 'enum-toggle-button-icon--open': open }"
-                icon="Add"
-                size="sm" />
-              {{ open ? 'Hide values' : 'Show all values' }}
-            </DisclosureButton>
-          </Disclosure>
-        </ul>
-      </template>
-    </div>
+    <SchemaEnumValues
+      v-if="
+        (
+          optimizedValue?.enum ||
+          (optimizedValue &&
+            isArraySchema(optimizedValue) &&
+            getResolvedRef(optimizedValue?.items)?.enum) ||
+          []
+        ).length
+      "
+      :value="optimizedValue" />
+
     <!-- Object -->
     <div
       v-if="shouldRenderObjectProperties"
       class="children">
       <Schema
+        :breadcrumb="breadcrumb && name ? [...breadcrumb, name] : undefined"
         :compact="compact"
+        :hideReadOnly="hideReadOnly"
+        :hideWriteOnly="hideWriteOnly"
         :level="level + 1"
         :name="name"
         :noncollapsible="noncollapsible"
-        :value="schema"
-        :resolvedSchema="schema"
-        :discriminatorMapping="discriminatorMapping"
-        :discriminatorPropertyName="discriminatorPropertyName"
-        :schemas="schemas"
-        @update:modelValue="handleDiscriminatorChange" />
+        :schema="optimizedValue" />
     </div>
+
     <!-- Array of objects -->
     <template
-      v-if="optimizedValue?.items && typeof optimizedValue.items === 'object'">
+      v-if="
+        optimizedValue &&
+        isArraySchema(optimizedValue) &&
+        typeof optimizedValue.items === 'object'
+      ">
       <div
         v-if="shouldRenderArrayOfObjects"
         class="children">
         <Schema
           :compact="compact"
+          :hideReadOnly="hideReadOnly"
+          :hideWriteOnly="hideWriteOnly"
           :level="level + 1"
           :name="name"
           :noncollapsible="noncollapsible"
-          :value="
-            schema && typeof schema === 'object' && 'items' in schema
-              ? schema.items
-              : optimizedValue.items
-          "
-          :resolvedSchema="
-            schema && typeof schema === 'object' && 'items' in schema
-              ? schema.items
-              : optimizedValue.items
-          "
-          :discriminatorMapping="discriminatorMapping"
-          :discriminatorPropertyName="discriminatorPropertyName"
-          :schemas="schemas"
-          @update:modelValue="handleDiscriminatorChange" />
+          :schema="getResolvedRef(optimizedValue.items)" />
       </div>
     </template>
-    <!-- Compositions -->
-    <template
-      v-for="composition in compositions"
-      :key="composition">
-      <!-- Property composition -->
-      <template
-        v-if="
-          optimizedValue?.[composition] &&
-          !(
-            optimizedValue?.items &&
-            typeof composition === 'string' &&
-            typeof optimizedValue.items === 'object' &&
-            composition in optimizedValue.items
-          )
-        ">
-        <SchemaComposition
-          :compact="compact"
-          :composition="composition"
-          :hideHeading="hideHeading"
-          :level="level"
-          :name="name"
-          :noncollapsible="noncollapsible"
-          :schemas="schemas"
-          :value="optimizedValue" />
-      </template>
 
-      <!-- Array item composition -->
-      <template
-        v-else-if="shouldRenderArrayItemComposition(composition)"
-        :key="composition">
-        <SchemaComposition
-          :compact="compact"
-          :composition="composition"
-          :hideHeading="hideHeading"
-          :level="level"
-          :name="name"
-          :noncollapsible="noncollapsible"
-          :schemas="schemas"
-          :value="optimizedValue?.items" />
-      </template>
-    </template>
-    <SchemaDiscriminator
-      v-if="isDiscriminator && discriminatorMapping && compact"
-      :discriminator-mapping="discriminatorMapping"
-      :discriminator="currentDiscriminator"
-      @update:modelValue="handleDiscriminatorChange" />
+    <!-- Compositions -->
+    <SchemaComposition
+      v-for="compositionData in compositionsToRender"
+      :key="compositionData.composition"
+      :breadcrumb="breadcrumb"
+      :compact="compact"
+      :composition="compositionData.composition"
+      :discriminator="value?.discriminator"
+      :hideHeading="hideHeading"
+      :hideReadOnly="hideReadOnly"
+      :hideWriteOnly="hideWriteOnly"
+      :level="level"
+      :name="name"
+      :noncollapsible="noncollapsible"
+      :value="getResolvedRef(props.value)!" />
     <SpecificationExtension :value="optimizedValue" />
   </component>
 </template>
@@ -465,14 +387,21 @@ const shouldShowEnumDescriptions = computed(() => {
   display: flex;
   flex-direction: column;
   padding: 8px;
-  font-size: var(--scalar-mini);
+  font-size: var(--scalar-small);
   position: relative;
 }
+
+/** Remove top padding for top level schema card */
 .property.property--level-0:has(
-    .property-rule .schema-properties.schema-properties-open > ul li.property
+    > .property-rule
+      > .schema-card
+      > .schema-properties.schema-properties-open
+      > ul
+      > li.property
   ) {
   padding-top: 0;
 }
+
 /* increase z-index for example hovers */
 .property:hover {
   z-index: 1;
@@ -482,9 +411,11 @@ const shouldShowEnumDescriptions = computed(() => {
 .property--compact.property--level-1 {
   padding: 8px 0;
 }
+
 .composition-panel .property.property.property.property--level-0 {
   padding: 0px;
 }
+
 .property--compact.property--level-0
   .composition-panel
   .property--compact.property--level-1 {
@@ -496,6 +427,7 @@ const shouldShowEnumDescriptions = computed(() => {
   padding-top: 8px;
   padding-bottom: 8px;
 }
+
 .property--deprecated {
   background: repeating-linear-gradient(
     -45deg,
@@ -516,13 +448,11 @@ const shouldShowEnumDescriptions = computed(() => {
   line-height: 1.4;
   font-size: var(--scalar-small);
 }
-.property-heading:empty + .property-description:last-of-type,
-.property-description:first-of-type:last-of-type {
-  margin-top: 0;
-}
+
 .property-description:has(+ .property-rule) {
   margin-bottom: 9px;
 }
+
 :deep(.property-description) * {
   color: var(--scalar-color-2) !important;
 }
@@ -551,11 +481,13 @@ const shouldShowEnumDescriptions = computed(() => {
   padding: 6px;
   border-top: var(--scalar-border-width) solid var(--scalar-border-color);
 }
+
 .property-rule {
   border-radius: var(--scalar-radius-lg);
   display: flex;
   flex-direction: column;
 }
+
 .property-rule
   :deep(
     .composition-panel .schema-card .schema-properties.schema-properties-open
@@ -563,48 +495,17 @@ const shouldShowEnumDescriptions = computed(() => {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
-.property-enum-value {
-  color: var(--scalar-color-3);
-  line-height: 1.5;
-  word-break: break-word;
-  display: flex;
-  align-items: stretch;
-  position: relative;
-}
-.property-enum-value-label {
-  display: flex;
-  padding: 3px 0;
-  font-family: var(--scalar-font-code);
-}
-.property-enum-value:last-of-type .property-enum-value-label {
-  padding-bottom: 0;
-}
-.property-enum-value::before {
-  content: '';
-  margin-right: 12px;
-  width: var(--scalar-border-width);
-  display: block;
-  background: currentColor;
-  color: var(--scalar-color-3);
-}
-.property-enum-value:after {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 0;
-  width: 8px;
-  height: var(--scalar-border-width);
-  background: currentColor;
-}
-.property-enum-value:last-of-type::after {
-  bottom: 0;
-  height: 50%;
-  background: var(--scalar-background-1);
-  border-top: var(--scalar-border-width) solid currentColor;
-}
-.property-enum-values {
-  margin-top: 8px;
-  list-style: none;
+
+.property-rule
+  :deep(.composition-panel > .schema-card > .schema-card-description) {
+  padding-left: 8px;
+  padding-right: 8px;
+  border-left: 1px solid var(--scalar-border-color);
+  border-right: 1px solid var(--scalar-border-color);
+
+  & + .schema-properties {
+    margin-top: 0;
+  }
 }
 
 .property-example {
@@ -614,46 +515,42 @@ const shouldShowEnumDescriptions = computed(() => {
   flex-direction: row;
   gap: 8px;
 }
+
 .property-example-label,
 .property-example-value {
   padding: 3px 0 0 0;
 }
+
 .property-example-value {
   background: var(--scalar-background-2);
   border-top: 0;
   border-radius: var(--scalar-radius);
   padding: 3px 4px;
 }
-.property-list {
-  border: var(--scalar-border-width) solid var(--scalar-border-color);
-  border-radius: var(--scalar-radius);
-  margin-top: 10px;
-}
-.property-list .property:last-of-type {
-  padding-bottom: 10px;
-}
+
 .property-name {
   font-family: var(--scalar-font-code);
   font-weight: var(--scalar-semibold);
 }
-.enum-toggle-button {
-  align-items: center;
-  border: var(--scalar-border-width) solid var(--scalar-border-color);
-  border-radius: 13.5px;
-  cursor: pointer;
-  color: var(--scalar-color-2);
-  display: flex;
-  font-weight: var(--scalar-semibold);
-  gap: 4px;
-  margin-top: 8px;
-  padding: 6px 10px;
-  user-select: none;
-  white-space: nowrap;
-}
-.enum-toggle-button:hover {
+
+.property-name-additional-properties::before,
+.property-name-pattern-properties::before {
+  text-transform: uppercase;
+  font-size: var(--scalar-micro);
+  display: inline-block;
+  padding: 2px 4px;
+  border-radius: var(--scalar-radius);
   color: var(--scalar-color-1);
+  border: 1px solid var(--scalar-border-color);
+  background-color: var(--scalar-background-2);
+  margin-right: 4px;
 }
-.enum-toggle-button-icon--open {
-  transform: rotate(45deg);
+
+.property-name-pattern-properties::before {
+  content: 'regex';
+}
+
+.property-name-additional-properties::before {
+  content: 'unknown';
 }
 </style>

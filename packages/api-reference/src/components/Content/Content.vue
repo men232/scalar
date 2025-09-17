@@ -1,34 +1,64 @@
 <script setup lang="ts">
 import { useActiveEntities, useWorkspace } from '@scalar/api-client/store'
-import { RequestAuth } from '@scalar/api-client/views/Request/RequestSection/RequestAuth'
 import { ScalarErrorBoundary } from '@scalar/components'
 import { getSlugUid } from '@scalar/oas-utils/transforms'
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
-import type { Spec } from '@scalar/types/legacy'
+import type { ApiReferenceConfiguration } from '@scalar/types'
+import type { WorkspaceStore } from '@scalar/workspace-store/client'
 import { computed } from 'vue'
 
-import { BaseUrl } from '@/features/BaseUrl'
-import { useConfig } from '@/hooks/useConfig'
-import { getModels, hasModels } from '@/libs/openapi'
+import IntroductionSection from '@/components/Content/IntroductionSection.vue'
+import { Models } from '@/components/Content/Models'
+import { SectionFlare } from '@/components/SectionFlare'
+import { getXKeysFromObject } from '@/features/specification-extension'
+import { DEFAULT_INTRODUCTION_SLUG } from '@/features/traverse-schema'
+import { useFreezing } from '@/hooks/useFreezing'
+import { useNavState } from '@/hooks/useNavState'
+import { AuthSelector } from '@/v2/blocks/scalar-auth-selector-block'
+import { ClientSelector } from '@/v2/blocks/scalar-client-selector-block'
+import { InfoBlock } from '@/v2/blocks/scalar-info-block'
+import { IntroductionCardItem } from '@/v2/blocks/scalar-info-block/'
+import { generateClientOptions } from '@/v2/blocks/scalar-request-example-block/helpers/generate-client-options'
+import { ServerSelector } from '@/v2/blocks/scalar-server-selector-block'
 
-import { ClientLibraries } from './ClientLibraries'
-import { Introduction } from './Introduction'
-import { Loading } from './Lazy'
-import { Models, ModelsAccordion } from './Models'
-import { TagList } from './Tag'
+import { TraversedEntryContainer } from './Operations'
 
-const props = withDefaults(
-  defineProps<{
-    document: OpenAPIV3_1.Document
-    parsedSpec: Spec
-    layout?: 'modern' | 'classic'
-  }>(),
-  {
-    layout: 'modern',
-  },
+const { store, config } = defineProps<{
+  config: ApiReferenceConfiguration
+  store: WorkspaceStore
+}>()
+
+useFreezing()
+
+/**
+ * Generate all client options so that it can be shared between the top client picker and the operations
+ */
+const clientOptions = computed(() =>
+  generateClientOptions(config.hiddenClients),
 )
 
-const config = useConfig()
+const { getHeadingId } = useNavState()
+
+const id = computed(() =>
+  getHeadingId({
+    slug: DEFAULT_INTRODUCTION_SLUG,
+    depth: 1,
+    value: 'Introduction',
+  }),
+)
+
+// Computed property to get all OpenAPI extension fields from the root document object
+const documentExtensions = computed(() =>
+  getXKeysFromObject(store.workspace.activeDocument),
+)
+
+// Computed property to get all OpenAPI extension fields from the document's info object
+const infoExtensions = computed(() =>
+  getXKeysFromObject(store.workspace.activeDocument?.info),
+)
+
+/**
+ * Should be removed after we migrate auth selector
+ */
 const { collections, securitySchemes, servers } = useWorkspace()
 const {
   activeCollection: _activeCollection,
@@ -39,8 +69,8 @@ const {
 
 /** Match the collection by slug if provided */
 const activeCollection = computed(() => {
-  if (config.value.slug) {
-    const collection = collections[getSlugUid(config.value.slug)]
+  if (config.slug) {
+    const collection = collections[getSlugUid(config.slug)]
     if (collection) {
       return collection
     }
@@ -64,219 +94,106 @@ const activeServer = computed(() => {
   return servers[activeCollection.value.servers[0]]
 })
 
-const introCardsSlot = computed(() =>
-  props.layout === 'classic' ? 'after' : 'aside',
-)
+const getOriginalDocument = () => store.exportActiveDocument('json') ?? '{}'
 </script>
 <template>
-  <!-- For adding gradients + animations to introduction of documents that :before / :after won't work for -->
-  <div class="section-flare">
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-    <div class="section-flare-item"></div>
-  </div>
+  <SectionFlare />
+
   <div class="narrow-references-container">
     <slot name="start" />
-    <Loading
-      v-if="activeCollection"
-      :collection="activeCollection"
-      :layout="layout"
-      :parsedSpec="parsedSpec"
-      :server="activeServer" />
 
-    <Introduction
-      v-if="document?.info?.title || document?.info?.description"
-      :document="document">
-      <template #[introCardsSlot]>
-        <ScalarErrorBoundary>
-          <div
-            class="introduction-card"
-            :class="{ 'introduction-card-row': layout === 'classic' }">
-            <div
-              v-if="activeCollection?.servers?.length"
-              class="scalar-reference-intro-server scalar-client introduction-card-item text-sm leading-normal [--scalar-address-bar-height:0px]">
-              <BaseUrl
-                :collection="activeCollection"
-                :server="activeServer" />
-            </div>
-            <div
+    <!-- Introduction -->
+    <IntroductionSection :showEmptyState="!store.workspace.activeDocument">
+      <InfoBlock
+        v-if="store.workspace.activeDocument"
+        :id
+        :documentExtensions
+        :externalDocs="store.workspace.activeDocument.externalDocs"
+        :getOriginalDocument
+        :info="store.workspace.activeDocument.info"
+        :infoExtensions
+        :isLoading="config.isLoading"
+        :layout="config.layout"
+        :oasVersion="store.workspace.activeDocument?.['x-original-oas-version']"
+        :onLoaded="config.onLoaded">
+        <template #selectors>
+          <ScalarErrorBoundary>
+            <IntroductionCardItem
+              v-if="store.workspace.activeDocument?.servers?.length"
+              class="scalar-reference-intro-server scalar-client introduction-card-item text-base leading-normal [--scalar-address-bar-height:0px]">
+              <ServerSelector
+                :servers="store.workspace.activeDocument?.servers ?? []"
+                :xSelectedServer="
+                  store.workspace.activeDocument?.['x-scalar-active-server']
+                " />
+            </IntroductionCardItem>
+          </ScalarErrorBoundary>
+          <ScalarErrorBoundary>
+            <IntroductionCardItem
               v-if="
                 activeCollection &&
                 activeWorkspace &&
                 Object.keys(securitySchemes ?? {}).length
               "
               class="scalar-reference-intro-auth scalar-client introduction-card-item leading-normal">
-              <RequestAuth
+              <AuthSelector
                 :collection="activeCollection"
                 :envVariables="activeEnvVariables"
                 :environment="activeEnvironment"
                 layout="reference"
-                :persistAuth="config.persistAuth"
+                :persistAuth="config?.persistAuth"
                 :selectedSecuritySchemeUids="
                   activeCollection?.selectedSecuritySchemeUids ?? []
                 "
                 :server="activeServer"
                 title="Authentication"
                 :workspace="activeWorkspace" />
-            </div>
-            <ClientLibraries
-              class="introduction-card-item scalar-reference-intro-clients" />
-          </div>
-        </ScalarErrorBoundary>
-      </template>
-    </Introduction>
-    <slot
-      v-else
-      name="empty-state" />
-    <template v-if="parsedSpec.tags && activeCollection">
-      <template v-if="parsedSpec['x-tagGroups']">
-        <TagList
-          v-for="tagGroup in parsedSpec['x-tagGroups']"
-          :key="tagGroup.name"
-          :collection="activeCollection"
-          :layout="layout"
-          :server="activeServer"
-          :spec="parsedSpec"
-          :tags="
-            tagGroup.tags
-              .map((name) => parsedSpec.tags?.find((t) => t.name === name))
-              .filter((tag) => !!tag)
-          " />
-      </template>
-      <TagList
-        v-else
-        :collection="activeCollection"
-        :layout="layout"
-        :schemas="getModels(parsedSpec)"
-        :server="activeServer"
-        :spec="parsedSpec"
-        :tags="parsedSpec.tags" />
-    </template>
+            </IntroductionCardItem>
+          </ScalarErrorBoundary>
+          <ScalarErrorBoundary>
+            <IntroductionCardItem
+              v-if="config?.hiddenClients !== true && clientOptions.length"
+              class="introduction-card-item scalar-reference-intro-clients">
+              <ClientSelector
+                class="introduction-card-item scalar-reference-intro-clients"
+                :clientOptions
+                :xScalarSdkInstallation="
+                  store.workspace.activeDocument?.info?.[
+                    'x-scalar-sdk-installation'
+                  ]
+                "
+                :xSelectedClient="store.workspace['x-scalar-default-client']" />
+            </IntroductionCardItem>
+          </ScalarErrorBoundary>
+        </template>
+      </InfoBlock>
 
-    <!-- Webhooks -->
-    <template v-if="parsedSpec.webhooks?.length && activeCollection">
-      <TagList
-        id="webhooks"
-        :collection="activeCollection"
-        :layout="layout"
-        :schemas="getModels(parsedSpec)"
-        :server="activeServer"
-        :spec="parsedSpec"
-        :tags="[
-          {
-            name: 'Webhooks',
-            description: '',
-            operations: parsedSpec.webhooks,
-          },
-        ]">
-      </TagList>
-    </template>
+      <template #empty-state>
+        <slot name="empty-state" />
+      </template>
+    </IntroductionSection>
 
-    <template v-if="hasModels(parsedSpec) && !config.hideModels">
-      <ModelsAccordion
-        v-if="layout === 'classic'"
-        :schemas="getModels(parsedSpec)" />
-      <Models
-        v-else
-        :schemas="getModels(parsedSpec)" />
-    </template>
+    <!-- Loop on traversed entries -->
+    <TraversedEntryContainer
+      v-if="store.workspace.activeDocument"
+      :clientOptions
+      :config
+      :document="store.workspace.activeDocument"
+      :store />
+
+    <!-- Models -->
+    <Models
+      v-if="!config?.hideModels && store.workspace.activeDocument"
+      :config
+      :document="store.workspace.activeDocument" />
+
     <slot name="end" />
   </div>
 </template>
+
 <style>
 .narrow-references-container {
   container-name: narrow-references-container;
   container-type: inline-size;
-}
-</style>
-<style scoped>
-.render-loading {
-  height: calc(var(--full-height) - var(--refs-header-height));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.introduction-card {
-  display: flex;
-  flex-direction: column;
-}
-.introduction-card-item {
-  display: flex;
-  margin-bottom: 12px;
-  flex-direction: column;
-  justify-content: start;
-}
-.introduction-card-item:has(.description) :deep(.server-form-container) {
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-.introduction-card-item :deep(.request-item) {
-  border-bottom: 0;
-}
-.introduction-card-title {
-  font-weight: var(--scalar-semibold);
-  font-size: var(--scalar-mini);
-  color: var(--scalar-color-3);
-}
-.introduction-card-row {
-  gap: 24px;
-}
-@media (min-width: 600px) {
-  .introduction-card-row {
-    flex-flow: row wrap;
-  }
-}
-.introduction-card-row > * {
-  flex: 1;
-}
-@media (min-width: 600px) {
-  .introduction-card-row > * {
-    min-width: min-content;
-  }
-}
-@media (max-width: 600px) {
-  .introduction-card-row > * {
-    max-width: 100%;
-  }
-}
-@container (max-width: 900px) {
-  .introduction-card-row {
-    flex-direction: column;
-    align-items: stretch;
-    gap: 0px;
-  }
-}
-.introduction-card :deep(.security-scheme-label) {
-  text-transform: uppercase;
-  font-weight: var(--scalar-semibold);
-}
-.references-classic
-  .introduction-card-row
-  :deep(.scalar-card:nth-of-type(2) .scalar-card-header) {
-  display: none;
-}
-.references-classic
-  .introduction-card-row
-  :deep(.scalar-card:nth-of-type(2) .scalar-card-header) {
-  display: none;
-}
-.references-classic
-  .introduction-card-row
-  :deep(
-    .scalar-card:nth-of-type(2)
-      .scalar-card-header.scalar-card--borderless
-      + .scalar-card-content
-  ) {
-  margin-top: 0;
-}
-.section-flare {
-  top: 0;
-  right: 0;
-  pointer-events: none;
 }
 </style>

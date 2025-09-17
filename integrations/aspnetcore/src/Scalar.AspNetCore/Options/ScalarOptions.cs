@@ -20,8 +20,8 @@ public sealed class ScalarOptions
     /// <summary>
     /// Gets or sets the path or URL to a favicon to be used for the documentation.
     /// </summary>
-    /// <value>The default value is <c>null</c>.</value>
-    public string? Favicon { get; set; }
+    /// <value>The default value is <c>favicon.svg</c>.</value>
+    public string? Favicon { get; set; } = "favicon.svg";
 
     /// <summary>
     /// Gets or sets the path prefix to access the documentation.
@@ -55,6 +55,12 @@ public sealed class ScalarOptions
     public bool ShowSidebar { get; set; } = true;
 
     /// <summary>
+    /// Gets or sets whether the sidebar and search should use the operation <i>summary</i> or the operation <i>path</i>.
+    /// </summary>
+    /// <value>The default value is <i>summary</i>.</value>
+    public OperationTitleSource? OperationTitleSource { get; set; }
+
+    /// <summary>
     /// Gets or sets whether models (components.schemas or definitions) should be hidden from the sidebar, search, and content.
     /// </summary>
     /// <value>The default value is <c>false</c>.</value>
@@ -64,6 +70,7 @@ public sealed class ScalarOptions
     /// Gets or sets whether to hide the "Download OpenAPI Specification" button.
     /// </summary>
     /// <value>The default value is <c>false</c>.</value>
+    [Obsolete($"This property is obsolete and will be removed in a future release. Please use the '{nameof(DocumentDownloadType)}' property instead.")]
     public bool HideDownloadButton { get; set; }
 
     /// <summary>
@@ -280,4 +287,22 @@ public sealed class ScalarOptions
     /// When set to <c>true</c>, the authentication state will be stored in the browser's local storage and restored when the user returns to the page.
     /// </remarks>
     public bool PersistentAuthentication { get; set; }
+
+    /// <summary>
+    /// Gets or sets the type of document download available for the API documentation.
+    /// </summary>
+    /// <value>The default value is <c>null</c>.</value>
+    public DocumentDownloadType? DocumentDownloadType { get; set; }
+
+    /// <summary>
+    /// Gets or sets whether required properties should be ordered first in schema properties.
+    /// </summary>
+    /// <value>The default value is <c>false</c>.</value>
+    public bool OrderRequiredPropertiesFirst { get; set; }
+
+    /// <summary>
+    /// Gets or sets the ordering method for schema properties.
+    /// </summary>
+    /// <value>The default value is <c>null</c>.</value>
+    public PropertyOrder? SchemaPropertyOrder { get; set; }
 }

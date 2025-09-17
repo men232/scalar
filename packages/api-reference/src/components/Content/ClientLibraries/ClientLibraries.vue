@@ -1,71 +1,68 @@
 <script setup lang="ts">
 import { TabGroup, TabList, TabPanel, TabPanels } from '@headlessui/vue'
-import { useWorkspace } from '@scalar/api-client/store'
 import { ScalarCodeBlock, ScalarMarkdown } from '@scalar/components'
-import { REFERENCE_LS_KEYS } from '@scalar/helpers/object/local-storage'
-import { computed, onMounted, ref, useId, watch } from 'vue'
+import type { AvailableClients } from '@scalar/snippetz'
+import { emitCustomEvent } from '@scalar/workspace-store/events'
+import type { WorkspaceDocument } from '@scalar/workspace-store/schemas/workspace'
+import { computed, useId, useTemplateRef } from 'vue'
 
-import { useHttpClientStore } from '@/stores/useHttpClientStore'
+import { DEFAULT_CLIENT } from '@/v2/blocks/scalar-request-example-block/helpers/find-client'
+import type { ClientOptionGroup } from '@/v2/blocks/scalar-request-example-block/types'
 
 import ClientSelector from './ClientSelector.vue'
-import { useFeaturedHttpClients } from './useFeaturedHttpClients'
+import { getFeaturedClients, isFeaturedClient } from './featured-clients'
 
 const {
-  availableTargets,
-  httpTargetTitle,
-  httpClientTitle,
-  getClientTitle,
-  getTargetTitle,
-  httpClient,
-  setHttpClient,
-} = useHttpClientStore()
-const { featuredClients, isFeatured } = useFeaturedHttpClients()
+  clientOptions,
+  document,
+  selectedClient = DEFAULT_CLIENT,
+} = defineProps<{
+  /** Current document from the store */
+  document: WorkspaceDocument
+  /** Computed list of all available Http Client options */
+  clientOptions: ClientOptionGroup[]
+  /** The currently selected Http Client */
+  selectedClient?: AvailableClients[number]
+}>()
 
-const store = useWorkspace()
-
-const index = ref(0)
 const headingId = useId()
 const morePanel = useId()
 
-watch(
-  httpClient,
-  (client) => {
-    if (!client) {
-      return
-    }
-
-    index.value = featuredClients.findIndex(
-      (tab) =>
-        tab.targetKey === client.targetKey &&
-        tab.clientKey === client.clientKey,
-    )
-  },
-  { immediate: true },
+/** Grab the option for the currently selected Http Client */
+const selectedClientOption = computed(
+  () =>
+    clientOptions.flatMap(
+      (option) =>
+        option.options.find((option) => option.id === selectedClient) ?? [],
+    )[0],
 )
 
-function handleChange(i: number) {
-  const tab = featuredClients[i]
-  if (!tab) {
+/** List of featured clients */
+const featuredClients = computed(() => getFeaturedClients(clientOptions))
+
+/** Currently selected tab index */
+const tabIndex = computed(() =>
+  featuredClients.value.findIndex(
+    (featuredClient) => selectedClient === featuredClient.id,
+  ),
+)
+
+const wrapper = useTemplateRef('wrapper-ref')
+
+/** Emit the selected client event on tab */
+const onTabSelect = (i: number) => {
+  const client = featuredClients.value[i]
+
+  if (!client || !wrapper.value) {
     return
   }
-  setHttpClient(tab)
+
+  emitCustomEvent(wrapper.value, 'scalar-update-selected-client', client.id)
 }
 
-// Restore selected client from localStorage
-onMounted(() => {
-  const storedClient = localStorage.getItem(REFERENCE_LS_KEYS.SELECTED_CLIENT)
-  if (storedClient) {
-    setHttpClient(JSON.parse(storedClient))
-  }
-})
-
 const installationInstructions = computed(() => {
-  // Get the current collection from the store
-  const firstCollection = Object.values(store.collections)[0]
-
   // Get instructions (if we have any)
-  const XScalarSdkInstallation =
-    firstCollection?.info?.['x-scalar-sdk-installation']
+  const XScalarSdkInstallation = document.info['x-scalar-sdk-installation']
 
   // Check whether we have instructions at all
   if (
@@ -76,10 +73,10 @@ const installationInstructions = computed(() => {
   }
 
   // Find the instructions for the current language
-  const instruction = XScalarSdkInstallation.find(
-    (instruction) =>
-      instruction.lang.toLowerCase() === httpClient?.targetKey?.toLowerCase(),
-  )
+  const instruction = XScalarSdkInstallation.find((instruction) => {
+    const targetKey = selectedClient?.split('/')[0]?.toLowerCase()
+    return instruction.lang.toLowerCase() === targetKey
+  })
 
   // Nothing found?
   if (!instruction) {
@@ -89,25 +86,37 @@ const installationInstructions = computed(() => {
   // Got it!
   return instruction
 })
+
+defineExpose({
+  selectedClientOption,
+})
 </script>
 <template>
-  <div v-if="availableTargets.length">
+  <div
+    v-if="clientOptions.length"
+    ref="wrapper-ref">
     <TabGroup
       manual
-      :selectedIndex="index"
-      @change="handleChange">
+      :selectedIndex="tabIndex"
+      @change="onTabSelect">
       <div
         :id="headingId"
         class="client-libraries-heading">
         Client Libraries
       </div>
+
+      <!-- Tabs -->
       <TabList
         :aria-labelledby="headingId"
         class="client-libraries-list">
         <ClientSelector
-          :featured="featuredClients"
-          :morePanel="morePanel" />
+          :clientOptions
+          :featuredClients
+          :morePanel
+          :selectedClient />
       </TabList>
+
+      <!-- Content -->
       <TabPanels>
         <template
           v-if="
@@ -128,19 +137,18 @@ const installationInstructions = computed(() => {
             role="tabpanel"
             tabindex="1">
             <ScalarCodeBlock
-              lang="shell"
+              class="rounded-t-none rounded-b-lg px-3 py-2 -outline-offset-1 has-focus:outline"
               :content="installationInstructions.source"
               :copy="true"
-              class="rounded-t-none rounded-b-lg px-3 py-2 -outline-offset-1 has-focus:outline" />
+              lang="shell" />
           </div>
         </template>
-        <template v-else-if="httpClient && isFeatured(httpClient)">
+        <template v-else-if="isFeaturedClient(selectedClient)">
           <TabPanel
-            v-for="(client, i) in featuredClients"
-            :key="i"
+            v-for="client in featuredClients"
+            :key="client.id"
             class="selected-client card-footer -outline-offset-2">
-            {{ getClientTitle(client) }}
-            {{ getTargetTitle(client) }}
+            {{ client.title }}
           </TabPanel>
         </template>
         <div
@@ -149,8 +157,7 @@ const installationInstructions = computed(() => {
           class="selected-client card-footer -outline-offset-2"
           role="tabpanel"
           tabindex="0">
-          {{ httpClientTitle }}
-          {{ httpTargetTitle }}
+          {{ selectedClientOption?.title }}
         </div>
       </TabPanels>
     </TabGroup>
@@ -159,7 +166,7 @@ const installationInstructions = computed(() => {
 <style scoped>
 .selected-client {
   color: var(--scalar-color-1);
-  font-size: var(--scalar-mini);
+  font-size: var(--scalar-small);
   font-family: var(--scalar-font-code);
   padding: 9px 12px;
   border-top: none;
@@ -173,8 +180,8 @@ const installationInstructions = computed(() => {
   min-height: fit-content;
 }
 .client-libraries-heading {
-  font-weight: var(--scalar-semibold);
-  font-size: var(--scalar-mini);
+  font-size: var(--scalar-small);
+  font-weight: var(--scalar-font-medium);
   color: var(--scalar-color-1);
   padding: 9px 12px;
   background-color: var(--scalar-background-2);

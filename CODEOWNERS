@@ -3,10 +3,11 @@
 
 # Root level code owners
 /.github @hanspagel @geoffgscott
+/.github/renovate.json @hanspagel @xC0dex
 /*.md @hanspagel @marclave
 
 # Documentation
-/documentation/* @hanspagel @marclave
+/documentation/* @hanspagel @marclave @hwkr @cameronrohani
 
 # Changesets
 /.changeset/*
@@ -34,6 +35,7 @@
 # /packages/use-modal
 /packages/build-watch @geoffgscott @marclave
 /integrations/nestjs @marclave
+/integrations/aspire @marclave @hanspagel @xC0dex
 /integrations/aspnetcore @marclave @hanspagel @xC0dex
 /packages/use-hooks @hwkr @hanspagel @marclave
 # /packages/use-toasts
@@ -41,7 +43,6 @@
 /integrations/express @hanspagel @marclave
 /integrations/nextjs @amritk @marclave
 /integrations/django-ninja @marclave
-# /packages/use-tooltip
 /packages/api-reference @hanspagel @marclave
 /packages/code-highlight @geoffgscott @marclave
 /integrations/fastify @hanspagel @marclave

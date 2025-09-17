@@ -43,7 +43,7 @@ defineSlots<{
   default(props: {
     /** Whether or not the listbox is open */
     open: boolean
-  }): any
+  }): unknown
 }>()
 
 defineOptions({ inheritAttrs: false })
@@ -65,8 +65,7 @@ const { cx } = useBindCx()
       :placement="placement ?? 'bottom-start'">
       <ListboxButton
         :id="id"
-        as="template"
-        class="justify-start focus:outline-none focus-visible:ring-1 focus-visible:ring-c-accent">
+        as="template">
         <slot :open="open" />
       </ListboxButton>
       <template #floating="{ width }">
@@ -74,7 +73,11 @@ const { cx } = useBindCx()
         <div
           v-if="open"
           :style="{ width }"
-          v-bind="cx('relative flex max-h-[inherit] w-40 rounded text-sm')">
+          v-bind="
+            cx(
+              'relative flex max-h-[inherit] w-40 max-w-[inherit] rounded text-sm',
+            )
+          ">
           <!-- Scroll container -->
           <div class="custom-scroll min-h-0 flex-1">
             <!-- Options list -->
@@ -84,7 +87,7 @@ const { cx } = useBindCx()
                 v-for="option in options"
                 :key="option.id"
                 :option="option"
-                :style="multiple ? 'checkbox' : 'radio'" />
+                :multiselect="multiple" />
             </ListboxOptions>
           </div>
           <ScalarFloatingBackdrop />

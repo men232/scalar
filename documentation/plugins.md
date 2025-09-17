@@ -8,7 +8,7 @@ Build custom plugins to extend the functionality of your API reference.
 import { MyCustomPlugin } from './my-custom-plugin.ts'
 
 const configuration = {
-  url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+  url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
   plugins: [
     MyCustomPlugin(),
   ],
@@ -19,7 +19,7 @@ const configuration = {
 
 ### Specification Extensions
 
-The OpenAPI specification allows to **[extend the format**](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.1.md#specification-extensions).
+The OpenAPI specification allows to [**extend the format**](https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.1.md#specification-extensions).
 You can add custom properties. They are always prefixed with a `x-`, here is an example:
 
 ```diff

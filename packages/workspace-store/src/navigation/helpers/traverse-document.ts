@@ -1,10 +1,12 @@
+import type { TagsMap, TraverseSpecOptions } from '@/navigation/types'
+import type { TraversedEntry } from '@/schemas/navigation'
+import type { OpenApiDocument } from '@/schemas/v3.1/strict/openapi-document'
+
 import { traverseDescription } from './traverse-description'
 import { traversePaths } from './traverse-paths'
 import { traverseSchemas } from './traverse-schemas'
 import { traverseTags } from './traverse-tags'
 import { traverseWebhooks } from './traverse-webhooks'
-import type { TagsMap, TraversedEntry, TraverseSpecOptions } from '@/navigation/types'
-import type { OpenApiDocument } from '@/schemas/v3.1/strict/openapi-document'
 
 /**
  * Traverses an OpenAPI Document to generate navigation structure and metadata.
@@ -51,7 +53,7 @@ export const traverseDocument = (
   // Add untagged webhooks
   if (untaggedWebhooks.length) {
     entries.push({
-      id: getWebhookId(),
+      id: getWebhookId({ name: '' }),
       title: 'Webhooks',
       children: untaggedWebhooks,
       type: 'text',
@@ -64,7 +66,7 @@ export const traverseDocument = (
 
     if (untaggedModels.length) {
       entries.push({
-        id: getModelId(),
+        id: getModelId({}),
         title: 'Models',
         children: untaggedModels,
         type: 'text',

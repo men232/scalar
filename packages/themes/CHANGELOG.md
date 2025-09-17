@@ -1,5 +1,105 @@
 # @scalar/themes
 
+## 0.13.17
+
+### Patch Changes
+
+- 8f2a2f2: Bump some dependencies to latest
+
+## 0.13.16
+
+### Patch Changes
+
+- Updated dependencies [abe3842]
+  - @scalar/types@0.2.15
+
+## 0.13.15
+
+### Patch Changes
+
+- 2b22eab: feat(themes): convert default color 1 to grey scale
+- Updated dependencies [792c937]
+  - @scalar/types@0.2.14
+
+## 0.13.14
+
+### Patch Changes
+
+- Updated dependencies [50032be]
+  - @scalar/types@0.2.13
+
+## 0.13.13
+
+### Patch Changes
+
+- 6c24be9: feat(components): update scalar hotkey design
+- Updated dependencies [6a88108]
+  - @scalar/types@0.2.12
+
+## 0.13.12
+
+### Patch Changes
+
+- 952f471: fix(themes): don't style <a> in reset only in markdown
+- 3c1e3e3: fix: removes a level line height from reset
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+  - @scalar/types@0.2.11
+
+## 0.13.11
+
+### Patch Changes
+
+- fb62e1b: feat: adds global base style for anchor tag
+- Updated dependencies [fb62e1b]
+  - @scalar/types@0.2.10
+
+## 0.13.10
+
+### Patch Changes
+
+- 8a67f4f: fix(api-reference): classic layout improvements
+- Updated dependencies [591562f]
+  - @scalar/types@0.2.9
+
+## 0.13.9
+
+### Patch Changes
+
+- 661c7e9: feat(themes): updates dark/light mode accent on default theme
+- Updated dependencies [c10e191]
+  - @scalar/types@0.2.8
+
+## 0.13.8
+
+### Patch Changes
+
+- 3fdc2f2: feat(api-reference): unify inconsistent font styles across scalar client and ref, and improve consistency"
+- Updated dependencies [ad2e3e6]
+  - @scalar/types@0.2.7
+
+## 0.13.7
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/types@0.2.6
+
+## 0.13.6
+
+### Patch Changes
+
+- @scalar/types@0.2.5
+
+## 0.13.5
+
+### Patch Changes
+
+- 4bbbb32: feat(components): add sidebar sections
+- Updated dependencies [1468280]
+  - @scalar/types@0.2.4
+
 ## 0.13.4
 
 ### Patch Changes

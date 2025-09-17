@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import type { ScalarIconComponent } from '@scalar/icons/types'
+import { useBindCx } from '@scalar/use-hooks/useBindCx'
 import { DropdownMenu } from 'radix-vue/namespaced'
 import type { Component } from 'vue'
 
@@ -7,12 +9,16 @@ import { type Icon, ScalarIconLegacyAdapter } from '../ScalarIcon'
 
 const { is = DropdownMenu.Item } = defineProps<{
   is?: string | Component
-  icon?: Icon | Component
+  icon?: Icon | ScalarIconComponent
   strong?: boolean
 }>()
+
+const { cx } = useBindCx()
+defineOptions({ inheritAttrs: false })
 </script>
 <template>
   <ScalarDropdownButton
+    v-bind="cx('flex items-center')"
     :is="is"
     as="a">
     <ScalarIconLegacyAdapter
@@ -28,7 +34,7 @@ const { is = DropdownMenu.Item } = defineProps<{
       v-else
       class="size-3" />
     <div
-      class="flex items-center flex-1"
+      class="flex items-center flex-1 min-w-0 truncate"
       :class="strong ? 'font-medium' : 'font-normal'">
       <slot />
     </div>

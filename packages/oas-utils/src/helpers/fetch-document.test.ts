@@ -16,7 +16,7 @@ beforeAll(async () => {
   } catch (_error) {
     throw new Error(`
 
-[sendRequest.test.ts] Looks like you’re not running @scalar/proxy-server on <http://127.0.0.1:${PROXY_PORT}>, but it’s required for this test file.
+[sendRequest.test.ts] Looks like you're not running @scalar/proxy-server on <http://127.0.0.1:${PROXY_PORT}>, but it's required for this test file.
 
 Try to run it like this:
 
@@ -27,7 +27,7 @@ $ pnpm dev:proxy-server
 
 describe('fetchDocument', () => {
   it('fetches specifications (without a proxy)', async () => {
-    const spec = await fetchDocument('https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml')
+    const spec = await fetchDocument('https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml')
 
     expect(typeof spec).toEqual('string')
     expect(spec.length).toBeGreaterThan(100)
@@ -35,7 +35,7 @@ describe('fetchDocument', () => {
 
   it('fetches specifications (through proxy.scalar.com)', async () => {
     const spec = await fetchDocument(
-      'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+      'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
       'https://proxy.scalar.com',
     )
 
@@ -45,7 +45,7 @@ describe('fetchDocument', () => {
 
   it(`fetches specifications (through 127.0.0.1:${PROXY_PORT})`, async () => {
     const spec = await fetchDocument(
-      'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.yaml',
+      'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=yaml',
       `http://127.0.0.1:${PROXY_PORT}`,
     )
 
@@ -79,5 +79,20 @@ describe('fetchDocument', () => {
 
   it('throws error when fetch fails', async () => {
     await expect(fetchDocument('https://does-not-exist.scalar.com/spec.yaml')).rejects.toThrow('fetch failed')
+  })
+
+  it('uses custom fetch implementation', async () => {
+    const fn = vi.fn()
+
+    const fetcher = async (...args: any) => {
+      fn(...args)
+      return new Response('custom-fetch', { status: 200 })
+    }
+
+    const spec = await fetchDocument('https://example.com/spec.yaml', undefined, fetcher)
+
+    expect(fn).toHaveBeenCalled()
+    expect(fn).toHaveBeenCalledWith('https://example.com/spec.yaml', undefined)
+    expect(spec).toEqual('custom-fetch')
   })
 })

@@ -1,8 +1,8 @@
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
-import { createTestApp } from './app.factory'
-import request from 'supertest'
-import { apiReference } from '../src'
 import type { INestApplication } from '@nestjs/common'
+import request from 'supertest'
+import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { apiReference } from '../src'
+import { createTestApp } from './app.factory'
 
 describe('apiReference middleware (express)', () => {
   let app: INestApplication
@@ -27,7 +27,7 @@ describe('apiReference middleware (express)', () => {
     expect(res.type).toBe('text/html')
     expect(res.text).toContain('<title>Scalar API Reference</title>')
     expect(res.text).toContain('Test API')
-    expect(res.text).toContain('--scalar-color-1: #2a2f45;')
+    expect(res.text).toContain('--scalar-color-1: #1b1b1b;')
   })
 
   it('should not include default theme CSS when a theme is provided', async () => {
@@ -47,7 +47,7 @@ describe('apiReference middleware (express)', () => {
     expect(res.text).toContain('<title>Scalar API Reference</title>')
     expect(res.text).toContain('https://cdn.example.com')
     expect(res.text).toContain('Test API')
-    expect(res.text).not.toContain('--scalar-color-1: #2a2f45;')
+    expect(res.text).not.toContain('--scalar-color-1: #1b1b1b;')
   })
 
   it('should handle missing spec content gracefully', async () => {
@@ -87,13 +87,13 @@ describe('apiReference middleware (express)', () => {
     app.use(
       '/reference',
       apiReference({
-        url: 'https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json',
+        url: 'https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json',
       }),
     )
 
     const res = await request(app.getHttpServer()).get('/reference')
 
-    expect(res.text).toContain('https://cdn.jsdelivr.net/npm/@scalar/galaxy/dist/latest.json')
+    expect(res.text).toContain('https://registry.scalar.com/@scalar/apis/galaxy/latest?format=json')
   })
 
   it('handles content as function', async () => {
@@ -108,6 +108,19 @@ describe('apiReference middleware (express)', () => {
     const res = await request(app.getHttpServer()).get('/reference')
 
     expect(res.text).toContain('Function API')
+  })
+
+  it('preserves function properties in configuration', async () => {
+    app.use(
+      '/reference',
+      apiReference({
+        operationsSorter: (a, b) => a.path.localeCompare(b.path),
+      }),
+    )
+
+    const res = await request(app.getHttpServer()).get('/reference')
+
+    expect(res.text).toContain('"operationsSorter": (a, b) => a.path.localeCompare(b.path)')
   })
 })
 

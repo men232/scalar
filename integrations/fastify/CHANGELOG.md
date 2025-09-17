@@ -1,5 +1,171 @@
 # @scalar/fastify-api-reference
 
+## 1.35.6
+
+### Patch Changes
+
+- 8f2a2f2: Bump some dependencies to latest
+  - @scalar/openapi-parser@0.20.6
+
+## 1.35.5
+
+### Patch Changes
+
+- Updated dependencies [39bbc0e]
+  - @scalar/openapi-parser@0.20.5
+
+## 1.35.4
+
+## 1.35.3
+
+### Patch Changes
+
+- @scalar/openapi-parser@0.20.4
+
+## 1.35.2
+
+### Patch Changes
+
+- Updated dependencies [b8c4b61]
+  - @scalar/openapi-parser@0.20.3
+
+## 1.35.1
+
+### Patch Changes
+
+- @scalar/core@0.3.16
+- @scalar/openapi-parser@0.20.2
+
+## 1.35.0
+
+### Patch Changes
+
+- 3999fb1: fix: does not work with @fastify/swagger decorator option
+  - @scalar/openapi-parser@0.20.2
+  - @scalar/core@0.3.15
+
+## 1.34.6
+
+### Patch Changes
+
+- @scalar/openapi-parser@0.20.1
+- @scalar/core@0.3.14
+
+## 1.34.5
+
+## 1.34.4
+
+### Patch Changes
+
+- Updated dependencies [d4adeba]
+- Updated dependencies [66b18fc]
+- Updated dependencies [5f022b5]
+- Updated dependencies [c418e92]
+  - @scalar/openapi-parser@0.20.0
+  - @scalar/core@0.3.13
+  - @scalar/openapi-types@0.3.7
+
+## 1.34.3
+
+### Patch Changes
+
+- Updated dependencies [e203e90]
+- Updated dependencies [7dfbe9e]
+  - @scalar/openapi-parser@0.19.1
+  - @scalar/core@0.3.12
+  - @scalar/openapi-types@0.3.7
+
+## 1.34.2
+
+## 1.34.1
+
+## 1.34.0
+
+### Patch Changes
+
+- Updated dependencies [952bde2]
+- Updated dependencies [2888e18]
+  - @scalar/openapi-parser@0.19.0
+
+## 1.33.0
+
+### Patch Changes
+
+- 7031d9c: fix(api-reference): reference theme and style fixes
+- Updated dependencies [ccf875a]
+- Updated dependencies [c345d2c]
+  - @scalar/openapi-types@0.3.7
+  - @scalar/openapi-parser@0.18.3
+  - @scalar/core@0.3.11
+
+## 1.32.10
+
+### Patch Changes
+
+- Updated dependencies [1c2b9f3]
+  - @scalar/openapi-parser@0.18.2
+  - @scalar/core@0.3.10
+
+## 1.32.9
+
+## 1.32.8
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/openapi-types@0.3.6
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/core@0.3.9
+
+## 1.32.7
+
+## 1.32.6
+
+### Patch Changes
+
+- @scalar/core@0.3.8
+- @scalar/openapi-parser@0.18.1
+
+## 1.32.5
+
+## 1.32.4
+
+### Patch Changes
+
+- Updated dependencies [66347d4]
+  - @scalar/core@0.3.7
+  - @scalar/openapi-parser@0.18.1
+
+## 1.32.3
+
+## 1.32.2
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/openapi-types@0.3.5
+  - @scalar/core@0.3.6
+
+## 1.32.1
+
+## 1.32.0
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+  - @scalar/openapi-types@0.3.4
+  - @scalar/openapi-parser@0.18.0
+  - @scalar/core@0.3.5
+
+## 1.31.18
+
+### Patch Changes
+
+- @scalar/core@0.3.4
+- @scalar/openapi-parser@0.18.0
+
 ## 1.31.17
 
 ## 1.31.16

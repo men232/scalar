@@ -1,5 +1,205 @@
 # @scalar/mock-server
 
+## 0.5.32
+
+### Patch Changes
+
+- Updated dependencies [bff46e5]
+  - @scalar/helpers@0.0.11
+  - @scalar/oas-utils@0.4.29
+  - @scalar/openapi-parser@0.20.6
+
+## 0.5.31
+
+### Patch Changes
+
+- Updated dependencies [39bbc0e]
+  - @scalar/openapi-parser@0.20.5
+  - @scalar/oas-utils@0.4.28
+
+## 0.5.30
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.27
+
+## 0.5.29
+
+### Patch Changes
+
+- Updated dependencies [821717b]
+  - @scalar/oas-utils@0.4.26
+  - @scalar/helpers@0.0.10
+  - @scalar/openapi-parser@0.20.4
+
+## 0.5.28
+
+### Patch Changes
+
+- Updated dependencies [b8c4b61]
+  - @scalar/openapi-parser@0.20.3
+  - @scalar/oas-utils@0.4.25
+
+## 0.5.27
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.24
+- @scalar/openapi-parser@0.20.2
+
+## 0.5.26
+
+### Patch Changes
+
+- 98c55d0: feat: better xml rendering
+- Updated dependencies [714b197]
+- Updated dependencies [98c55d0]
+- Updated dependencies [cededd8]
+- Updated dependencies [a6ae22a]
+- Updated dependencies [0e747c7]
+- Updated dependencies [976366f]
+  - @scalar/oas-utils@0.4.23
+  - @scalar/helpers@0.0.9
+  - @scalar/openapi-parser@0.20.2
+
+## 0.5.25
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.22
+- @scalar/openapi-parser@0.20.1
+
+## 0.5.24
+
+### Patch Changes
+
+- Updated dependencies [e2272a1]
+- Updated dependencies [b6f4b60]
+  - @scalar/oas-utils@0.4.21
+
+## 0.5.23
+
+### Patch Changes
+
+- Updated dependencies [bbef120]
+- Updated dependencies [a1429ca]
+- Updated dependencies [d4adeba]
+- Updated dependencies [66b18fc]
+- Updated dependencies [5f022b5]
+- Updated dependencies [c418e92]
+  - @scalar/oas-utils@0.4.20
+  - @scalar/openapi-parser@0.20.0
+  - @scalar/openapi-types@0.3.7
+
+## 0.5.22
+
+### Patch Changes
+
+- Updated dependencies [e203e90]
+- Updated dependencies [3de82ac]
+  - @scalar/openapi-parser@0.19.1
+  - @scalar/oas-utils@0.4.19
+  - @scalar/openapi-types@0.3.7
+
+## 0.5.21
+
+### Patch Changes
+
+- Updated dependencies [46bfd2f]
+  - @scalar/oas-utils@0.4.18
+
+## 0.5.20
+
+### Patch Changes
+
+- Updated dependencies [952bde2]
+- Updated dependencies [46ebe6e]
+- Updated dependencies [2888e18]
+  - @scalar/openapi-parser@0.19.0
+  - @scalar/oas-utils@0.4.17
+
+## 0.5.19
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [c345d2c]
+- Updated dependencies [b957a2c]
+  - @scalar/openapi-types@0.3.7
+  - @scalar/oas-utils@0.4.16
+  - @scalar/openapi-parser@0.18.3
+
+## 0.5.18
+
+### Patch Changes
+
+- Updated dependencies [1c2b9f3]
+  - @scalar/openapi-parser@0.18.2
+  - @scalar/oas-utils@0.4.15
+
+## 0.5.17
+
+### Patch Changes
+
+- Updated dependencies [591562f]
+  - @scalar/openapi-types@0.3.6
+  - @scalar/oas-utils@0.4.14
+  - @scalar/openapi-parser@0.18.1
+
+## 0.5.16
+
+### Patch Changes
+
+- 3e657c9: feat(mock-server): update galaxy.scalar.com to use default theme
+- Updated dependencies [71958fd]
+  - @scalar/oas-utils@0.4.13
+
+## 0.5.15
+
+### Patch Changes
+
+- Updated dependencies [c826b3e]
+- Updated dependencies [80acf84]
+  - @scalar/oas-utils@0.4.12
+  - @scalar/openapi-parser@0.18.1
+
+## 0.5.14
+
+### Patch Changes
+
+- Updated dependencies [58287f8]
+- Updated dependencies [74fdc0e]
+  - @scalar/oas-utils@0.4.11
+  - @scalar/openapi-parser@0.18.1
+
+## 0.5.13
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/openapi-parser@0.18.1
+  - @scalar/openapi-types@0.3.5
+  - @scalar/oas-utils@0.4.10
+
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+- Updated dependencies [23b150b]
+  - @scalar/openapi-types@0.3.4
+  - @scalar/oas-utils@0.4.9
+  - @scalar/openapi-parser@0.18.0
+
+## 0.5.11
+
+### Patch Changes
+
+- @scalar/oas-utils@0.4.8
+- @scalar/openapi-parser@0.18.0
+
 ## 0.5.10
 
 ### Patch Changes

@@ -1,7 +1,9 @@
-import { describe, it, expect } from 'vitest'
-import { traversePaths } from './traverse-paths'
+import { describe, expect, it } from 'vitest'
+
 import type { TagsMap, TraverseSpecOptions } from '@/navigation/types'
 import type { OpenApiDocument } from '@/schemas/v3.1/strict/openapi-document'
+
+import { traversePaths } from './traverse-paths'
 
 describe('traversePaths', () => {
   // Mock getOperationId function
@@ -112,9 +114,9 @@ describe('traversePaths', () => {
 
     traversePaths(spec, tagsMap, titlesMap, mockGetOperationId)
     expect(tagsMap.get('Foobar')?.entries.length).toBe(1)
-    expect(tagsMap.get('Foobar')?.entries[0].title).toBe('Get Hello World')
+    expect(tagsMap.get('Foobar')?.entries[0]?.title).toBe('Get Hello World')
     expect(tagsMap.get('default')?.entries.length).toBe(1)
-    expect(tagsMap.get('default')?.entries[0].title).toBe('Post Hello World')
+    expect(tagsMap.get('default')?.entries[0]?.title).toBe('Post Hello World')
   })
 
   it('should handle deprecated operations', () => {
@@ -201,7 +203,7 @@ describe('traversePaths', () => {
     const titlesMap = new Map<string, string>()
 
     traversePaths(spec, tagsMap, titlesMap, mockGetOperationId)
-    expect(tagsMap.get('Misc')?.entries[0].title).toBe('/no-summary')
+    expect(tagsMap.get('Misc')?.entries[0]?.title).toBe('/no-summary')
   })
 
   it('should populate titlesMap correctly', () => {
@@ -222,5 +224,25 @@ describe('traversePaths', () => {
     traversePaths(spec, tagsMap, titlesMap, mockGetOperationId)
 
     expect(titlesMap.get('GET-/test')).toBe('Test endpoint')
+  })
+
+  it('should use the path when the summary is empty', () => {
+    const spec = createBasicSpec()
+    spec.paths = {
+      '/test': {
+        get: {
+          tags: ['Test'],
+          summary: '',
+          operationId: 'testEndpoint',
+        },
+      },
+    }
+
+    const tagsMap: TagsMap = new Map([['Test', { tag: { name: 'Test' }, entries: [] }]])
+    const titlesMap = new Map<string, string>()
+
+    traversePaths(spec, tagsMap, titlesMap, mockGetOperationId)
+
+    expect(titlesMap.get('GET-/test')).toBe('/test')
   })
 })

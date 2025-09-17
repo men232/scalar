@@ -23,6 +23,9 @@ const themeIdEnum = z.enum([
   'none',
 ])
 
+/** Whether to use the operation summary or the operation path for the sidebar and search */
+const operationTitleEnum = z.enum(['summary', 'path'])
+
 /** Valid keys that can be used with CTRL/CMD to open the search modal */
 const searchHotKeyEnum = z.enum([
   'a',
@@ -207,6 +210,11 @@ export const apiClientConfigurationSchema = z.object({
    * @default true
    */
   showSidebar: z.boolean().optional().default(true).catch(true),
+  /**
+   * Whether to use the operation summary or the operation path for the sidebar and search
+   * @default 'summary'
+   */
+  operationTitleSource: operationTitleEnum.optional().default('summary').catch('summary'),
   /** A string to use one of the color presets */
   theme: themeIdEnum.optional().default('default').catch('default'),
   /** Integration type identifier */
@@ -217,9 +225,17 @@ export const apiClientConfigurationSchema = z.object({
   persistAuth: z.boolean().optional().default(false).catch(false),
   /** Plugins for the API client */
   plugins: z.array(ApiClientPluginSchema).optional(),
+  /** Enables / disables telemetry*/
+  telemetry: z.boolean().optional().default(true),
 })
 
 export type ApiClientConfiguration = z.infer<typeof apiClientConfigurationSchema>
+
+export const FetchLike = z
+  .function()
+  .args(z.union([z.string(), z.instanceof(URL), z.instanceof(Request)]), z.any().optional())
+  .returns(z.promise(z.instanceof(Response)))
+  .optional()
 
 /** Configuration for the Api Client without the transform since it cannot be merged */
 const _apiReferenceConfigurationSchema = apiClientConfigurationSchema.merge(
@@ -234,6 +250,12 @@ const _apiReferenceConfigurationSchema = apiClientConfigurationSchema.merge(
      * @deprecated Use proxyUrl instead
      */
     proxy: z.string().optional(),
+    /**
+     * Custom fetch function for custom logic
+     *
+     * Can be used to add custom headers, handle auth, etc.
+     */
+    fetch: FetchLike,
     /**
      * Plugins for the API reference
      */
@@ -254,10 +276,16 @@ const _apiReferenceConfigurationSchema = apiClientConfigurationSchema.merge(
      */
     hideModels: z.boolean().optional().default(false).catch(false),
     /**
+     * Sets the file type of the document to download, set to `none` to hide the download button
+     * @default 'both'
+     */
+    documentDownloadType: z.enum(['yaml', 'json', 'both', 'direct', 'none']).optional().default('both').catch('both'),
+    /**
      * Whether to show the "Download OpenAPI Document" button
      * @default false
+     * @deprecated Use `documentDownloadType: 'none'` instead
      */
-    hideDownloadButton: z.boolean().optional().default(false).catch(false),
+    hideDownloadButton: z.boolean().optional(),
     /**
      * Whether to show the "Test Request" button
      * @default false
@@ -312,6 +340,12 @@ const _apiReferenceConfigurationSchema = apiClientConfigurationSchema.merge(
     onDocumentSelect: z.function().returns(z.void().or(z.void().promise())).optional(),
     /** Callback fired when the reference is fully loaded */
     onLoaded: z.function().returns(z.void().or(z.void().promise())).optional(),
+    /** onBeforeRequest is fired before the request is sent. You can modify the request here. */
+    onBeforeRequest: z
+      .function()
+      .args(z.object({ request: z.instanceof(Request) }))
+      .returns(z.void().or(z.void().promise()))
+      .optional(),
     /**
      * onShowMore is fired when the user clicks the "Show more" button on the references
      * @param tagId - The ID of the tag that was clicked
@@ -434,8 +468,27 @@ const _apiReferenceConfigurationSchema = apiClientConfigurationSchema.merge(
      * @default true
      */
     withDefaultFonts: z.boolean().optional().default(true).catch(true),
-    /** Whether to expand all tags by default */
-    defaultOpenAllTags: z.boolean().optional(),
+    /**
+     * Whether to expand all tags by default
+     *
+     * Warning this can cause performance issues on big documents
+     * @default false
+     */
+    defaultOpenAllTags: z.boolean().optional().default(false).catch(false),
+    /**
+     * Whether to expand all models by default
+     *
+     * Warning this can cause performance issues on big documents
+     * @default false
+     */
+    expandAllModelSections: z.boolean().optional().default(false).catch(false),
+    /**
+     * Whether to expand all responses by default
+     *
+     * Warning this can cause performance issues on big documents
+     * @default false
+     */
+    expandAllResponses: z.boolean().optional().default(false).catch(false),
     /**
      * Function to sort tags
      * @default 'alpha' for alphabetical sorting
@@ -448,6 +501,20 @@ const _apiReferenceConfigurationSchema = apiClientConfigurationSchema.merge(
     operationsSorter: z
       .union([z.literal('alpha'), z.literal('method'), z.function().args(z.any(), z.any()).returns(z.number())])
       .optional(),
+    /**
+     * Order the schema properties by
+     * @default 'alpha' for alphabetical sorting
+     */
+    orderSchemaPropertiesBy: z
+      .union([z.literal('alpha'), z.literal('preserve')])
+      .optional()
+      .default('alpha')
+      .catch('alpha'),
+    /**
+     * Sort the schema properties by required ones first
+     * @default true
+     */
+    orderRequiredPropertiesFirst: z.boolean().optional().default(true).catch(true),
   }),
 )
 
@@ -457,6 +524,15 @@ const NEW_PROXY_URL = 'https://proxy.scalar.com'
 /** Migrate the configuration through a transform */
 const migrateConfiguration = <T extends z.infer<typeof _apiReferenceConfigurationSchema>>(_configuration: T): T => {
   const configuration = { ..._configuration }
+
+  // Migrate hideDownloadButton to documentDownloadType
+  if (configuration.hideDownloadButton) {
+    console.warn(
+      `[DEPRECATED] You're using the deprecated 'hideDownloadButton' attribute. Use 'documentDownloadType: 'none'' instead.`,
+    )
+
+    configuration.documentDownloadType = 'none'
+  }
 
   // Remove the spec prefix
   if (configuration.spec?.url) {

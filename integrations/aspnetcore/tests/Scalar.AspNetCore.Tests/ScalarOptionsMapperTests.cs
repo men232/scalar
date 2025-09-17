@@ -14,8 +14,9 @@ public class ScalarOptionsMapperTests
         // Assert
         configuration.ProxyUrl.Should().BeNull();
         configuration.ShowSidebar.Should().BeTrue();
+        configuration.OperationTitleSource.Should().BeNull();
         configuration.HideModels.Should().BeFalse();
-        configuration.HideDownloadButton.Should().BeFalse();
+        configuration.DocumentDownloadType.Should().BeNull();
         configuration.HideTestRequestButton.Should().BeFalse();
         configuration.DarkMode.Should().BeTrue();
         configuration.ForceDarkModeState.Should().BeNull();
@@ -24,18 +25,20 @@ public class ScalarOptionsMapperTests
         configuration.SearchHotKey.Should().BeNull();
         configuration.Servers.Should().BeNull();
         configuration.MetaData.Should().BeNull();
-        configuration.DefaultHttpClient!.TargetKey.Should().Be("shell");
-        configuration.DefaultHttpClient!.ClientKey.Should().Be("curl");
+        configuration.DefaultHttpClient!.TargetKey.Should().Be(ScalarTarget.Shell);
+        configuration.DefaultHttpClient!.ClientKey.Should().Be(ScalarClient.Curl);
         configuration.HiddenClients.Should().BeNull();
         configuration.Authentication.Should().BeNull();
         configuration.WithDefaultFonts.Should().BeTrue();
         configuration.DefaultOpenAllTags.Should().BeFalse();
-        configuration.TagsSorter.Should().BeNull();
+        configuration.TagSorter.Should().BeNull();
         configuration.OperationsSorter.Should().BeNull();
-        configuration.Theme.Should().Be("purple");
+        configuration.Theme.Should().Be(ScalarTheme.Purple);
         configuration.Integration.Should().Be("dotnet");
         configuration.Sources.Should().BeEmpty();
         configuration.PersistAuth.Should().BeFalse();
+        configuration.OrderRequiredPropertiesFirst.Should().BeFalse();
+        configuration.OrderSchemaPropertiesBy.Should().BeNull();
     }
 
     [Fact]
@@ -46,8 +49,8 @@ public class ScalarOptionsMapperTests
         {
             ProxyUrl = "http://localhost:8080",
             ShowSidebar = false,
+            OperationTitleSource = OperationTitleSource.Path,
             HideModels = true,
-            HideDownloadButton = true,
             HideTestRequestButton = true,
             DarkMode = false,
             ForceThemeMode = ThemeMode.Light,
@@ -60,9 +63,10 @@ public class ScalarOptionsMapperTests
             Metadata = new Dictionary<string, string> { ["key"] = "value" },
             DefaultHttpClient = new KeyValuePair<ScalarTarget, ScalarClient>(ScalarTarget.CSharp, ScalarClient.HttpClient),
             HiddenClients = true,
+#pragma warning disable CS0618 // Type or member is obsolete
+            HideDownloadButton = true,
             Authentication = new ScalarAuthenticationOptions
             {
-#pragma warning disable CS0618 // Type or member is obsolete
                 PreferredSecurityScheme = "my-scheme",
                 ApiKey = new ApiKeyOptions
                 {
@@ -76,7 +80,9 @@ public class ScalarOptionsMapperTests
             OperationSorter = OperationSorter.Method,
             DotNetFlag = false,
             HideClientButton = true,
-            PersistentAuthentication = true
+            PersistentAuthentication = true,
+            OrderRequiredPropertiesFirst = true,
+            SchemaPropertyOrder = PropertyOrder.Alpha
         };
         options.AddDocument("v2");
 
@@ -86,8 +92,9 @@ public class ScalarOptionsMapperTests
         // Assert
         configuration.ProxyUrl.Should().Be("http://localhost:8080");
         configuration.ShowSidebar.Should().BeFalse();
+        configuration.OperationTitleSource.Should().Be(OperationTitleSource.Path);
         configuration.HideModels.Should().BeTrue();
-        configuration.HideDownloadButton.Should().BeTrue();
+        configuration.DocumentDownloadType.Should().Be(DocumentDownloadType.None);
         configuration.HideTestRequestButton.Should().BeTrue();
         configuration.DarkMode.Should().BeFalse();
         configuration.HideDarkModeToggle.Should().BeTrue();
@@ -95,8 +102,8 @@ public class ScalarOptionsMapperTests
         configuration.SearchHotKey.Should().Be("o");
         configuration.Servers.Should().ContainSingle().Which.Url.Should().Be("https://example.com");
         configuration.MetaData.Should().ContainKey("key").WhoseValue.Should().Be("value");
-        configuration.DefaultHttpClient!.TargetKey.Should().Be("csharp");
-        configuration.DefaultHttpClient!.ClientKey.Should().Be("httpclient");
+        configuration.DefaultHttpClient!.TargetKey.Should().Be(ScalarTarget.CSharp);
+        configuration.DefaultHttpClient!.ClientKey.Should().Be(ScalarClient.HttpClient);
         ((bool) configuration.HiddenClients!).Should().BeTrue();
         configuration.Authentication.Should().NotBeNull();
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -106,14 +113,16 @@ public class ScalarOptionsMapperTests
 #pragma warning restore CS0618 // Type or member is obsolete
         configuration.WithDefaultFonts.Should().BeFalse();
         configuration.DefaultOpenAllTags.Should().BeTrue();
-        configuration.TagsSorter.Should().Be("alpha");
-        configuration.OperationsSorter.Should().Be("method");
-        configuration.Theme.Should().Be("saturn");
-        configuration.Layout.Should().Be("classic");
+        configuration.TagSorter.Should().Be(TagSorter.Alpha);
+        configuration.OperationsSorter.Should().Be(OperationSorter.Method);
+        configuration.Theme.Should().Be(ScalarTheme.Saturn);
+        configuration.Layout.Should().Be(ScalarLayout.Classic);
         configuration.Integration.Should().BeNull();
         configuration.HideClientButton.Should().BeTrue();
         configuration.Sources.Should().ContainSingle().Which.Url.Should().Be("openapi/v2.json");
         configuration.PersistAuth.Should().BeTrue();
+        configuration.OrderRequiredPropertiesFirst.Should().BeTrue();
+        configuration.OrderSchemaPropertiesBy.Should().Be(PropertyOrder.Alpha);
     }
 
     [Fact]
@@ -149,11 +158,11 @@ public class ScalarOptionsMapperTests
         var options = new ScalarOptions { EnabledTargets = [ScalarTarget.CSharp] };
 
         // Act
-        var hiddenClients = (IDictionary<string, IEnumerable<string>>) options.ToScalarConfiguration().HiddenClients!;
+        var hiddenClients = (IDictionary<ScalarTarget, ScalarClient[]>) options.ToScalarConfiguration().HiddenClients!;
 
         // Assert
-        hiddenClients.Should().HaveCount(ScalarOptionsMapper.ClientOptions.Count - 1);
-        hiddenClients.Should().NotContainKey("csharp");
+        hiddenClients.Should().HaveCount(ScalarOptionsMapper.AvailableClientsByTarget.Count - 1);
+        hiddenClients.Should().NotContainKey(ScalarTarget.CSharp);
     }
 
     [Fact]
@@ -163,14 +172,14 @@ public class ScalarOptionsMapperTests
         var options = new ScalarOptions { EnabledClients = [ScalarClient.HttpClient, ScalarClient.Python3] };
 
         // Act
-        var hiddenClients = (IDictionary<string, IEnumerable<string>>) options.ToScalarConfiguration().HiddenClients!;
+        var hiddenClients = (IDictionary<ScalarTarget, ScalarClient[]>) options.ToScalarConfiguration().HiddenClients!;
 
         // Assert
-        hiddenClients.Should().HaveCount(ScalarOptionsMapper.ClientOptions.Count);
-        hiddenClients.Should().ContainKey("csharp")
-            .WhoseValue.Should().ContainSingle().Which.Should().Be("restsharp");
-        hiddenClients.Should().ContainKey("python")
-            .WhoseValue.Should().ContainSingle().Which.Should().Be("requests");
+        hiddenClients.Should().HaveCount(ScalarOptionsMapper.AvailableClientsByTarget.Count);
+        hiddenClients.Should().ContainKey(ScalarTarget.CSharp)
+            .WhoseValue.Should().ContainSingle().Which.Should().Be(ScalarClient.RestSharp);
+        hiddenClients.Should().ContainKey(ScalarTarget.Python)
+            .WhoseValue.Should().BeEquivalentTo([ScalarClient.Requests, ScalarClient.HttpxSync, ScalarClient.HttpxAsync]);
     }
 
     [Fact]
@@ -180,11 +189,11 @@ public class ScalarOptionsMapperTests
         var options = new ScalarOptions { EnabledClients = [ScalarClient.OkHttp] }; // All Kotlin clients are enabled
 
         // Act
-        var hiddenClients = (IDictionary<string, IEnumerable<string>>) options.ToScalarConfiguration().HiddenClients!;
+        var hiddenClients = (IDictionary<ScalarTarget, ScalarClient[]>) options.ToScalarConfiguration().HiddenClients!;
 
         // Assert
-        hiddenClients.Should().HaveCount(ScalarOptionsMapper.ClientOptions.Count - 1);
-        hiddenClients.Should().NotContainKey("kotlin");
+        hiddenClients.Should().HaveCount(ScalarOptionsMapper.AvailableClientsByTarget.Count - 1);
+        hiddenClients.Should().NotContainKey(ScalarTarget.Kotlin);
     }
 
     [Fact]

@@ -1,4 +1,3 @@
-import type { OpenAPIV3_1 } from '@scalar/openapi-types'
 import type { HttpMethod } from '@scalar/helpers/http/http-methods'
 import type { Request as HarRequest } from 'har-format'
 
@@ -6,28 +5,34 @@ import { processServerUrl } from './process-server-url'
 import { processParameters } from './process-parameters'
 import { processBody } from './process-body'
 import { processSecuritySchemes } from './process-security-schemes'
+import type {
+  ServerObject,
+  SecuritySchemeObject,
+  OperationObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
 
 export type OperationToHarProps = {
   /** OpenAPI Operation object */
-  operation: OpenAPIV3_1.OperationObject
+  operation: OperationObject
   /** HTTP method of the operation */
   method: HttpMethod
+  /** Path of the operation */
+  path: string
+  /**
+   * requestBody.content[contentType].example to use for the request, it should be pre-selected and discriminated
+   */
+  example?: unknown
   /**
    * Content type of the request
    *
    * @defaults to the first content type in the operation.requestBody.content
    */
   contentType?: string
-  /** Path of the operation */
-  path: string
   /** OpenAPI Server object */
-  server?: OpenAPIV3_1.ServerObject
+  server?: ServerObject | undefined
   /** OpenAPI SecurityScheme objects which are applicable to the operation */
-  securitySchemes?: OpenAPIV3_1.SecuritySchemeObject[]
-  /**
-   * requestBody.content[contentType].example to use for the request, it should be pre-selected and discriminated
-   */
-  example?: unknown
+  securitySchemes?: SecuritySchemeObject[]
 }
 
 /**
@@ -81,17 +86,38 @@ export const operationToHar = ({
 
   // Handle parameters
   if (operation.parameters) {
-    const { url, headers, queryString } = processParameters(harRequest, operation.parameters, example)
+    const { url, headers, queryString, cookies } = processParameters(harRequest, operation.parameters, example)
     harRequest.url = url
     harRequest.headers = headers
     harRequest.queryString = queryString
+    harRequest.cookies = cookies
   }
 
+  const body = getResolvedRef(operation.requestBody)
+
   // Handle request body
-  if (operation.requestBody?.content && example) {
-    const postData = processBody({ operation, contentType, example })
+  if (body?.content) {
+    const postData = processBody({ content: body.content, contentType, example })
     harRequest.postData = postData
     harRequest.bodySize = postData.text?.length ?? -1
+
+    // Add or update Content-Type header
+    if (postData.mimeType) {
+      const existingContentTypeHeader = harRequest.headers.find(
+        (header) => header.name.toLowerCase() === 'content-type',
+      )
+      // Update existing header if it has an empty value
+      if (existingContentTypeHeader && !existingContentTypeHeader.value) {
+        existingContentTypeHeader.value = postData.mimeType
+      }
+      // Add new header if none exists
+      else {
+        harRequest.headers.push({
+          name: 'Content-Type',
+          value: postData.mimeType,
+        })
+      }
+    }
   }
 
   // Handle security schemes

@@ -1,5 +1,270 @@
 # scalar-app
 
+## 0.1.231
+
+### Patch Changes
+
+- 8f2a2f2: Bump some dependencies to latest
+- Updated dependencies [498f771]
+- Updated dependencies [8f2a2f2]
+  - @scalar/components@0.14.34
+  - @scalar/api-client@2.5.33
+  - @scalar/themes@0.13.17
+  - @scalar/import@0.4.24
+
+## 0.1.230
+
+### Patch Changes
+
+- @scalar/api-client@2.5.32
+- @scalar/import@0.4.23
+- @scalar/components@0.14.33
+
+## 0.1.229
+
+### Patch Changes
+
+- Updated dependencies [f8fc81c]
+  - @scalar/api-client@2.5.31
+  - @scalar/components@0.14.32
+
+## 0.1.228
+
+### Patch Changes
+
+- Updated dependencies [c173063]
+- Updated dependencies [c173063]
+- Updated dependencies [2249fe3]
+  - @scalar/api-client@2.5.30
+  - @scalar/components@0.14.31
+  - @scalar/import@0.4.22
+
+## 0.1.227
+
+### Patch Changes
+
+- Updated dependencies [5eedb97]
+  - @scalar/api-client@2.5.29
+  - @scalar/import@0.4.21
+  - @scalar/components@0.14.30
+
+## 0.1.226
+
+### Patch Changes
+
+- Updated dependencies [c470c60]
+- Updated dependencies [abe3842]
+- Updated dependencies [5a7d388]
+  - @scalar/api-client@2.5.28
+  - @scalar/components@0.14.29
+  - @scalar/themes@0.13.16
+
+## 0.1.225
+
+### Patch Changes
+
+- Updated dependencies [714b197]
+- Updated dependencies [f918582]
+- Updated dependencies [422cb2b]
+- Updated dependencies [ee605d8]
+- Updated dependencies [2b22eab]
+  - @scalar/api-client@2.5.27
+  - @scalar/components@0.14.28
+  - @scalar/themes@0.13.15
+  - @scalar/import@0.4.20
+
+## 0.1.224
+
+### Patch Changes
+
+- @scalar/api-client@2.5.26
+- @scalar/themes@0.13.14
+- @scalar/components@0.14.27
+- @scalar/import@0.4.19
+
+## 0.1.223
+
+### Patch Changes
+
+- @scalar/api-client@2.5.25
+- @scalar/components@0.14.26
+
+## 0.1.222
+
+### Patch Changes
+
+- Updated dependencies [172e397]
+- Updated dependencies [5f022b5]
+- Updated dependencies [d8b8a5b]
+- Updated dependencies [6c24be9]
+- Updated dependencies [638120c]
+- Updated dependencies [0804cfc]
+  - @scalar/api-client@2.5.24
+  - @scalar/components@0.14.25
+  - @scalar/themes@0.13.13
+  - @scalar/import@0.4.18
+
+## 0.1.221
+
+### Patch Changes
+
+- Updated dependencies [b235392]
+- Updated dependencies [58b9321]
+- Updated dependencies [68e4631]
+- Updated dependencies [fbafeab]
+- Updated dependencies [376739d]
+  - @scalar/api-client@2.5.23
+  - @scalar/components@0.14.24
+  - @scalar/import@0.4.17
+  - @scalar/themes@0.13.12
+
+## 0.1.220
+
+### Patch Changes
+
+- @scalar/api-client@2.5.22
+- @scalar/components@0.14.23
+
+## 0.1.219
+
+### Patch Changes
+
+- Updated dependencies [c02c1c8]
+- Updated dependencies [b551707]
+- Updated dependencies [dd00357]
+  - @scalar/api-client@2.5.21
+  - @scalar/components@0.14.22
+  - @scalar/import@0.4.16
+
+## 0.1.218
+
+### Patch Changes
+
+- Updated dependencies [ccf875a]
+- Updated dependencies [fbef7e1]
+- Updated dependencies [f913898]
+- Updated dependencies [cf5d6a2]
+- Updated dependencies [94d6d0c]
+- Updated dependencies [8c731b9]
+- Updated dependencies [952f471]
+- Updated dependencies [1af32c0]
+- Updated dependencies [8c731b9]
+- Updated dependencies [c0d6793]
+- Updated dependencies [77e700b]
+- Updated dependencies [3c1e3e3]
+- Updated dependencies [f3d0216]
+- Updated dependencies [af22451]
+  - @scalar/api-client@2.5.20
+  - @scalar/components@0.14.21
+  - @scalar/themes@0.13.12
+  - @scalar/import@0.4.15
+
+## 0.1.217
+
+### Patch Changes
+
+- Updated dependencies [60c7bef]
+- Updated dependencies [e895f86]
+- Updated dependencies [cac47ea]
+- Updated dependencies [fb62e1b]
+- Updated dependencies [cac47ea]
+  - @scalar/api-client@2.5.19
+  - @scalar/components@0.14.20
+  - @scalar/themes@0.13.11
+  - @scalar/import@0.4.14
+
+## 0.1.216
+
+### Patch Changes
+
+- Updated dependencies [a04cc15]
+- Updated dependencies [591562f]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [fbaaa12]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [97721b5]
+- Updated dependencies [85ee2ce]
+- Updated dependencies [8a67f4f]
+  - @scalar/components@0.14.19
+  - @scalar/api-client@2.5.18
+  - @scalar/themes@0.13.10
+
+## 0.1.215
+
+### Patch Changes
+
+- Updated dependencies [934dff9]
+  - @scalar/components@0.14.18
+  - @scalar/api-client@2.5.17
+
+## 0.1.214
+
+### Patch Changes
+
+- Updated dependencies [c10e191]
+- Updated dependencies [661c7e9]
+- Updated dependencies [cd1c367]
+- Updated dependencies [244edda]
+- Updated dependencies [4d89219]
+- Updated dependencies [244edda]
+- Updated dependencies [244edda]
+- Updated dependencies [1db9130]
+- Updated dependencies [9e81b17]
+  - @scalar/api-client@2.5.16
+  - @scalar/themes@0.13.9
+  - @scalar/components@0.14.17
+
+## 0.1.213
+
+### Patch Changes
+
+- Updated dependencies [a696604]
+- Updated dependencies [b2862d9]
+- Updated dependencies [ad2e3e6]
+- Updated dependencies [b2862d9]
+- Updated dependencies [74fdc0e]
+- Updated dependencies [ca77d70]
+- Updated dependencies [a696604]
+- Updated dependencies [3fdc2f2]
+- Updated dependencies [972602f]
+  - @scalar/api-client@2.5.15
+  - @scalar/components@0.14.16
+  - @scalar/themes@0.13.8
+
+## 0.1.212
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+- Updated dependencies [2d7f995]
+  - @scalar/api-client@2.5.14
+  - @scalar/import@0.4.13
+  - @scalar/themes@0.13.7
+  - @scalar/components@0.14.15
+
+## 0.1.211
+
+### Patch Changes
+
+- Updated dependencies [533469b]
+- Updated dependencies [3393c83]
+- Updated dependencies [4f47b3c]
+- Updated dependencies [8e85856]
+  - @scalar/api-client@2.5.13
+  - @scalar/components@0.14.14
+  - @scalar/import@0.4.12
+  - @scalar/themes@0.13.6
+
+## 0.1.210
+
+### Patch Changes
+
+- Updated dependencies [c907685]
+- Updated dependencies [4bbbb32]
+  - @scalar/components@0.14.13
+  - @scalar/themes@0.13.5
+  - @scalar/api-client@2.5.12
+
 ## 0.1.209
 
 ### Patch Changes

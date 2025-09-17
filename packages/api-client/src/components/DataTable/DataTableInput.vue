@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { ScalarIconButton } from '@scalar/components'
+import { ScalarIconEye, ScalarIconEyeSlash } from '@scalar/icons'
 import type { Environment } from '@scalar/oas-utils/entities/environment'
 import type { Workspace } from '@scalar/oas-utils/entities/workspace'
 import { computed, ref } from 'vue'
@@ -145,7 +146,7 @@ const handleLabelClick = () => {
     <ScalarIconButton
       v-if="type === 'password'"
       class="-ml-.5 mr-1.25 h-6 w-6 self-center p-1.25"
-      :icon="mask ? 'Show' : 'Hide'"
+      :icon="mask ? ScalarIconEye : ScalarIconEyeSlash"
       :label="mask ? 'Show Password' : 'Hide Password'"
       @click="mask = !mask" />
   </DataTableCell>
@@ -160,12 +161,12 @@ const handleLabelClick = () => {
   background-color: transparent;
   display: flex;
   font-family: var(--scalar-font);
-  font-size: var(--scalar-mini);
-  padding: 6px 8px;
+  font-size: var(--scalar-small);
+  padding: 5px 8px;
   width: 100%;
 }
 :deep(.cm-content):has(.cm-pill) {
-  padding: 6px 8px;
+  padding: 5px 8px;
 }
 :deep(.cm-content .cm-pill:not(:last-of-type)) {
   margin-right: 0.5px;
@@ -177,6 +178,7 @@ const handleLabelClick = () => {
   overflow: hidden;
   padding: 0;
   text-overflow: ellipsis;
+  word-break: break-word;
 }
 .required::after {
   content: 'Required';

@@ -1,16 +1,26 @@
 <script setup lang="ts">
 import { ScalarErrorBoundary, ScalarMarkdown } from '@scalar/components'
+import type { HttpMethod as HttpMethodType } from '@scalar/helpers/http/http-methods'
 import { ScalarIconWebhooksLogo } from '@scalar/icons'
+import {
+  getOperationStability,
+  getOperationStabilityColor,
+  isOperationDeprecated,
+} from '@scalar/oas-utils/helpers'
+import type { ApiReferenceConfiguration } from '@scalar/types'
+import type { WorkspaceStore } from '@scalar/workspace-store/client'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
 import type {
-  Collection,
-  Request,
-  Server,
-} from '@scalar/oas-utils/entities/spec'
-import type { TransformedOperation } from '@scalar/types/legacy'
-import { useId } from 'vue'
+  OperationObject,
+  ParameterObject,
+  SecuritySchemeObject,
+  ServerObject,
+} from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
+import { computed, useId } from 'vue'
 
 import { Anchor } from '@/components/Anchor'
 import { Badge } from '@/components/Badge'
+import { LinkList } from '@/components/LinkList'
 import OperationPath from '@/components/OperationPath.vue'
 import {
   Section,
@@ -20,71 +30,78 @@ import {
   SectionHeader,
   SectionHeaderTag,
 } from '@/components/Section'
-import { ExampleRequest } from '@/features/ExampleRequest'
-import { ExampleResponses } from '@/features/ExampleResponses'
-import type { Schemas } from '@/features/Operation/types/schemas'
-import { TestRequestButton } from '@/features/TestRequestButton'
-import { useConfig } from '@/hooks/useConfig'
-import {
-  getOperationStability,
-  getOperationStabilityColor,
-  isOperationDeprecated,
-} from '@/libs/openapi'
+import { ExampleResponses } from '@/features/example-responses'
+import { ExternalDocs } from '@/features/external-docs'
+import Callbacks from '@/features/Operation/components/callbacks/Callbacks.vue'
+import OperationParameters from '@/features/Operation/components/OperationParameters.vue'
+import OperationResponses from '@/features/Operation/components/OperationResponses.vue'
+import { TestRequestButton } from '@/features/test-request-button'
+import { XBadges } from '@/features/x-badges'
+import { RequestExample } from '@/v2/blocks/scalar-request-example-block'
+import type { ClientOptionGroup } from '@/v2/blocks/scalar-request-example-block/types'
 
-import Callbacks from '../components/callbacks/Callbacks.vue'
-import OperationParameters from '../components/OperationParameters.vue'
-import OperationResponses from '../components/OperationResponses.vue'
-
-const { request, transformedOperation } = defineProps<{
-  collection: Collection
-  server: Server | undefined
-  request: Request | undefined
-  transformedOperation: TransformedOperation
-  schemas?: Schemas
+const { path, config, operation, method, isWebhook } = defineProps<{
+  id: string
+  path: string
+  clientOptions: ClientOptionGroup[]
+  config: ApiReferenceConfiguration
+  method: HttpMethodType
+  operation: OperationObject
+  // pathServers: ServerObject[] | undefined
+  isWebhook: boolean
+  securitySchemes: SecuritySchemeObject[]
+  server: ServerObject | undefined
+  store: WorkspaceStore
 }>()
 
-const emit = defineEmits<{
-  (e: 'update:modelValue', value: string): void
-}>()
+const operationTitle = computed(() => operation.summary || path || '')
 
 const labelId = useId()
-const config = useConfig()
-
-const handleDiscriminatorChange = (type: string) => {
-  emit('update:modelValue', type)
-}
 </script>
 
 <template>
   <Section
-    :id="transformedOperation.id"
+    :id="id"
     :aria-labelledby="labelId"
-    :label="transformedOperation.name"
+    :label="operationTitle"
     tabindex="-1">
     <SectionContent :loading="config.isLoading">
-      <Badge
-        v-if="getOperationStability(transformedOperation.information)"
-        :class="getOperationStabilityColor(transformedOperation.information)">
-        {{ getOperationStability(transformedOperation.information) }}
-      </Badge>
-
-      <Badge
-        v-if="transformedOperation.isWebhook"
-        class="font-code text-green flex w-fit items-center justify-center gap-1">
-        <ScalarIconWebhooksLogo weight="bold" />Webhook
-      </Badge>
-      <div
-        :class="
-          isOperationDeprecated(transformedOperation.information)
-            ? 'deprecated'
-            : ''
-        ">
+      <div class="flex flex-row justify-between gap-1">
+        <!-- Left -->
+        <div class="flex gap-1">
+          <!-- Stability badge -->
+          <Badge
+            v-if="getOperationStability(operation)"
+            class="capitalize"
+            :class="getOperationStabilityColor(operation)">
+            {{ getOperationStability(operation) }}
+          </Badge>
+          <!-- Webhook badge -->
+          <Badge
+            v-if="isWebhook"
+            class="font-code text-green flex w-fit items-center justify-center gap-1">
+            <ScalarIconWebhooksLogo weight="bold" />Webhook
+          </Badge>
+          <!-- x-badges before -->
+          <XBadges
+            :badges="operation['x-badges']"
+            position="before" />
+        </div>
+        <!-- Right -->
+        <div class="flex gap-1">
+          <!-- x-badges after -->
+          <XBadges
+            :badges="operation['x-badges']"
+            position="after" />
+        </div>
+      </div>
+      <div :class="isOperationDeprecated(operation) ? 'deprecated' : ''">
         <SectionHeader>
-          <Anchor :id="transformedOperation.id">
+          <Anchor :id="id">
             <SectionHeaderTag
               :id="labelId"
               :level="3">
-              {{ transformedOperation.name }}
+              {{ operationTitle }}
             </SectionHeaderTag>
           </Anchor>
         </SectionHeader>
@@ -93,59 +110,73 @@ const handleDiscriminatorChange = (type: string) => {
         <SectionColumn>
           <div class="operation-details">
             <ScalarMarkdown
-              :value="transformedOperation.information.description"
-              withImages
-              withAnchors
+              :anchorPrefix="id"
               transformType="heading"
-              :anchorPrefix="transformedOperation.id" />
+              :value="operation.description"
+              withAnchors
+              withImages />
             <OperationParameters
-              :parameters="transformedOperation.information.parameters"
-              :requestBody="transformedOperation.information.requestBody"
-              :schemas="schemas"
-              @update:modelValue="handleDiscriminatorChange">
-            </OperationParameters>
+              :breadcrumb="[id]"
+              :parameters="
+                // These have been resolved in the Operation.vue component
+                operation.parameters as ParameterObject[]
+              "
+              :requestBody="getResolvedRef(operation.requestBody)" />
             <OperationResponses
-              :responses="transformedOperation.information.responses"
-              :schemas="schemas" />
+              :breadcrumb="[id]"
+              :collapsableItems="!config.expandAllResponses"
+              :responses="operation.responses" />
 
             <!-- Callbacks -->
             <ScalarErrorBoundary>
               <Callbacks
-                v-if="transformedOperation.information.callbacks"
-                :callbacks="transformedOperation.information.callbacks"
-                :collection="collection"
-                :schemas="schemas" />
+                v-if="operation.callbacks"
+                :callbacks="operation.callbacks"
+                class="mt-6"
+                :method="method"
+                :path="path" />
             </ScalarErrorBoundary>
           </div>
         </SectionColumn>
         <SectionColumn>
           <div class="examples">
+            <!-- External Docs -->
+            <LinkList v-if="operation.externalDocs">
+              <ExternalDocs :value="operation.externalDocs" />
+            </LinkList>
+
+            <!-- New Example Request -->
             <ScalarErrorBoundary>
-              <ExampleRequest
-                :request="request"
-                :method="transformedOperation.httpVerb"
-                :collection="collection"
+              <RequestExample
+                :clientOptions="clientOptions"
                 fallback
-                :operation="transformedOperation.information"
-                :server="server"
-                :schemas="schemas"
-                @update:modelValue="handleDiscriminatorChange">
+                :method="method"
+                :operation="operation"
+                :path="path"
+                :isWebhook="isWebhook"
+                :securitySchemes="securitySchemes"
+                :selectedClient="store.workspace['x-scalar-default-client']"
+                :selectedServer="server">
                 <template #header>
                   <OperationPath
-                    class="example-path"
-                    :deprecated="transformedOperation.information.deprecated"
-                    :path="transformedOperation.path" />
+                    class="font-code text-c-2 [&_em]:text-c-1 [&_em]:not-italic"
+                    :deprecated="operation?.deprecated"
+                    :path="path" />
                 </template>
                 <template
-                  #footer
-                  v-if="request">
-                  <TestRequestButton :operation="request" />
+                  v-if="!isWebhook"
+                  #footer>
+                  <TestRequestButton
+                    :method="method"
+                    :path="path" />
                 </template>
-              </ExampleRequest>
+              </RequestExample>
             </ScalarErrorBoundary>
+
             <ScalarErrorBoundary>
               <ExampleResponses
-                :responses="transformedOperation.information.responses"
+                v-if="operation.responses"
+                :responses="operation.responses"
                 style="margin-top: 12px" />
             </ScalarErrorBoundary>
           </div>
@@ -160,15 +191,24 @@ const handleDiscriminatorChange = (type: string) => {
   position: sticky;
   top: calc(var(--refs-header-height) + 24px);
 }
+
+.examples > * {
+  max-height: calc(
+    ((var(--full-height) - var(--refs-header-height)) - 60px) / 2
+  );
+  position: relative;
+}
+
+/*
+ * Don't constrain card height on mobile
+ * (or zoomed in screens)
+ */
+@media (max-width: 600px) {
+  .examples > * {
+    max-height: unset;
+  }
+}
 .deprecated * {
   text-decoration: line-through;
-}
-.example-path {
-  color: var(--scalar-color-2);
-  font-family: var(--scalar-font-code);
-}
-.example-path :deep(em) {
-  color: var(--scalar-color-1);
-  font-style: normal;
 }
 </style>

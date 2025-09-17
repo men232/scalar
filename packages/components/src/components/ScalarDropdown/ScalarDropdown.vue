@@ -30,12 +30,12 @@ defineSlots<{
   default(props: {
     /** Whether or not the dropdown is open */
     open: boolean
-  }): any
+  }): unknown
   /** The list of dropdown items */
   items(props: {
     /** Whether or not the dropdown is open */
     open: boolean
-  }): any
+  }): unknown
 }>()
 
 defineOptions({ inheritAttrs: false })
@@ -54,7 +54,7 @@ const { cx } = useBindCx()
         <ScalarDropdownMenu
           :is="MenuItems"
           :style="{ width }"
-          v-bind="cx('max-h-[inherit]')">
+          v-bind="cx('max-h-[inherit] max-w-[inherit]')">
           <slot
             name="items"
             :open="open" />

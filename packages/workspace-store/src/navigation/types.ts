@@ -1,61 +1,15 @@
-import type { OperationObject } from '@/schemas/v3.1/strict/path-operations'
-import type { TagObject } from '@/schemas/v3.1/strict/tag'
-
+import type { TraversedEntry } from '@/schemas/navigation'
+import type { OperationObject, TagObject } from '@/schemas/v3.1/strict/openapi-document'
 /** Map of tagNames and their entries */
 export type TagsMap = Map<string, { tag: TagObject; entries: TraversedEntry[] }>
 
-type TraverseEntryBase = {
-  type: 'text' | 'operation' | 'model' | 'tag' | 'webhook'
-  id: string
-  title: string
-}
-
-/** Description entry returned form traversing the document */
-export type TraversedDescription = TraverseEntryBase & {
-  type: 'text'
-  children?: TraverseEntryBase[]
-}
-
-/** Operation entry returned form traversing the document */
-export type TraversedOperation = TraverseEntryBase & {
-  type: 'operation'
-  ref: string
+type OperationSortValue = {
   method: string
   path: string
-}
-
-/** Model entry returned form traversing the document */
-export type TraversedSchema = TraverseEntryBase & {
-  type: 'model'
   ref: string
-  name: string
+  /** @deprecated use method instead */
+  httpVerb: string
 }
-
-/** Tag entry returned form traversing the document, includes tagGroups */
-export type TraversedTag = TraverseEntryBase & {
-  type: 'tag'
-  name: string
-  children?: TraversedEntry[]
-  isGroup: boolean
-}
-
-/** Webhook entry returned form traversing the document, basically the same as an operation but with name instead of path */
-export type TraversedWebhook = TraverseEntryBase & {
-  type: 'webhook'
-  ref: string
-  method: string
-  name: string
-}
-
-/** Entries returned form traversing the document */
-export type TraversedEntry =
-  | TraversedDescription
-  | TraversedOperation
-  | TraversedSchema
-  | TraversedTag
-  | TraversedWebhook
-
-type OperationSortValue = { method: string; path: string; ref: string }
 
 /** Configuration options for traversing an OpenAPI specification document.
  *
@@ -75,11 +29,7 @@ export type TraverseSpecOptions = {
   hideModels: boolean
 
   /** Function to generate unique IDs for markdown headings */
-  getHeadingId: (heading: {
-    depth: number
-    value: string
-    slug?: string
-  }) => string
+  getHeadingId: (heading: { depth: number; value: string; slug?: string }) => string
 
   /** Function to generate unique IDs for operations */
   getOperationId: (
@@ -92,7 +42,7 @@ export type TraverseSpecOptions = {
 
   /** Function to generate unique IDs for webhooks */
   getWebhookId: (
-    webhook?: {
+    webhook: {
       name: string
       method?: string
     },
@@ -101,8 +51,8 @@ export type TraverseSpecOptions = {
 
   /** Function to generate unique IDs for models/schemas */
   getModelId: (
-    model?: {
-      name: string
+    model: {
+      name?: string
     },
     parentTag?: TagObject,
   ) => string

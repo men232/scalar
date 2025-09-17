@@ -81,46 +81,30 @@ export const getHtmlDocument = (givenConfiguration: Partial<HtmlRenderingConfigu
 }
 
 /**
+ * Helper function to serialize arrays that may contain functions
+ */
+const serializeArrayWithFunctions = (arr: unknown[]): string => {
+  return `[${arr.map((item) => (typeof item === 'function' ? item.toString() : JSON.stringify(item))).join(', ')}]`
+}
+
+/**
  * The script tags to load the @scalar/api-reference package from the CDN.
  */
 export function getScriptTags(configuration: Partial<ApiReferenceConfiguration>, cdn?: string) {
-  // Extract function properties before stringifying
-  const {
-    tagsSorter,
-    operationsSorter,
-    generateHeadingSlug,
-    generateModelSlug,
-    generateTagSlug,
-    generateOperationSlug,
-    generateWebhookSlug,
-    onLoaded,
-    redirect,
-    onSpecUpdate,
-    onServerChange,
-    ...restConfig
-  } = configuration
+  const restConfig = { ...configuration }
 
-  // Create the function strings if they exist
   const functionProps: string[] = []
-  const functionProperties = [
-    { name: 'tagsSorter', value: tagsSorter },
-    { name: 'operationsSorter', value: operationsSorter },
-    { name: 'generateHeadingSlug', value: generateHeadingSlug },
-    { name: 'generateModelSlug', value: generateModelSlug },
-    { name: 'generateTagSlug', value: generateTagSlug },
-    { name: 'generateOperationSlug', value: generateOperationSlug },
-    { name: 'generateWebhookSlug', value: generateWebhookSlug },
-    { name: 'onLoaded', value: onLoaded },
-    { name: 'redirect', value: redirect },
-    { name: 'onSpecUpdate', value: onSpecUpdate },
-    { name: 'onServerChange', value: onServerChange },
-  ]
 
-  functionProperties.forEach(({ name, value }) => {
-    if (value && typeof value === 'function') {
-      functionProps.push(`"${name}": ${value.toString()}`)
+  for (const [key, value] of Object.entries(configuration) as [keyof typeof configuration, unknown][]) {
+    if (typeof value === 'function') {
+      functionProps.push(`"${key}": ${value.toString()}`)
+      delete restConfig[key]
+    } else if (Array.isArray(value) && value.some((item) => typeof item === 'function')) {
+      // Handle arrays that contain functions (like plugins)
+      functionProps.push(`"${key}": ${serializeArrayWithFunctions(value)}`)
+      delete restConfig[key]
     }
-  })
+  }
 
   // Stringify the rest of the configuration
   const configString = JSON.stringify(restConfig, null, 2)

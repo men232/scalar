@@ -1,5 +1,24 @@
 # @scalar/use-hooks
 
+## 0.2.5
+
+### Patch Changes
+
+- 8f2a2f2: Bump some dependencies to latest
+
+## 0.2.4
+
+### Patch Changes
+
+- 2d7f995: refactor: use more common straight apostrophe ' instead of the real apostrophe ’
+  - @scalar/use-toasts@0.8.0
+
+## 0.2.3
+
+### Patch Changes
+
+- 4bbbb32: feat(components): add sidebar sections
+
 ## 0.2.2
 
 ### Patch Changes

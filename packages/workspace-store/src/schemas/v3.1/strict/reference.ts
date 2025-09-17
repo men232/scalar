@@ -1,6 +1,6 @@
-import { compose } from '@/schemas/v3.1/compose'
-import { ExtensionsSchema } from '@/schemas/v3.1/strict/extensions'
-import { Type, type Static } from '@sinclair/typebox'
+import { type Static, type TSchema, Type } from '@scalar/typebox'
+
+import { compose } from '@/schemas/compose'
 
 export const ReferenceObjectExtensionsSchema = Type.Object({
   /** Indicates the current status of the reference resolution. Can be either 'loading' while fetching the reference or 'error' if the resolution failed. */
@@ -25,7 +25,11 @@ export const ReferenceObjectSchema = compose(
     description: Type.Optional(Type.String()),
   }),
   ReferenceObjectExtensionsSchema,
-  ExtensionsSchema,
 )
 
 export type ReferenceObject = Static<typeof ReferenceObjectSchema>
+
+export const reference = <T extends TSchema>(schema: T) =>
+  compose(ReferenceObjectSchema, Type.Object({ '$ref-value': schema }))
+
+export type ReferenceType<Value> = ReferenceObject & { '$ref-value': Value }

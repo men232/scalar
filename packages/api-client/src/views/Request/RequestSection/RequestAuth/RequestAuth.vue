@@ -2,7 +2,8 @@
 import {
   ScalarButton,
   ScalarComboboxMultiselect,
-  ScalarIcon,
+  ScalarIconButton,
+  ScalarListboxCheckbox,
   useModal,
   type Icon,
   type ScalarButton as ScalarButtonType,
@@ -11,6 +12,7 @@ import {
   CLIENT_LS_KEYS,
   safeLocalStorage,
 } from '@scalar/helpers/object/local-storage'
+import { ScalarIconCaretDown, ScalarIconTrash } from '@scalar/icons'
 import type { Environment } from '@scalar/oas-utils/entities/environment'
 import type { SelectedSecuritySchemeUids } from '@scalar/oas-utils/entities/shared'
 import type {
@@ -24,7 +26,6 @@ import { isDefined } from '@scalar/oas-utils/helpers'
 import { computed, ref, useId } from 'vue'
 
 import ViewLayoutCollapse from '@/components/ViewLayout/ViewLayoutCollapse.vue'
-import { useLayout } from '@/hooks/useLayout'
 import type { EnvVariable } from '@/store/active-entities'
 import { useWorkspace } from '@/store/store'
 import type { SecuritySchemeOption } from '@/views/Request/consts'
@@ -40,6 +41,7 @@ import RequestAuthDataTable from './RequestAuthDataTable.vue'
 
 const {
   collection,
+  isReadOnly = false,
   environment,
   envVariables,
   layout,
@@ -51,6 +53,8 @@ const {
   workspace,
 } = defineProps<{
   collection: Collection
+  /** Controls whether user can add new auth schemes */
+  isReadOnly?: boolean
   environment: Environment
   envVariables: EnvVariable[]
   layout: 'client' | 'reference'
@@ -62,7 +66,17 @@ const {
   workspace: Workspace
 }>()
 
-const { layout: clientLayout } = useLayout()
+const emits = defineEmits<{
+  /** Emits when the user has authorized with an oauth2 flow */
+  authorized: []
+  /** Emits the currently active scheme */
+  activeSchemes: [schemes: SecurityScheme[]]
+}>()
+
+defineSlots<{
+  'oauth-actions'?: () => unknown
+}>()
+
 const {
   securitySchemes,
   securitySchemeMutators,
@@ -77,6 +91,7 @@ const deleteSchemeModal = useModal()
 const selectedScheme = ref<{ id: SecurityScheme['uid']; label: string } | null>(
   null,
 )
+const isViewLayoutOpen = ref(false)
 
 /** Security requirements for the request */
 const securityRequirements = computed(() => {
@@ -107,20 +122,8 @@ const authIndicator = computed(() => {
 
   const icon: Icon = isOptional ? 'Unlock' : 'Lock'
 
-  /** Dynamic text to indicate auth requirements */
-  const requiredText = isOptional ? 'Optional' : 'Required'
-  const nameKey =
-    filteredRequirements.length === 1
-      ? (() => {
-          // Get the keys of the first requirement
-          const keys = Object.keys(filteredRequirements[0] || {})
-
-          // If there are multiple keys, join them with ' & '
-          return keys.length > 1 ? keys.join(' & ') : keys[0] || ''
-        })()
-      : ''
-
-  const text = `${nameKey} ${requiredText}`
+  /** Text to indicate auth requirements */
+  const text = isOptional ? 'Optional' : 'Required'
 
   return { icon, text }
 })
@@ -129,7 +132,7 @@ const authIndicator = computed(() => {
  * Currently selected auth schemes on the collection, we store complex auth joined by a comma to represent the array
  * in the string
  */
-const selectedSchemeOptions = computed(() =>
+const selectedSchemeOptions = computed<SecuritySchemeOption[]>(() =>
   selectedSecuritySchemeUids
     .map((s) => {
       if (Array.isArray(s)) {
@@ -231,67 +234,93 @@ const schemeOptions = computed(() =>
     securityRequirements.value.filteredRequirements,
     collection?.securitySchemes ?? [],
     securitySchemes,
-    clientLayout === 'modal' || layout === 'reference',
+    isReadOnly,
   ),
 )
+
+const openAuthCombobox = (event: Event) => {
+  // If the layout is open, we don't want it to close on auth label click
+  if (isViewLayoutOpen.value) {
+    event.stopPropagation()
+  }
+
+  comboboxButtonRef.value?.$el.click()
+}
 </script>
 <template>
   <ViewLayoutCollapse
-    class="group/params"
+    class="group/params relative"
     :itemCount="selectedSchemeOptions.length"
-    :layout="layout">
+    :layout="layout"
+    @update:modelValue="isViewLayoutOpen = $event">
     <template #title>
       <div
         :id="titleId"
-        class="inline-flex items-center gap-1">
+        class="inline-flex items-center gap-0.5 leading-[20px]">
         <span>{{ title }}</span>
         <!-- Authentication indicator -->
         <span
           v-if="authIndicator"
-          class="text-c-3 text-xs leading-[normal]"
-          :class="{ 'text-c-1': authIndicator.text === 'Required' }">
+          class="text-c-3 hover:bg-b-3 hover:text-c-1 -mr-1 cursor-pointer rounded px-1 py-0.5 text-xs leading-[normal]"
+          :class="{ 'text-c-1': authIndicator.text === 'Required' }"
+          @click="openAuthCombobox">
           {{ authIndicator.text }}
         </span>
       </div>
     </template>
     <template #actions>
-      <div class="-mx-1 flex flex-1">
+      <div class="flex flex-1">
         <ScalarComboboxMultiselect
           class="w-72 text-xs"
-          :isDeletable="clientLayout !== 'modal' && layout !== 'reference'"
           :modelValue="selectedSchemeOptions"
           multiple
           :options="schemeOptions"
+          placement="bottom-end"
+          teleport
           @delete="handleDeleteScheme"
           @update:modelValue="updateSelectedAuth">
           <ScalarButton
             ref="comboboxButtonRef"
             :aria-describedby="titleId"
-            class="hover:bg-b-3 text-c-1 hover:text-c-1 h-fit px-1.5 py-0.25 font-normal"
+            class="group/combobox-button hover:text-c-1 text-c-2 flex h-fit items-center gap-1 px-0.75 py-0.25 text-base font-normal transition-transform"
             fullWidth
             variant="ghost">
-            <div class="text-c-1">
-              <template v-if="selectedSchemeOptions.length === 0">
-                <span class="sr-only">Select</span>
-                Auth Type
-              </template>
-              <template v-else-if="selectedSchemeOptions.length === 1">
-                <span class="sr-only">Selected Auth Type:</span>
-                {{ selectedSchemeOptions[0]?.label }}
-              </template>
-              <template v-else>
-                Multiple
-                <span class="sr-only">Auth Types Selected</span>
-              </template>
-            </div>
-            <ScalarIcon
-              class="ml-1 shrink-0"
-              icon="ChevronDown"
-              size="sm" />
+            <template v-if="selectedSchemeOptions.length === 1">
+              <span class="sr-only">Selected Auth Type:</span>
+              {{ selectedSchemeOptions[0]?.label }}
+            </template>
+            <template v-else-if="selectedSchemeOptions.length > 1">
+              Multiple
+              <span class="sr-only">Auth Types Selected</span>
+            </template>
+            <template v-else>
+              <span class="sr-only">Select</span>
+              Auth Type
+            </template>
+            <ScalarIconCaretDown
+              class="size-3 shrink-0 transition-transform duration-100 group-aria-expanded/combobox-button:rotate-180"
+              weight="bold" />
           </ScalarButton>
+          <template #option="{ option, selected }">
+            <ScalarListboxCheckbox
+              multiselect
+              :selected="selected" />
+            <div class="min-w-0 flex-1 truncate">
+              {{ option.label }}
+            </div>
+            <ScalarIconButton
+              v-if="option.isDeletable ?? !isReadOnly"
+              class="-m-0.5 shrink-0 p-0.5 opacity-0 group-hover/item:opacity-100"
+              :icon="ScalarIconTrash"
+              :label="`Delete ${option.label}`"
+              size="xs"
+              @click.stop="handleDeleteScheme(option)" />
+          </template>
         </ScalarComboboxMultiselect>
       </div>
     </template>
+
+    <!-- Auth Table -->
     <RequestAuthDataTable
       :collection="collection"
       :envVariables="envVariables"
@@ -300,7 +329,14 @@ const schemeOptions = computed(() =>
       :persistAuth="persistAuth"
       :selectedSchemeOptions="selectedSchemeOptions"
       :server="server"
-      :workspace="workspace" />
+      :workspace="workspace"
+      @activeSchemes="emits('activeSchemes', $event)"
+      @authorized="emits('authorized')">
+      <template #oauth-actions>
+        <slot name="oauth-actions" />
+      </template>
+    </RequestAuthDataTable>
+
     <DeleteRequestAuthModal
       :scheme="selectedScheme"
       :state="deleteSchemeModal"

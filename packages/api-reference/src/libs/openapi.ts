@@ -1,32 +1,22 @@
 import type { OpenAPI, OpenAPIV3_1 } from '@scalar/openapi-types'
-import type { Spec, TransformedOperation } from '@scalar/types/legacy'
-import { XScalarStability } from '@scalar/types/legacy'
-
-import type { ContentSchema } from '../types'
-
-type PropertyObject = {
-  required?: string[]
-  properties: {
-    [key: string]: {
-      type: string
-      description?: string
-    }
-  }
-}
+import { isDereferenced } from '@scalar/openapi-types/helpers'
+import { getResolvedRef } from '@scalar/workspace-store/helpers/get-resolved-ref'
+import type { OperationObject, ParameterObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 
 /**
  * Formats a property object into a string.
  */
-export function formatProperty(key: string, obj: PropertyObject): string {
+export function formatProperty(key: string, obj: OpenAPIV3_1.SchemaObject): string {
   let output = key
   const isRequired = obj.required?.includes(key)
   output += isRequired ? ' REQUIRED ' : ' optional '
+  const property = getResolvedRef(obj.properties?.[key])
 
   // Check existence before accessing
-  if (obj.properties[key]) {
-    output += obj.properties[key].type
-    if (obj.properties[key].description) {
-      output += ' ' + obj.properties[key].description
+  if (property) {
+    output += property.type
+    if (property.description) {
+      output += ' ' + property.description
     }
   }
 
@@ -36,23 +26,24 @@ export function formatProperty(key: string, obj: PropertyObject): string {
 /**
  * Recursively logs the properties of an object.
  */
-function recursiveLogger(obj: ContentSchema): string[] {
+function recursiveLogger(obj: OpenAPIV3_1.MediaTypeObject): string[] {
   const results: string[] = ['Body']
+  const schema = getResolvedRef(obj?.schema)
 
-  const properties = obj?.schema?.properties
+  const properties = schema?.properties
   if (properties) {
     Object.keys(properties).forEach((key) => {
       if (!obj.schema) {
         return
       }
 
-      results.push(formatProperty(key, obj.schema))
+      results.push(formatProperty(key, schema))
 
-      const property = properties[key]
-      const isNestedObject = property.type === 'object' && !!property.properties
+      const property = getResolvedRef(properties[key])
+      const isNestedObject = property.type === 'object' && Boolean(property.properties)
       if (isNestedObject && property.properties) {
         Object.keys(property.properties).forEach((subKey) => {
-          results.push(`${subKey} ${property.properties?.[subKey]?.type}`)
+          results.push(`${subKey} ${getResolvedRef(property.properties?.[subKey])?.type}`)
         })
       }
     })
@@ -64,75 +55,18 @@ function recursiveLogger(obj: ContentSchema): string[] {
 /**
  * Extracts the request body from an operation.
  */
-export function extractRequestBody(operation: TransformedOperation): string[] | boolean {
+export function extractRequestBody(operation: OperationObject): string[] | boolean {
   try {
-    // Using optional chaining here as well
-    const body = operation?.information?.requestBody?.content?.['application/json']
-    if (!body) {
+    // TODO: Wait… there's more than just 'application/json' (https://github.com/scalar/scalar/issues/6427)
+    const media = getResolvedRef(operation?.requestBody)?.content?.['application/json']
+    if (!media) {
       throw new Error('Body not found')
     }
 
-    return recursiveLogger(body)
+    return recursiveLogger(media)
   } catch (_error) {
     return false
   }
-}
-
-/**
- * Returns all models from the specification, no matter if it’s OpenAPI 3.x.
- */
-export function getModels(spec?: Spec) {
-  if (!spec) {
-    return {} as Record<string, OpenAPIV3_1.SchemaObject>
-  }
-
-  const models =
-    // OpenAPI 3.x
-    (
-      Object.keys(spec?.components?.schemas ?? {}).length
-        ? spec?.components?.schemas
-        : // Fallback
-          {}
-    ) as Record<string, OpenAPIV3_1.SchemaObject>
-
-  // Filter out all schemas with `x-internal: true`
-  Object.keys(models ?? {}).forEach((key) => {
-    if (models[key]?.['x-internal'] === true || models[key]?.['x-scalar-ignore'] === true) {
-      delete models[key]
-    }
-  })
-
-  return models
-}
-
-/**
- * Checks if the OpenAPI document has schemas.
- */
-export const hasModels = (content?: Spec) => {
-  if (!content) {
-    return false
-  }
-
-  if (Object.keys(getModels(content) ?? {}).length) {
-    return true
-  }
-
-  return false
-}
-
-/**
- * Checks if the OpenAPI document has webhooks.
- */
-export const hasWebhooks = (content?: Spec) => {
-  if (!content) {
-    return false
-  }
-
-  if (Object.keys(content?.webhooks ?? {}).length) {
-    return true
-  }
-
-  return false
 }
 
 /**
@@ -172,45 +106,80 @@ export function createEmptySpecification(partialSpecification?: Partial<OpenAPI.
     },
     servers: [],
     tags: [],
-  }) as Spec
+  }) as OpenAPI.Document
+}
+
+export type ParameterMap = {
+  path: ParameterObject[]
+  query: ParameterObject[]
+  header: ParameterObject[]
+  cookie: ParameterObject[]
+  body: ParameterObject[]
+  formData: ParameterObject[]
 }
 
 /**
- * Returns if an operation is considered deprecated.
+ * This function creates a parameter map from an Operation Object, that's easier to consume.
+ *
+ * TODO: Isn't it easier to just stick to the OpenAPI structure, without transforming it?
  */
-export function isOperationDeprecated(operation: OpenAPIV3_1.OperationObject): boolean {
-  if (operation.deprecated !== undefined) {
-    return operation.deprecated
+export function createParameterMap(operation: OperationObject) {
+  const map: ParameterMap = {
+    path: [],
+    query: [],
+    header: [],
+    cookie: [],
+    body: [],
+    formData: [],
   }
-  if (operation['x-scalar-stability'] && operation['x-scalar-stability'] === XScalarStability.Deprecated) {
-    return true
-  }
-  return false
-}
 
-/**
- * Get operation stability.
- */
-export function getOperationStability(operation: OpenAPIV3_1.OperationObject): XScalarStability | undefined {
-  if (operation.deprecated) {
-    return XScalarStability.Deprecated
-  }
-  return operation['x-scalar-stability']
-}
+  // TODO: They are not passed to the function, so we don't need to deal with them yet, but we should.
+  // @see https://github.com/scalar/scalar/issues/6428
+  // if (operation.pathParameters) {
+  //   operation.pathParameters.forEach((parameter: OpenAPIV3_1.ParameterObject) => {
+  //     if (parameter.in === 'path') {
+  //       map.path.push(parameter)
+  //     } else if (parameter.in === 'query') {
+  //       map.query.push(parameter)
+  //     } else if (parameter.in === 'header') {
+  //       map.header.push(parameter)
+  //     } else if (parameter.in === 'cookie') {
+  //       map.cookie.push(parameter)
+  //     } else if (parameter.in === 'body') {
+  //       map.body.push(parameter)
+  //     } else if (parameter.in === 'formData') {
+  //       map.formData.push(parameter)
+  //     }
+  //   })
+  // }
 
-/**
- * Get Operation stability color
- */
-export function getOperationStabilityColor(operation: OpenAPIV3_1.OperationObject): string {
-  const stability = getOperationStability(operation)
-  if (stability === XScalarStability.Deprecated) {
-    return 'text-red'
+  const parameters = operation.parameters ?? []
+
+  if (parameters) {
+    parameters.forEach((parameter) => {
+      if (!isDereferenced<ParameterObject>(parameter)) {
+        return
+      }
+
+      if (typeof parameter === 'object' && parameter !== null && '$ref' in parameter) {
+        return
+      }
+
+      if (parameter.in === 'path') {
+        map.path.push(parameter)
+      } else if (parameter.in === 'query') {
+        map.query.push(parameter)
+      } else if (parameter.in === 'header') {
+        map.header.push(parameter)
+      } else if (parameter.in === 'cookie') {
+        map.cookie.push(parameter)
+      } else if (parameter.in === 'body') {
+        map.body.push(parameter)
+      } else if (parameter.in === 'formData') {
+        map.formData.push(parameter)
+      }
+    })
   }
-  if (stability === XScalarStability.Experimental) {
-    return 'text-orange'
-  }
-  if (stability === XScalarStability.Stable) {
-    return 'text-green'
-  }
-  return ''
+
+  return map
 }
