@@ -32,16 +32,15 @@ export const traverseDocument = (
 
   // Add models if they are not hidden
   if (!config.value.hideModels && document.components?.schemas) {
-    const untaggedModels = traverseSchemas(document, tagsMap, titles, getModelId)
+    const models = traverseSchemas(document, tagsMap, titles, getModelId)
+
+    console.log({ models })
 
     tagsMap.set('models', {
       tag: {
-        id: getModelId(),
-        title: 'Models',
         name: 'Models',
-        children: [],
       },
-      entries: untaggedModels,
+      entries: models,
     })
   }
 
@@ -57,7 +56,15 @@ export const traverseDocument = (
   })
 
   const modelTagUsed = tagsEntries
-    .flatMap((v) => ('tag' in v ? (Array.isArray(v.tag?.tags) ? v.tag?.tags : []) : []))
+    .flatMap((v) => {
+      if ('tag' in v) {
+        return [v.tag.name, ...('tags' in v.tag && Array.isArray(v.tag.tags) ? v.tag.tags : [])]
+      }if ('tags' in v && Array.isArray(v.tags)) {
+        return v.tags
+      }
+
+      return []
+    })
     .includes('models')
 
   // Add tagged operations, webhooks and tagGroups
@@ -80,6 +87,8 @@ export const traverseDocument = (
       children: tagsMap.get('models')!.entries,
     })
   }
+
+  console.log(entries)
 
   return { entries, titles }
 }

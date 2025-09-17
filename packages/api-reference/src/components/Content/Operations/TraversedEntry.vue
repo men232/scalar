@@ -54,7 +54,7 @@ const isOperation = (entry: TraversedEntry): entry is TraversedOperation =>
 const isWebhook = (entry: TraversedEntry): entry is TraversedWebhook =>
   'webhook' in entry
 
-const isModel = (entry: TraversedEntry): entry is TraversedSchema =>
+const isSchema = (entry: TraversedEntry): entry is TraversedSchema =>
   'schema' in entry
 
 const isWebhookGroup = (entry: TraversedEntry): entry is TraversedTag =>
@@ -95,6 +95,10 @@ const isLazy = (entry: TraversedEntry, index: number) => {
   return null
 }
 
+const entriesFiltered = computed(() =>
+  entries.filter((v) => v.id !== 'tag/models'),
+)
+
 defineExpose({
   currentIndex,
   isLazy,
@@ -103,7 +107,7 @@ defineExpose({
 
 <template>
   <Lazy
-    v-for="(entry, index) in entries"
+    v-for="(entry, index) in entriesFiltered"
     :id="entry.id"
     :key="entry.id"
     :isLazy="Boolean(isLazy(entry, index))"
@@ -160,7 +164,7 @@ defineExpose({
         :store />
     </template>
 
-    <template v-else-if="isModel(entry)">
+    <template v-else-if="isSchema(entry)">
       <Model :entry="entry" />
     </template>
   </Lazy>

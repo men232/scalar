@@ -1,5 +1,12 @@
 <script setup lang="ts">
-import { ScalarErrorBoundary } from '@scalar/components'
+import {
+  ScalarCard,
+  ScalarCardHeader,
+  ScalarCardSection,
+  ScalarCodeBlock,
+  ScalarErrorBoundary,
+} from '@scalar/components'
+import { getExampleFromSchema } from '@scalar/oas-utils/spec-getters'
 import type { ApiReferenceConfiguration } from '@scalar/types'
 import type { SchemaObject } from '@scalar/workspace-store/schemas/v3.1/strict/openapi-document'
 import { computed, useId } from 'vue'
@@ -7,7 +14,10 @@ import { computed, useId } from 'vue'
 import {
   CompactSection,
   Section,
+  SectionColumn,
+  SectionColumns,
   SectionContainer,
+  SectionContent,
   SectionHeader,
   SectionHeaderTag,
 } from '@/components/Section'
@@ -75,12 +85,37 @@ const models = computed(() => {
             </SectionHeaderTag>
           </template>
           <ScalarErrorBoundary>
-            <Schema
-              :hideHeading="true"
-              :hideModelNames="true"
-              :level="1"
-              noncollapsible
-              :schema />
+            <SectionContent>
+              <SectionColumns>
+                <SectionColumn>
+                  <Schema
+                    :hideHeading="true"
+                    :hideModelNames="true"
+                    :level="1"
+                    noncollapsible
+                    :schema />
+                </SectionColumn>
+                <SectionColumn>
+                  <ScalarCard class="scalar-card-sticky">
+                    <ScalarCardHeader>
+                      {{ schema.title ?? name }}
+                    </ScalarCardHeader>
+                    <ScalarCardSection
+                      class="request-editor-section custom-scroll p-0">
+                      <ScalarCodeBlock
+                        class="bg-b-2 -outline-offset-2"
+                        :content="
+                          getExampleFromSchema(schema, {
+                            emptyString: 'string',
+                            mode: 'read',
+                          })
+                        "
+                        lang="json" />
+                    </ScalarCardSection>
+                  </ScalarCard>
+                </SectionColumn>
+              </SectionColumns>
+            </SectionContent>
           </ScalarErrorBoundary>
         </CompactSection>
       </div>

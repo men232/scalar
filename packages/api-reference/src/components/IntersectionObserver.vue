@@ -13,12 +13,12 @@ const emit = defineEmits<{
 
 const intersectionObserverRef = ref<HTMLElement>()
 
-const calculateRootMargin = (element: HTMLElement) => {
+const calculateRootMargin = (_element: HTMLElement) => {
   // Trigger when element reaches top 1/3 of viewport
   return '-33% 0px -67% 0px'
 }
 
-const calculateThreshold = (element: HTMLElement) => {
+const calculateThreshold = (_element: HTMLElement) => {
   return 0
 }
 
